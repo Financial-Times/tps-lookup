@@ -1,0 +1,18 @@
+{
+  "name": "tps-lookup",
+  "version": "1.0.0",
+  "description": "Lookup TPS numbers",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Andrew Snead",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "co": "^4.6.0",
+    "dotenv": "^4.0.0",
+    "express": "^4.15.3",
+    "ssh2": "^0.5.5"
+  }
+}
