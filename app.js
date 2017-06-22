@@ -6,11 +6,12 @@ const bodyParser = require('body-parser');
 const Client = require('ssh2');
 const fs = require('fs');
 const path = require('path');
+const compression = require('compression');
 const config = require('./config');
 const { notFound, errorMiddleware } = require('./errors');
 
 const app = new express();
-const FILENAME = 'tps.dat';
+app.use(compression());
 const connSettings = {
   host: config.sftpHost,
   port: config.sftpPort,
@@ -28,16 +29,23 @@ app.post('/search', (req, res, next) => {
   const results = req.body.map((num) => {
     return {
       number: num,
-      canCall: numbers[num.replace(/\s/g, '')] || false
+      canCall: !numbers[num.replace(/\s/g, '')] || false
     };
   });
 
   res.json({ results });
 });
 
+app.use(express.static(`${__dirname}/dist`));
+app.get('/', (req, res, next) => {
+  res.sendFile(`${__dirname}/index.html`);
+});
+
 app.use(notFound);
 app.use(errorMiddleware);
 
+
+const FILENAME = 'tps.dat';
 const conn = new Client();
 conn.on('ready', () => {
   const moveFrom = `./${FILENAME}`;
