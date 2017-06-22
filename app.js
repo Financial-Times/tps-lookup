@@ -63,7 +63,7 @@ conn.on('ready', () => {
 
       // turn into map for constant lookup
       // trim spaces from numbers
-      fs.readFileSync(`/tmp/${FILENAME}`).toString().split(/\r?\n/).forEach(num => {
+      fs.readFileSync(`/tmp/${FILENAME}`).toString().split(/\r?\n/).forEach((num, i) => {
         numbers[num] = true;
       });
 
