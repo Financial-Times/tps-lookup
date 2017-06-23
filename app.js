@@ -40,7 +40,7 @@ app.post('/search', (req, res, next) => {
         .then((result) => {
           return Promise.resolve({
             number: num,
-            canCall: result ? false : true
+            canCall: result.Item ? false : true
           });
         })
         .catch((err) => {
@@ -50,7 +50,7 @@ app.post('/search', (req, res, next) => {
     res.json({ results });
   }).catch((err) => {
     console.log(err);
-    next(err);
+    next({ message: 'Something went wrong' });
   });
 });
 
