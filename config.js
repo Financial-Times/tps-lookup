@@ -8,3 +8,4 @@ config.sftpPassword = process.env.SFTP_PASSWORD;
 config.awsAccessKeyId = process.env.AWS_ACCESS_KEY;
 config.awsSecretAccessKey = process.env.AWS_SECRET_KEY;
 config.awsRegion = process.env.AWS_REGION || 'eu-west-1';
+config.apiKey = process.env.API_KEY || 'development';

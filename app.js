@@ -5,6 +5,7 @@ const co = require('co');
 const bodyParser = require('body-parser');
 const AWS = require('aws-sdk');
 const authS3O = require('s3o-middleware');
+const authenticate = require('./authenticate');
 const path = require('path');
 const compression = require('compression');
 const config = require('./config');
@@ -23,7 +24,7 @@ const docClient = new AWS.DynamoDB.DocumentClient();
 app.use(compression());
 app.use(bodyParser.json());
 
-app.post('/search', (req, res, next) => {
+app.post('/search', authenticate, (req, res, next) => {
   if (!Array.isArray(req.body)) {
     return next({ message: 'Must provide array of numbers', status: 400 })
   }

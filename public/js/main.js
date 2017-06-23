@@ -7,6 +7,7 @@ const tickImg = document.getElementById('img-tick');
 function searchHandler() {
   const options = {
     method: 'POST',
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json'
     },
