@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "compileAll": "./bin/main.sh compileAll",
-    "postinstall": "npm run compileAll"
+    "postinstall": "npm run compileAll",
+    "start": "node app.js"
   },
   "author": "Andrew Snead",
   "license": "ISC",
