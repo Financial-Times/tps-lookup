@@ -19,11 +19,11 @@ function searchHandler() {
       .then(resJson => {
         let resText;
         if (resJson.results[0].canCall) {
-          resText = 'You can call this number';
+          resText = 'This number is not on the TPS list;
           tickImg.classList.remove('img-hidden');
           crossImg.classList.add('img-hidden');
         } else {
-          resText = 'Do NOT Call this number';
+          resText = 'This number IS ON the TPS list';
           crossImg.classList.remove('img-hidden');
           tickImg.classList.add('img-hidden');
         }
