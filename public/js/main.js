@@ -21,11 +21,11 @@ function searchHandler() {
     .then(resJson => {
       let resText;
       if (resJson.results[0].canCall) {
-        resText = 'This number is not on the TPS list';
+        resText = 'Good news! This number is not on the TPS/CTPS list';
         tickImg.classList.remove('img-hidden');
         crossImg.classList.add('img-hidden');
       } else {
-        resText = 'This number IS ON the TPS list';
+        resText = 'This number IS ON the TPS/CTPS list. Please seek guidance before calling.';
         crossImg.classList.remove('img-hidden');
         tickImg.classList.add('img-hidden');
       }
