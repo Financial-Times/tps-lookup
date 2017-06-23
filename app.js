@@ -4,6 +4,7 @@ const express = require('express');
 const co = require('co');
 const bodyParser = require('body-parser');
 const AWS = require('aws-sdk');
+const authS3O = require('s3o-middleware');
 const path = require('path');
 const compression = require('compression');
 const config = require('./config');
@@ -55,7 +56,8 @@ app.post('/search', (req, res, next) => {
 });
 
 app.use(express.static(`${__dirname}/dist`));
-app.get('/', (req, res, next) => {
+app.use(authS3O);
+app.get('/*', (req, res, next) => {
   res.sendFile(`${__dirname}/index.html`);
 });
 
