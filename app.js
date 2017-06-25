@@ -18,6 +18,7 @@ AWS.config.update({
   secretAccessKey: config.awsSecretAccessKey,
   region: config.awsRegion
 });
+const tableName = 'ft-email_platform_tps_lookup';
 
 const docClient = new AWS.DynamoDB.DocumentClient();
 
@@ -25,29 +26,38 @@ app.use(compression());
 app.use(bodyParser.json());
 
 app.post('/search', authenticate, (req, res, next) => {
+  // check body with regex for british phone number
   if (!Array.isArray(req.body)) {
     return next({ message: 'Must provide array of numbers', status: 400 })
   }
   co(function* () {
-    const results = yield req.body.map((num) => {
+    const results = yield req.body.map(function* (num) {
       const params = {
-        TableName: 'ft-email_platform_tps_lookup',
+        TableName: tableName,
         Key: {
           phone: num.replace(/\s/g, '')
         }
       };
 
-      return docClient.get(params)
-        .promise()
-        .then((result) => {
-          return Promise.resolve({
-            number: num,
-            canCall: result.Item ? false : true
-          });
-        })
-        .catch((err) => {
-          return Promise.reject(err);
-        });
+      const result = yield docClient.get(params).promise();
+      if (result.Item) {
+        const updateParams = Object.assign({}, params,
+            {
+              ExpressionAttributeNames: {
+                '#d': 'lastRetrieved'
+              },
+              ExpressionAttributeValues: {
+                ':d': JSON.stringify(new Date())
+              },
+              UpdateExpression: 'SET #d = :d'
+            });
+        yield docClient.update(updateParams).promise();
+      }
+
+      return Promise.resolve({
+        number: num,
+        canCall: result.Item ? false : true
+      });
     });
     res.json({ results });
   }).catch((err) => {
