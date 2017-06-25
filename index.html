@@ -2,7 +2,7 @@
 <html lang="en">
 
   <head>
-    <link rel="stylesheet" href="https://www.ft.com/__origami/service/build/v2/bundles/css?modules=o-buttons@^5.0.2,o-techdocs@^7.0.2,o-forms@^4.0.1,o-icons@^5.4.0" />
+    <link rel="stylesheet" href="https://www.ft.com/__origami/service/build/v2/bundles/css?modules=o-buttons@^5.0.2,o-techdocs@^7.0.2,o-forms@^4.0.1,o-icons@^5.4.0,o-grid@^4.3.3" />
     <link rel="stylesheet" type="text/css" href="/main.css">
     <meta charset="UTF-8">
     <title>TPS Screener</title>
@@ -19,18 +19,31 @@
     </header>
     <div class="o-techdocs-container">
       <div class="o-techdocs-layout">
-        <!--<section class="o-techdocs-content about">-->
-        <div class="o-forms">
-          <label for="search-input" class="o-forms__label">Phone Number</label>
-          <div class="o-forms__affix-wrapper">
-            <input type="text" id="search-input" class="o-forms__text search-input" placeholder="UK Phone number">
-            <div class="o-forms__suffix">
-              <button class="search-button o-buttons">Search</button>
+        <div class="o-techdocs-main">
+          <!--<section class="o-techdocs-content about">-->
+          <div class="o-grid-container">
+            <div class="o-grid-row">
+              <div data-o-grid-colspan="7">
+                <form class="search-form">
+                  <div class="o-forms">
+                    <label for="search-input" class="o-forms__label">Phone Number</label>
+                    <div class="o-forms__affix-wrapper">
+                      <input type="text" id="search-input" class="o-forms__text search-input" placeholder="UK Phone number" required pattern="^0(?!044)[\d ]+$"/>
+                      <div class="o-forms__suffix">
+                        <button type="submit" class="search-button o-buttons">Search</button>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+              </div>
+              <div data-o-grid-colspan="4">
+                Number must begin with a 0 and not include the country code.<br>
+                <strong>Example</strong>: 077xxxxxxxx
             </div>
           </div>
         </div>
-        <!--</section>-->
       </div>
+        <!--</section>-->
       <div>
         <div class="search-result">
           <span class="search-result-text"></span>

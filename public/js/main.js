@@ -1,10 +1,20 @@
 const numberInput = document.querySelector('.search-input');
+const searchForm = document.querySelector('.search-form')
 const searchButton = document.querySelector('.search-button')
 const resultSection = document.querySelector('.search-result-text');
 const crossImg = document.getElementById('img-cross');
 const tickImg = document.getElementById('img-tick');
 
-function searchHandler() {
+
+function clearMessages() {
+  tickImg.classList.add('img-hidden');
+  crossImg.classList.add('img-hidden');
+  resultSection.innerHTML = '';
+}
+
+function searchHandler(e) {
+  e.preventDefault();
+
   const options = {
     method: 'POST',
     credentials: 'include',
@@ -23,11 +33,9 @@ function searchHandler() {
       if (resJson.results[0].canCall) {
         resText = 'Good news! This number is not on the TPS/CTPS list';
         tickImg.classList.remove('img-hidden');
-        crossImg.classList.add('img-hidden');
       } else {
         resText = 'This number IS ON the TPS/CTPS list. Please seek guidance before calling.';
         crossImg.classList.remove('img-hidden');
-        tickImg.classList.add('img-hidden');
       }
       resultSection.innerHTML = resText;
     })
@@ -36,10 +44,11 @@ function searchHandler() {
     });
 }
 
-searchButton.addEventListener('click', searchHandler);
+searchForm.addEventListener('submit', searchHandler);
+searchButton.addEventListener('click', clearMessages);
 numberInput.addEventListener('keypress', (e) => {
   const key = e.which || e.keyCode;
   if (key === 13) {
-    searchHandler();
+    clearMessages();
   }
 });
