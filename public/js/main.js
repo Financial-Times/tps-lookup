@@ -31,7 +31,7 @@ function searchHandler(e) {
     .then(resJson => {
       let resText;
       if (resJson.results[0].canCall) {
-        resText = 'Good news! This number is not on the TPS/CTPS list';
+        resText = 'Good news! This number is not on the TPS/CTPS list.';
         tickImg.classList.remove('img-hidden');
       } else {
         resText = 'This number IS ON the TPS/CTPS list. Please seek guidance before calling.';
