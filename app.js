@@ -22,6 +22,10 @@ const tableName = 'ft-email_platform_tps_lookup';
 
 const docClient = new AWS.DynamoDB.DocumentClient();
 
+function validateNumber(phoneNum) {
+  return /^0(?!044)[\d ]+$/.test(phoneNum);
+}
+
 app.use(compression());
 app.use(bodyParser.json());
 
@@ -32,6 +36,9 @@ app.post('/search', authenticate, (req, res, next) => {
   }
   co(function* () {
     const results = yield req.body.map(function* (num) {
+      if (!validateNumber(num)) {
+        return next({ message: `${num} does not match formate 0xxxxxxxxxx`, status: 400 })
+      }
       const params = {
         TableName: tableName,
         Key: {
