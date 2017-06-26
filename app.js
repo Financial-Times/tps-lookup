@@ -9,6 +9,7 @@ const authenticate = require('./authenticate');
 const path = require('path');
 const compression = require('compression');
 const config = require('./config');
+const ensureHttps = require('./ensureHttps');
 const { notFound, errorMiddleware } = require('./errors');
 
 const app = new express();
@@ -18,7 +19,6 @@ AWS.config.update({
   secretAccessKey: config.awsSecretAccessKey,
   region: config.awsRegion
 });
-const tableName = 'ft-email_platform_tps_lookup';
 
 const docClient = new AWS.DynamoDB.DocumentClient();
 
@@ -26,6 +26,9 @@ function validateNumber(phoneNum) {
   return /^0(?!044)[\d ]+$/.test(phoneNum);
 }
 
+if (config.NODE_ENV === 'production') {
+  app.use(ensureHttps);
+}
 app.use(compression());
 app.use(bodyParser.json());
 
@@ -37,10 +40,12 @@ app.post('/search', authenticate, (req, res, next) => {
   co(function* () {
     const results = yield req.body.map(function* (num) {
       if (!validateNumber(num)) {
-        return next({ message: `${num} does not match formate 0xxxxxxxxxx`, status: 400 })
+        const err = new Error(`${num} does not match format 0xxxxxxxxxx`)
+        err.status = 400;
+        throw err; 
       }
       const params = {
-        TableName: tableName,
+        TableName: config.tableName,
         Key: {
           phone: num.replace(/\s/g, '')
         }
@@ -69,7 +74,7 @@ app.post('/search', authenticate, (req, res, next) => {
     res.json({ results });
   }).catch((err) => {
     console.log(err);
-    next({ message: 'Something went wrong' });
+    next(err);
   });
 });
 
