@@ -1,3 +1,5 @@
 .env
 *\n"
 dist
+*.dat
+*.txt

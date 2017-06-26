@@ -1,9 +1,17 @@
 const fs = require('fs');
+//const es = require('event-stream');
 
-const wstream = fs.createWriteStream('nums.dat');
+const file = fs.readFileSync('./nums.dat');
+console.log(file.length);
 
-let nums = ''; 
-for (let i = 0; i < 30000000; i++) {
-  console.log(i);
-  fs.appendFileSync('nums.dat', `${(Math.floor(Math.random() * 1000000000))}\r\n`);
-}
+//const wstream = fs.createWriteStream('nums.dat');
+
+//const arr = []
+//for (let i = 0; i < 28000000; i++) {
+  //console.log(i);
+  //arr.push(`${(Math.floor(Math.random() * 1000000000))}\r\n`);
+  ////wstream.write(`${(Math.floor(Math.random() * 1000000000))}\r\n`);
+//}
+
+//es.readArray(arr).pipe(wstream);
+////wstream.end()
