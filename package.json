@@ -18,7 +18,10 @@
     "co": "^4.6.0",
     "compression": "^1.6.2",
     "dotenv": "^4.0.0",
+    "dynamo-backup-to-s3": "^0.6.1",
+    "event-stream": "^3.3.4",
     "express": "^4.15.3",
+    "form-data": "^2.2.0",
     "node-sass": "^4.5.3",
     "s3o-middleware": "^1.8.0"
   }
