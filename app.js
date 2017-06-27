@@ -26,6 +26,9 @@ function validateNumber(phoneNum) {
   return /^0(?!044)[\d ]+$/.test(phoneNum);
 }
 
+// Set login to 1 day
+app.set('s3o-cookie-ttl', 86400000);
+
 if (config.NODE_ENV === 'production') {
   app.use(ensureHttps);
 }
@@ -78,6 +81,10 @@ app.post('/search', authenticate, (req, res, next) => {
   });
 });
 
+app.post(`/logout`, (req, res) => {
+  res.cookie('s3o_token', '', { maxAge: -1, httpOnly: true });
+  return res.redirect('/');
+});
 app.use(express.static(`${__dirname}/dist`));
 app.use(authS3O);
 app.get('/*', (req, res, next) => {

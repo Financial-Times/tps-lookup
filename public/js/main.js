@@ -2,9 +2,15 @@ const numberInput = document.querySelector('.search-input');
 const searchForm = document.querySelector('.search-form')
 const searchButton = document.querySelector('.search-button')
 const resultSection = document.querySelector('.search-result-text');
+const logoutLink = document.querySelector('.logout-link');
+const logoutForm = document.querySelector('.logout-form');
 const crossImg = document.getElementById('img-cross');
 const tickImg = document.getElementById('img-tick');
 
+function logoutHandler(e) {
+  e.preventDefault();
+  logoutForm.submit();
+}
 
 function clearMessages() {
   tickImg.classList.add('img-hidden');
@@ -46,6 +52,7 @@ function searchHandler(e) {
 
 searchForm.addEventListener('submit', searchHandler);
 searchButton.addEventListener('click', clearMessages);
+logoutLink.addEventListener('click', logoutHandler);
 numberInput.addEventListener('keypress', (e) => {
   const key = e.which || e.keyCode;
   if (key === 13) {
