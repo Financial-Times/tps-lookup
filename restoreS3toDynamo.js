@@ -10,9 +10,9 @@ const restore = new DynamoRestore({
   concurrency: 1000,
   partitionkey: 'phone',
   stopOnFailure: true,
-  //awsAccessKey: config.awsAccessKeyId,
-  //awsSecretKey: config.awsSecretAccessKey,
-  //awsSecret: config.awsSecretAccessKey,
+  awsAccessKey: config.awsAccessKeyId,
+  awsSecretKey: config.awsSecretAccessKey,
+  awsSecret: config.awsSecretAccessKey,
   awsRegion: config.awsRegion
 });
 
