@@ -18,7 +18,7 @@ const docClient = new AWS.DynamoDB.DocumentClient();
 
 function uploadToS3(fileStream) {
   const params = { Bucket: 'email-platform-ftcom-tps', Key: 'tps.txt', Body: fileStream };
-  return s3.upload(params);
+  return s3.upload(params).promise();
 }
 
 function addToDynamo(phone) {
@@ -43,11 +43,7 @@ function removeFromDynamo(phone) {
 
 function getDeletions() {
   const deletionCheck = spawnSync('/bin/bash', [ '-c', `
-  (sort -n -o tps_original.txt tps_original.txt &
-  sort -n -o tps_new.txt tps_new.txt &
-  wait
-  comm -23 tps_original.txt tps_new.txt
-  )
+  comm -23 <(sort -n tps_original.txt) <(sort -n tps_new.txt)
     `
   ], {
     cwd: '/tmp',
@@ -59,11 +55,7 @@ function getDeletions() {
 
 function getAdditions() {
   const additionCheck = spawnSync('/bin/bash', [ '-c', `
-  (sort -n -o tps_original.txt tps_original.txt &
-  sort -n -o tps_new.txt tps_new.txt &
-  wait
-  comm -13 tps_original.txt tps_new.txt
-  )
+  comm -13 <(sort -n tps_original.txt) <(sort -n tps_new.txt)
     `
   ], {
     cwd: '/tmp',
@@ -91,41 +83,54 @@ conn.on('ready', () => {
       throw err;
     }
 
+    console.log('Retrieving new file from FTP');
     sftp.fastGet(moveFrom, moveTo, {}, (downloadErr) => {
       if (downloadErr) {
         throw downloadErr;
       }
 
-      const deletions = getDeletions();
-      const additions = getAdditions();
+      console.log('Finding deletions and additions since last update');
+      const deletions = getDeletions().filter(d => d.trim());
+      const additions = getAdditions().filter(a => a.trim());
       co(function* () {
+        console.log(`Deleting ${deletions.length} records`);
         for (const del of deletions) {
-          if (del) {
-            yield removeFromDynamo(del.trim());
-          }
+          yield removeFromDynamo(del);
         }
+        console.log(`Adding ${additions.length} records`);
         for (const add of additions) {
-          if (add) {
-            yield addToDynamodb(add.trim());
-          }
+          yield addToDynamo(add);
         }
 
+        console.log('Uploading new file to S3');
         yield uploadToS3(fs.createReadStream('/tmp/tps_new.txt'));
+        console.log('Done!');
+        process.exit(0);
+      }).catch((err) => {
+        console.log(err);
+        process.exit(1);
       });
     });
   });
-})
+}).on('error', (err) => {
+  console.log(err);
+  process.exit(1);
+});
 
 // Get file from S3, then from FTP
 const s3Params = { Bucket: 'email-platform-ftcom-tps', Key: 'tps.txt' };
 const oldFile = fs.createWriteStream('/tmp/tps_original.txt');
 
-file.on('close', () => {
+oldFile.on('close', () => {
   conn.connect(connSettings);
 });
 
+console.log('Downloading old file');
 s3.getObject(s3Params)
   .createReadStream()
+  .on('close', () => {
+     console.log('Old file downloaded');
+  })
   .on('error', (err) => {
     console.log(err);
-  }).pipe(file);
+  }).pipe(oldFile);
