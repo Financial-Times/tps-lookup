@@ -97,6 +97,11 @@ function ftpToFS(moveFrom, moveTo, filename) {
         console.log('Finding deletions and additions since last update');
         const deletions = getDeletions(oldFile, newFile).filter(d => d.trim());
         const additions = getAdditions(oldFile, newFile).filter(a => a.trim());
+
+        if (deletions.length > 1000000) {
+          throw new Error('List appears to be incomplete - halting sync');
+        }
+
         co(function* () {
           console.log(`Deleting ${deletions.length} records`);
           for (const del of deletions) {
