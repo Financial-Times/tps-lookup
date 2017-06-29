@@ -16,6 +16,7 @@
     "body-parser": "^1.17.2",
     "browserify": "^14.4.0",
     "co": "^4.6.0",
+    "co-wait": "0.0.0",
     "compression": "^1.6.2",
     "dotenv": "^4.0.0",
     "dynamo-backup-to-s3": "^0.6.1",
