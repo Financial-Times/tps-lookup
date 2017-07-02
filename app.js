@@ -94,8 +94,8 @@ indexRouter.get('/', (req, res, next) => {
   res.sendFile(`${__dirname}/index.html`);
 });
 
-app.use(searchRouter);
-app.use(indexRouter);
+app.use('/search', searchRouter);
+app.use('/', indexRouter);
 
 app.use(notFound);
 app.use(errorMiddleware);
