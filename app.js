@@ -9,11 +9,13 @@ const path = require('path');
 const compression = require('compression');
 const config = require('./config');
 const { docClient } = require('./db');
-const ensureHttps = require('./ensureHttps');
+const { ensureHttps, redirectHttps } = require('./ensureHttps');
 const healthCheck = require('./healthCheck');
 const { notFound, errorMiddleware } = require('./errors');
 
 const app = new express();
+const searchRouter = express.Router();
+const indexRouter = express.Router();
 
 function validateNumber(phoneNum) {
   return /^0(?!044)[\d ]+$/.test(phoneNum);
@@ -28,7 +30,10 @@ if (config.NODE_ENV === 'production') {
 app.use(compression());
 app.use(bodyParser.json());
 
-app.post('/search', authenticate, (req, res, next) => {
+if (config.NODE_ENV === 'production') {
+  searchRouter.use(ensureHttps);
+}
+searchRouter.post('/search', authenticate, (req, res, next) => {
   // check body with regex for british phone number
   if (!Array.isArray(req.body)) {
     return next({ message: 'Must provide array of numbers', status: 400 })
@@ -38,7 +43,7 @@ app.post('/search', authenticate, (req, res, next) => {
       if (!validateNumber(num)) {
         const err = new Error(`${num} does not match format 0xxxxxxxxxx`)
         err.status = 400;
-        throw err; 
+        throw err;
       }
       const params = {
         TableName: config.tableName,
@@ -81,10 +86,16 @@ app.post(`/logout`, (req, res) => {
 app.get('/__health', healthCheck.handle);
 
 app.use(express.static(`${__dirname}/dist`));
-app.use(authS3O);
-app.get('/*', (req, res, next) => {
+indexRouter.use(authS3O);
+if (config.NODE_ENV === 'production') {
+  indexRouter.use(redirectHttps);
+}
+indexRouter.get('/', (req, res, next) => {
   res.sendFile(`${__dirname}/index.html`);
 });
+
+app.use(searchRouter);
+app.use(indexRouter);
 
 app.use(notFound);
 app.use(errorMiddleware);
