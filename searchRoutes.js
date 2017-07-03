@@ -17,7 +17,7 @@ module.exports = (app) => {
   }
   router.use(authenticate);
 
-  router.post('/search', (req, res, next) => {
+  router.post('/', (req, res, next) => {
     // check body with regex for british phone number
     if (!Array.isArray(req.body)) {
       return next({ message: 'Must provide array of numbers', status: 400 })
@@ -63,6 +63,6 @@ module.exports = (app) => {
     });
   });
 
-  app.use(router);
+  app.use('/search', router);
 };
 
