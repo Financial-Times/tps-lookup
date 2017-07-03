@@ -30,7 +30,7 @@ function searchHandler(e) {
     body: JSON.stringify([numberInput.value])
   }
 
-  fetch('/search', options)
+  fetch('https://tps-screener.ft.com/search', options)
     .then(res => {
       return res.json();
     })
