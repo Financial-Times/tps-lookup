@@ -79,7 +79,7 @@ function ftpToFS(moveFrom, moveTo, filename) {
     password: config.sftpPassword
   };
 
-  const newFile = moveTo.split('/tmp/')[0];
+  const newFile = moveTo.split('/tmp/')[1];
   const oldFile = newFile.replace('new', 'original');
 
   conn.on('ready', () => {
