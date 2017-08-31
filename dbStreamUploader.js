@@ -3,6 +3,7 @@ require('dotenv').load({ silent: true });
 const FormData = require('form-data');
 const fetch = require('node-fetch');
 const co = require('co');
+const fs = require('fs');
 const AWS = require('aws-sdk');
 const es = require('event-stream');
 const Stream = require('stream');
@@ -14,12 +15,12 @@ AWS.config.update({
   region: config.awsRegion
 });
 
-const s3 = new AWS.S3({ });
+//const s3 = new AWS.S3({ });
 
 const form = new FormData();
-form.append('f', config.tpsNS);
+form.append('f', '/www/corporate.tpsonline.org.uk//data/tps_ns.txt');
 const ctpsForm = new FormData();
-ctpsForm.append('f', config.ctpsNS);
+ctpsForm.append('f', 'f=/www/corporate.tpsonline.org.uk//data/ctps_ns.txt');
 
 const options = {
   method: 'POST',
@@ -34,7 +35,7 @@ const ctpsOptions = {
 co(function* () {
   function uploadFromStream(s3) {
     const pass = new Stream.PassThrough();
-    const params = { Bucket: 'email-platform-ftcom-signup/test/files', Key: 'tps.json', Body: pass };
+    const params = { Bucket: 'email-platform-ftcom-tps', Key: 'tps.json', Body: pass };
 
     s3.upload(params, (err, data) => {
       console.log(err, data);
@@ -43,9 +44,12 @@ co(function* () {
     return pass;
   }
   let count = 0;
-  const res = yield fetch(config.tpsHost, options)
-  const cRes = yield fetch(config.ctpsHost, ctpsOptions)
-  es.merge(res.body, cRes.body)
+  const res = fs.createReadStream('./CTPS.txt');
+  //const cRes = fs.createReadStream('./ctps_ns.txt');
+  //const res = yield fetch('https://corporate.tpsonline.org.uk/index.php/tps/get_file', options)
+  //const cRes = yield fetch('http://corporate.ctpsonline.org.uk/index.php/ctps/get_file', ctpsOptions)
+  //es.merge(res, cRes)
+  res
     .pipe(es.split('\r\n'))
     .pipe(es.mapSync((data) => {
       if (data.trim()) {
@@ -53,7 +57,7 @@ co(function* () {
         return `${JSON.stringify({ phone: { S: data.trim() } })}\n`;
       }
     }))
-    .pipe(uploadFromStream(new AWS.S3({ })));
+    .pipe(fs.createWriteStream('./tps.json'));
 }).catch((err) => {
   console.log(err);
 });
