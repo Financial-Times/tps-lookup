@@ -4,6 +4,8 @@
   "description": "Lookup TPS numbers",
   "main": "app.js",
   "scripts": {
+    "precommit": "secret-squirrel",
+    "commitmsg": "secret-squirrel-commitmsg",
     "test": "echo \"Error: no test specified\" && exit 1",
     "compileAll": "./bin/main.sh compileAll",
     "postinstall": "npm run compileAll",
@@ -29,5 +31,9 @@
   },
   "engines": {
     "node": "^8.1.4"
+  },
+  "devDependencies": {
+    "@financial-times/secret-squirrel": "^2.8.0",
+    "husky": "^0.14.3"
   }
 }

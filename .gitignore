@@ -3,3 +3,6 @@
 dist
 *.dat
 *.txt
+.idea/
+package-lock.json
+node_modules/
