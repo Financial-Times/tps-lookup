@@ -21,11 +21,21 @@ Run this command to install the packages needed for the app locally ( if it is t
 npm run postinstall
 ```
 
-Then, to spin up the local instance of the app, run the command below:
+Secondly, run the following command to populate your `.env` file:
+
+```shell
+npm run vault:env
+```
+
+Finally, to spin up the local instance of the app, run the command below:
 
 ```shell
 npm start
 ```
+
+**Tests**
+
+Run the command `npm run test` for tests
 
 ## Heroku Deployments
 
