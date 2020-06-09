@@ -23,7 +23,7 @@ exports.handle = (req, res) => {
   const health = {};
 
   health.schemaVersion = 1;
-  health.systemCode = 'tps-screener';
+  health.systemCode = 'ft-tps-screener';
   health.name = 'Internal Product TPS Screener';
   health.description = 'API and Interface for screening phone numbers on the TPS/CTPS registry';
   health.checks = [];
