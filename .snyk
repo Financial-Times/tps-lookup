@@ -1,0 +1,122 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.13.5
+# ignores vulnerabilities until expiry date; change duration by modifying expiry date
+ignore:
+  SNYK-JS-LODASH-450202:
+    - dynamo-backup-to-s3 > lodash:
+        reason: no fix available
+        expires: '2020-07-09T12:11:16.126Z'
+    - s3o-middleware > node-rsa > lodash:
+        reason: no fix available
+        expires: '2020-07-09T12:11:16.127Z'
+  SNYK-JS-LODASH-567746:
+    - dynamo-backup-to-s3 > lodash:
+        reason: no fix available
+        expires: '2020-07-09T12:11:16.127Z'
+    - s3o-middleware > node-rsa > lodash:
+        reason: no fix available
+        expires: '2020-07-09T12:11:16.127Z'
+  SNYK-JS-LODASH-73638:
+    - dynamo-backup-to-s3 > lodash:
+        reason: no fix available
+        expires: '2020-07-09T12:11:16.127Z'
+    - s3o-middleware > node-rsa > lodash:
+        reason: no fix available
+        expires: '2020-07-09T12:11:16.127Z'
+  SNYK-JS-LODASH-73639:
+    - dynamo-backup-to-s3 > lodash:
+        reason: no fix available
+        expires: '2020-07-09T12:11:16.127Z'
+    - s3o-middleware > node-rsa > lodash:
+        reason: no fix available
+        expires: '2020-07-09T12:11:16.127Z'
+  'npm:lodash:20180130':
+    - s3o-middleware > node-rsa > lodash:
+        reason: no fix available
+        expires: '2020-07-09T12:11:16.127Z'
+  SNYK-JS-MINIMIST-559764:
+    - browserify > subarg > minimist:
+        reason: no fix available
+        expires: '2020-07-09T12:11:16.127Z'
+    - browserify > deps-sort > subarg > minimist:
+        reason: no fix available
+        expires: '2020-07-09T12:11:16.127Z'
+    - browserify > module-deps > subarg > minimist:
+        reason: no fix available
+        expires: '2020-07-09T12:11:16.127Z'
+  SNYK-JS-NODESASS-535497:
+    - node-sass:
+        reason: no fix available
+        expires: '2020-07-09T12:11:16.127Z'
+  SNYK-JS-NODESASS-535498:
+    - node-sass:
+        reason: no fix available
+        expires: '2020-07-09T12:11:16.127Z'
+  SNYK-JS-NODESASS-535502:
+    - node-sass:
+        reason: no fix available
+        expires: '2020-07-09T12:11:16.127Z'
+  SNYK-JS-NODESASS-540956:
+    - node-sass:
+        reason: no fix available
+        expires: '2020-07-09T12:11:16.127Z'
+  SNYK-JS-NODESASS-540958:
+    - node-sass:
+        reason: no fix available
+        expires: '2020-07-09T12:11:16.127Z'
+  SNYK-JS-NODESASS-540964:
+    - node-sass:
+        reason: no fix available
+        expires: '2020-07-09T12:11:16.127Z'
+  SNYK-JS-NODESASS-540974:
+    - node-sass:
+        reason: no fix available
+        expires: '2020-07-09T12:11:16.127Z'
+  SNYK-JS-NODESASS-540978:
+    - node-sass:
+        reason: no fix available
+        expires: '2020-07-09T12:11:16.127Z'
+  SNYK-JS-NODESASS-540980:
+    - node-sass:
+        reason: no fix available
+        expires: '2020-07-09T12:11:16.127Z'
+  SNYK-JS-NODESASS-540990:
+    - node-sass:
+        reason: no fix available
+        expires: '2020-07-09T12:11:16.127Z'
+  SNYK-JS-NODESASS-540992:
+    - node-sass:
+        reason: no fix available
+        expires: '2020-07-09T12:11:16.127Z'
+  SNYK-JS-NODESASS-540994:
+    - node-sass:
+        reason: no fix available
+        expires: '2020-07-09T12:11:16.127Z'
+  SNYK-JS-NODESASS-540996:
+    - node-sass:
+        reason: no fix available
+        expires: '2020-07-09T12:11:16.127Z'
+  SNYK-JS-NODESASS-540998:
+    - node-sass:
+        reason: no fix available
+        expires: '2020-07-09T12:11:16.127Z'
+  SNYK-JS-NODESASS-541000:
+    - node-sass:
+        reason: no fix available
+        expires: '2020-07-09T12:11:16.127Z'
+  SNYK-JS-NODESASS-541002:
+    - node-sass:
+        reason: no fix available
+        expires: '2020-07-09T12:11:16.127Z'
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  SNYK-JS-LODASH-567746:
+    - node-sass > sass-graph > lodash:
+        patched: '2020-06-09T12:06:36.285Z'
+    - node-sass > gaze > globule > lodash:
+        patched: '2020-06-09T12:06:36.285Z'
+    - node-sass > lodash:
+        patched: '2020-06-09T12:06:36.285Z'
+  'npm:lodash:20180130':
+    - dynamo-backup-to-s3 > lodash:
+        patched: '2020-06-09T12:06:36.285Z'
