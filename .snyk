@@ -1,5 +1,5 @@
 # Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
-version: v1.13.5
+version: v1.14.1
 # ignores vulnerabilities until expiry date; change duration by modifying expiry date
 ignore:
   SNYK-JS-LODASH-450202:
@@ -117,6 +117,14 @@ patch:
         patched: '2020-06-09T12:06:36.285Z'
     - node-sass > lodash:
         patched: '2020-06-09T12:06:36.285Z'
+    - node-sass > lodash:
+        patched: '2020-06-10T09:26:59.459Z'
+    - node-sass > sass-graph > lodash:
+        patched: '2020-06-10T09:26:59.459Z'
+    - eslint-plugin-jest > @typescript-eslint/experimental-utils > @typescript-eslint/typescript-estree > lodash:
+        patched: '2020-06-10T09:26:59.459Z'
+    - node-sass > gaze > globule > lodash:
+        patched: '2020-06-10T09:26:59.459Z'
   'npm:lodash:20180130':
     - dynamo-backup-to-s3 > lodash:
         patched: '2020-06-09T12:06:36.285Z'
