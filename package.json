@@ -17,7 +17,7 @@
   "dependencies": {
     "@financial-times/n-logger": "^6.1.0",
     "aws-sdk": "^2.695.0",
-    "body-parser": "^1.17.2",
+    "body-parser": "^1.19.0",
     "browserify": "^14.5.0",
     "co": "^4.6.0",
     "co-wait": "0.0.0",
