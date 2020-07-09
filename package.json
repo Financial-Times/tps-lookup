@@ -10,7 +10,7 @@
     "start": "node app.js",
     "prepare": "npm run snyk-protect; snyk protect",
     "snyk-protect": "snyk protect",
-    "vault:env": "vault read --format json /secret/teams/internal-products/ft-tps-screener/production | jq -r \".data|to_entries|map(\\\"\\(.key)='\\(.value|tostring)'\\\")|.[]\" > .env"
+    "vault:env": "vault read --format json /secret/teams/internal-products/ft-tps-screener/development | jq -r \".data|to_entries|map(\\\"\\(.key)='\\(.value|tostring)'\\\")|.[]\" > .env"
   },
   "author": "Andrew Snead",
   "license": "ISC",
