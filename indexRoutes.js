@@ -1,5 +1,4 @@
 const express = require('express');
-// const authS3O = require('s3o-middleware');
 const { okta, cookieOptions } = require('./okta.js');
 const config = require('./config');
 const { redirectHttps } = require('./ensureHttps');
@@ -12,7 +11,7 @@ module.exports = (app) => {
     router.use(redirectHttps);
     app.enable('trust proxy');  
   }
-  // router.use(authS3O);
+  
   router.use(session(cookieOptions));
   router.use(okta.router);
   router.use(okta.ensureAuthenticated());
