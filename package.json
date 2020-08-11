@@ -16,7 +16,7 @@
   "license": "ISC",
   "dependencies": {
     "@financial-times/n-logger": "^6.1.0",
-    "@financial-times/okta-express-middleware": "0.0.5",
+    "@financial-times/okta-express-middleware": "0.0.6",
     "aws-sdk": "^2.695.0",
     "body-parser": "^1.17.2",
     "browserify": "^14.5.0",
