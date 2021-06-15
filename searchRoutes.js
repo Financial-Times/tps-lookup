@@ -4,6 +4,8 @@ const config = require('./config');
 const { docClient } = require('./db');
 const { ensureHttps } = require('./ensureHttps');
 const authenticate = require('./authenticate');
+const session = require('cookie-session');
+const { okta, cookieOptions } = require('./okta.js');
 
 const router = express.Router();
 
@@ -15,6 +17,9 @@ module.exports = (app) => {
   if (config.NODE_ENV === 'production') {
     router.use(ensureHttps);
   }
+
+  router.use(session(cookieOptions));
+  router.use(okta.router);
   router.use(authenticate);
 
   router.post('/', (req, res, next) => {
