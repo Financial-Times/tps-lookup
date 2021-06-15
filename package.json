@@ -23,7 +23,6 @@
     "co": "^4.6.0",
     "co-wait": "0.0.0",
     "compression": "^1.6.2",
-    "cookie-parser": "^1.4.5",
     "cookie-session": "^1.4.0",
     "dotenv": "^4.0.0",
     "dynamo-backup-to-s3": "^0.6.1",

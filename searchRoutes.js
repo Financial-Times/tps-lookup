@@ -4,7 +4,8 @@ const config = require('./config');
 const { docClient } = require('./db');
 const { ensureHttps } = require('./ensureHttps');
 const authenticate = require('./authenticate');
-const cookieParser = require('cookie-parser');
+const session = require('cookie-session');
+const { okta, cookieOptions } = require('./okta.js');
 
 const router = express.Router();
 
@@ -17,7 +18,8 @@ module.exports = (app) => {
     router.use(ensureHttps);
   }
 
-  router.use(cookieParser());
+  router.use(session(cookieOptions));
+  router.use(okta.router);
   router.use(authenticate);
 
   router.post('/', (req, res, next) => {
