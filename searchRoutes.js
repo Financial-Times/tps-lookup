@@ -4,6 +4,7 @@ const config = require('./config');
 const { docClient } = require('./db');
 const { ensureHttps } = require('./ensureHttps');
 const authenticate = require('./authenticate');
+const cookieParser = require('cookie-parser');
 
 const router = express.Router();
 
@@ -15,6 +16,8 @@ module.exports = (app) => {
   if (config.NODE_ENV === 'production') {
     router.use(ensureHttps);
   }
+
+  router.use(cookieParser());
   router.use(authenticate);
 
   router.post('/', (req, res, next) => {
