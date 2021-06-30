@@ -30,7 +30,7 @@ workflows:
           filters:
             branches:
               only:
-                - main
+                - master
           changeApiKey: '${CHANGE_API_KEY}'
           systemCode: 'tps-lookup'
           environment: 'prod'
