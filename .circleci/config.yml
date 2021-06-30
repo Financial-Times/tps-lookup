@@ -20,3 +20,18 @@ jobs:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
+workflows:
+  version: 2
+  
+  build_and_test:
+    jobs:
+      - build
+      - change-api/release-log:
+          filters:
+            branches:
+              only:
+                - main
+          changeApiKey: '${CHANGE_API_KEY}'
+          systemCode: 'tps-lookup'
+          environment: 'prod'
+          slackChannels: 'ft-changes,ip-devx'
