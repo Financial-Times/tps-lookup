@@ -1,9 +1,25 @@
 const co = require('co');
 const { dynamoDb } = require('./db');
 const config = require('./config');
+const HealthCheck = require('@financial-times/health-check');
 
 let isDBUp = true;
 let dbUpLastUpdated;
+
+const healthcheck = new HealthCheck({
+  checks: [{
+    type: 'ping-url',
+    name: 'TPS-lookup gtg is down',
+    id: 'tps-screener-search',
+    url: `${process.env.OKTA_APP_BASE_URL}/__gtg`,
+    id: 'tps-lookup-gtg',
+    severity: 1,
+    interval: 60000,
+    businessImpact: 'Will not be able to check the phone numbers on the TPS/CTPS registry',
+    technicalSummary: 'tps-lookup is unreachable',
+    panicGuide: 'Please contact us on #crm-enablement-team',
+  }]
+});
 
 function checkDBUp() {
   co(function* () {
@@ -26,7 +42,7 @@ exports.handle = (req, res) => {
   health.systemCode = 'ft-tps-screener';
   health.name = 'Internal Product TPS Screener';
   health.description = 'API and Interface for screening phone numbers on the TPS/CTPS registry';
-  health.checks = [];
+  health.checks = healthcheck.toJSON();
 
   const dbCheckObj = {
     name: 'DynamoDB is up',

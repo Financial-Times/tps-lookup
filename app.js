@@ -17,7 +17,9 @@ app.post(`/logout`, (req, res) => {
   res.cookie('express.sess','', { maxAge: -1, httpOnly: true });
   return res.redirect('/');
 });
-
+app.get('/__gtg', (req, res) => {
+  res.send('Good to go 👍');
+});
 app.get('/__health', healthCheck.handle);
 
 // require routes and mount to app

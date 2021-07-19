@@ -15,6 +15,7 @@
   "author": "Andrew Snead",
   "license": "ISC",
   "dependencies": {
+    "@financial-times/health-check": "^2.1.9",
     "@financial-times/n-logger": "^6.2.0",
     "@financial-times/okta-express-middleware": "0.0.9",
     "aws-sdk": "^2.822.0",
