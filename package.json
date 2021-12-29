@@ -31,7 +31,7 @@
     "event-stream": "^3.3.4",
     "express": "^4.17.1",
     "form-data": "^2.5.1",
-    "node-sass": "^4.14.1",
+    "node-sass": "^7.0.1",
     "semver": "^5.7.1",
     "snyk": "^1.437.3",
     "ssh2": "^0.8.9"
