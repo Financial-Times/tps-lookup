@@ -108,6 +108,10 @@ ignore:
     - node-sass:
         reason: no fix available
         expires: '2020-07-09T12:11:16.127Z'
+  SNYK-JS-AWSSDK-1059424:
+    - dynamo-backup-to-s3 > s3-streaming-upload > aws-sdk:
+        reason: None given
+        expires: '2022-03-27T15:28:02.761Z'
 # patches apply the minimum changes required to fix a vulnerability
 patch:
   SNYK-JS-LODASH-567746:
@@ -127,4 +131,4 @@ patch:
         patched: '2020-06-10T09:26:59.459Z'
   'npm:lodash:20180130':
     - dynamo-backup-to-s3 > lodash:
-        patched: '2020-06-09T12:06:36.285Z'
+        patched: '2022-02-28T12:30:05.564Z'
