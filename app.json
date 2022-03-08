@@ -1,0 +1,11 @@
+{
+    "scripts": {
+        "postdeploy": "node ./scripts/post-deploy.js",
+        "pr-predestroy": "node ./scripts/pre-destroy.js"
+    },
+    "env": {
+        "HEROKU_APP_NAME": {
+        "required": true
+        }
+    }
+}
