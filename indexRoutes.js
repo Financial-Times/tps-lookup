@@ -7,19 +7,19 @@ const session = require('cookie-session');
 const router = express.Router();
 
 module.exports = (app) => {
-  if (config.NODE_ENV === 'production') {
-    router.use(redirectHttps);
-    app.enable('trust proxy');  
-  }
+  // if (config.NODE_ENV === 'production') {
+  //   router.use(redirectHttps);
+  //   app.enable('trust proxy');  
+  // }
   
-  router.use(session(cookieOptions));
-  router.use(okta.router);
-  router.use(okta.ensureAuthenticated());
-  router.use(okta.verifyJwts());
-  // router.get('authorization-code/callback', ({ res }) => res.redirect(302, '/'));
-  router.get('/', (req, res, next) => {
-    res.sendFile(`${__dirname}/index.html`);
-  });
+  // router.use(session(cookieOptions));
+  // router.use(okta.router);
+  // router.use(okta.ensureAuthenticated());
+  // router.use(okta.verifyJwts());
+  // // router.get('authorization-code/callback', ({ res }) => res.redirect(302, '/'));
+  // router.get('/', (req, res, next) => {
+  //   res.sendFile(`${__dirname}/index.html`);
+  // });
 
   app.use(router);
 };

@@ -18,9 +18,9 @@ module.exports = (app) => {
     router.use(ensureHttps);
   }
 
-  router.use(session(cookieOptions));
-  router.use(okta.router);
-  router.use(authenticate);
+  // router.use(session(cookieOptions));
+  // router.use(okta.router);
+  // router.use(authenticate);
 
   router.post('/', (req, res, next) => {
     // check body with regex for british phone number
