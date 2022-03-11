@@ -1,17 +1,3 @@
 {
-    "name": "ft-tps-screener",
-    "scripts": {
-        "postdeploy": "echo \"testing okta safelist\" ",
-        "pr-predestroy": "node ./scripts/pre-destroy.js"
-    },
-    "env": {
-        "HEROKU_APP_NAME": {
-            "required": true
-        }
-    },
-    "formation": {
-        "web": {
-          "quantity": 1
-        }
-    }
+    "test": "hello"
 }
