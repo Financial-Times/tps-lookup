@@ -1,7 +1,7 @@
 {
     "name": "ft-tps-screener",
     "scripts": {
-        "postdeploy": "node ./scripts/post-deploy.js",
+        "postdeploy": "echo \"testing okta safelist\" ",
         "pr-predestroy": "node ./scripts/pre-destroy.js"
     },
     "env": {
