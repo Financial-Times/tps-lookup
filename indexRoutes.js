@@ -17,9 +17,9 @@ module.exports = (app) => {
   // router.use(okta.ensureAuthenticated());
   // router.use(okta.verifyJwts());
   // // router.get('authorization-code/callback', ({ res }) => res.redirect(302, '/'));
-  // router.get('/', (req, res, next) => {
-  //   res.sendFile(`${__dirname}/index.html`);
-  // });
+  router.get('/', (req, res, next) => {
+    res.sendFile(`${__dirname}/index.html`);
+  });
 
   app.use(router);
 };

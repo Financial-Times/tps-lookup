@@ -1,5 +1,5 @@
 const { okta } = require('./okta.js');
-const oktaNoRedirect = okta.verifyJwts({redirect:false});
+// const oktaNoRedirect = okta.verifyJwts({redirect:false});
 const config = require('./config');
 
 module.exports = (req, res, next) => {
@@ -8,7 +8,7 @@ module.exports = (req, res, next) => {
     return next()
   }
 
-  return oktaNoRedirect(req, res, next);
+  // return oktaNoRedirect(req, res, next);
 };
 
 
