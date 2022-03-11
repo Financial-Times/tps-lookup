@@ -1,5 +1,5 @@
 const fetch = require('node-fetch');
-
+console.log("Checking");
 fetch(`https://api.heroku.com/apps/${process.env.HEROKU_APP_NAME}/config-vars`,{ 
 	method: 'PATCH',
 	headers: {

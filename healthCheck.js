@@ -11,7 +11,7 @@ const healthcheck = new HealthCheck({
     type: 'ping-url',
     name: 'TPS-lookup gtg is down',
     id: 'tps-screener-search',
-    url: `${process.env.OKTA_APP_BASE_URL}/__gtg`,
+    url: `${process.env.AUTH_APP_BASE_URL}/__gtg`,
     id: 'tps-lookup-gtg',
     severity: 1,
     interval: 60000,

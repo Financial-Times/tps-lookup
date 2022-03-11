@@ -4,7 +4,7 @@ const okta = new oktaMiddleware({
 	client_id: process.env.OKTA_CLIENT_ID,
 	client_secret: process.env.OKTA_CLIENT_SECRET,
 	issuer: process.env.OKTA_ISSUER,
-	appBaseUrl: process.env.OKTA_APP_BASE_URL,
+	appBaseUrl: process.env.AUTH_APP_BASE_URL,
 	scope: process.env.OKTA_SCOPE
 });
 
