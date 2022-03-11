@@ -1,11 +1,17 @@
 {
+    "name": "ft-tps-screener",
     "scripts": {
         "postdeploy": "node ./scripts/post-deploy.js",
         "pr-predestroy": "node ./scripts/pre-destroy.js"
     },
     "env": {
         "HEROKU_APP_NAME": {
-        "required": true
+            "required": true
+        }
+    },
+    "formation": {
+        "web": {
+          "quantity": 1
         }
     }
 }
