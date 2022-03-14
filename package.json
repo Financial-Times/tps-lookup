@@ -4,7 +4,7 @@
   "description": "Lookup TPS numbers",
   "main": "app.js",
   "scripts": {
-    "test": "jest",
+    "test": "snyk test && jest",
     "compileAll": "./bin/main.sh compileAll",
     "postinstall": "npm run compileAll",
     "start": "node app.js",
@@ -17,10 +17,9 @@
   "dependencies": {
     "@financial-times/health-check": "^2.1.9",
     "@financial-times/n-logger": "^6.2.0",
-    "@financial-times/okta-express-middleware": "0.0.9",
+    "@financial-times/okta-express-middleware": "0.0.10",
     "aws-sdk": "^2.822.0",
     "body-parser": "^1.17.2",
-    "browserify": "^14.5.0",
     "co": "^4.6.0",
     "co-wait": "0.0.0",
     "compression": "^1.6.2",
@@ -31,13 +30,13 @@
     "event-stream": "^3.3.4",
     "express": "^4.17.1",
     "form-data": "^2.5.1",
-    "node-sass": "^4.14.1",
+    "sass": "^1.49.9",
     "semver": "^5.7.1",
-    "snyk": "^1.437.3",
-    "ssh2": "^0.8.9"
+    "snyk": "^1.870.0",
+    "ssh2": "^1.0.0"
   },
   "engines": {
-    "node": "^10.15.3"
+    "node": "14.x.x"
   },
   "devDependencies": {
     "@financial-times/secret-squirrel": "^2.17.0",

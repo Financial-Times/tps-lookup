@@ -4,29 +4,29 @@ version: v1.14.1
 ignore:
   SNYK-JS-LODASH-450202:
     - dynamo-backup-to-s3 > lodash:
-        reason: no fix available
-        expires: '2020-07-09T12:11:16.126Z'
+        reason: None given
+        expires: '2022-04-13T11:19:29.050Z'
     - s3o-middleware > node-rsa > lodash:
         reason: no fix available
         expires: '2020-07-09T12:11:16.127Z'
   SNYK-JS-LODASH-567746:
     - dynamo-backup-to-s3 > lodash:
-        reason: no fix available
-        expires: '2020-07-09T12:11:16.127Z'
+        reason: None given
+        expires: '2022-04-13T11:19:29.050Z'
     - s3o-middleware > node-rsa > lodash:
         reason: no fix available
         expires: '2020-07-09T12:11:16.127Z'
   SNYK-JS-LODASH-73638:
     - dynamo-backup-to-s3 > lodash:
-        reason: no fix available
-        expires: '2020-07-09T12:11:16.127Z'
+        reason: None given
+        expires: '2022-04-13T11:19:29.050Z'
     - s3o-middleware > node-rsa > lodash:
         reason: no fix available
         expires: '2020-07-09T12:11:16.127Z'
   SNYK-JS-LODASH-73639:
     - dynamo-backup-to-s3 > lodash:
-        reason: no fix available
-        expires: '2020-07-09T12:11:16.127Z'
+        reason: None given
+        expires: '2022-04-13T11:19:29.050Z'
     - s3o-middleware > node-rsa > lodash:
         reason: no fix available
         expires: '2020-07-09T12:11:16.127Z'
@@ -108,6 +108,36 @@ ignore:
     - node-sass:
         reason: no fix available
         expires: '2020-07-09T12:11:16.127Z'
+  SNYK-JS-AWSSDK-1059424:
+    - dynamo-backup-to-s3 > s3-streaming-upload > aws-sdk:
+        reason: None given
+        expires: '2022-04-13T11:19:29.049Z'
+  SNYK-JS-LODASH-1018905:
+    - dynamo-backup-to-s3 > lodash:
+        reason: None given
+        expires: '2022-04-13T11:19:29.050Z'
+  SNYK-JS-LODASH-1040724:
+    - dynamo-backup-to-s3 > lodash:
+        reason: None given
+        expires: '2022-04-13T11:19:29.050Z'
+  SNYK-JS-LODASH-590103:
+    - dynamo-backup-to-s3 > lodash:
+        reason: None given
+        expires: '2022-04-13T11:19:29.050Z'
+  SNYK-JS-LODASH-608086:
+    - dynamo-backup-to-s3 > lodash:
+        reason: None given
+        expires: '2022-04-13T11:19:29.050Z'
+  SNYK-JS-LODASHSET-1320032:
+    - snyk > snyk-nodejs-lockfile-parser > lodash.set:
+        reason: None given
+        expires: '2022-04-13T11:19:29.050Z'
+    - snyk > snyk-resolve-deps > lodash.set:
+        reason: None given
+        expires: '2022-04-13T11:19:29.050Z'
+    - snyk > snyk-docker-plugin > snyk-nodejs-lockfile-parser > lodash.set:
+        reason: None given
+        expires: '2022-04-13T11:19:29.050Z'
 # patches apply the minimum changes required to fix a vulnerability
 patch:
   SNYK-JS-LODASH-567746:
@@ -127,4 +157,4 @@ patch:
         patched: '2020-06-10T09:26:59.459Z'
   'npm:lodash:20180130':
     - dynamo-backup-to-s3 > lodash:
-        patched: '2020-06-09T12:06:36.285Z'
+        patched: '2022-03-14T11:17:26.904Z'
