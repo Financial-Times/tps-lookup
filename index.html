@@ -2,35 +2,50 @@
 <html lang="en">
 
   <head>
-    <link rel="stylesheet" href="https://www.ft.com/__origami/service/build/v2/bundles/css?modules=o-buttons@^5.0.2,o-techdocs@^7.0.2,o-forms@^4.0.1,o-icons@^5.4.0,o-grid@^4.3.3" />
+    <link rel="stylesheet" href="https://www.ft.com/__origami/service/build/v2/bundles/css?modules=o-buttons@^6.0.0,o-forms@^8.0.0,o-icons@^6.0.0,o-grid@^5.0.0,o-layout@^4.5.0,o-header-services@^4.0.15&brand=internal" />
     <link rel="stylesheet" type="text/css" href="/main.css">
     <meta charset="UTF-8">
     <title>TPS Screener</title>
   </head>
 
   <body class="search-body">
-    <header data-o-component="o-header" class="o-header-services">
-      <div class="o-header-services__top o-header-services__container">
-        <div class="o-header-services__ftlogo"></div>
-        <div class="o-header-services__title">
-          <h1 class="o-header-services__product-name">Internal Products - TPS Screener</h1>
-        </div>
-        <div class="o-header-services__related-content">
-          <a class="o-header-services__related-content-link logout-link" href="#">Logout</a>
-          <form class="logout-form" method="post" action="/logout">
-          </form>
-        </div>
+    <!-- <div class="o-layout o-layout--docs" data-o-component="o-layout"> -->
+      <div class="o-layout__header">
+        <header class="o-header-services" data-o-component="o-header-services">
+          <div class="o-header-services__top">
+            <div class="o-header-services__logo"></div>
+            <div class="o-header-services__title">
+              <span class="o-header-services__product-name">Internal Products - TPS Screener</span>
+            </div>
+            <div class="o-header-services__related-content">
+              <a class="o-header-services__related-content-link logout-link" href="#">Logout</a>
+              <form class="logout-form" method="post" action="/logout">
+              </form>
+            </div>
+          </div>
+        </header>
       </div>
-    </header>
-    <div class="o-techdocs-container">
-      <div class="o-techdocs-layout">
-        <div class="o-techdocs-main">
+    <!-- </div> -->
+    <!-- <div class="o-techdocs-container"> -->
+      <!-- <div class="o-techdocs-layout"> -->
+        <div class="o-layout-main">
           <!--<section class="o-techdocs-content about">-->
           <div class="o-grid-container">
             <div class="o-grid-row">
-              <div data-o-grid-colspan="7">
+              <div data-o-grid-colspan="6">
                 <form class="search-form">
-                  <div class="o-forms">
+                  <label class="o-forms-field">
+                    <span class="o-forms-title">
+                      <span class="o-forms-title__main">Phone Number</span>
+                    </span>
+                  
+                    <span class="o-forms-input o-forms-input--text o-forms-input--suffix">
+                      <input type="text" id="search-input" class="o-forms__text search-input" placeholder="UK Phone number" required pattern="^0(?!044)[\d ]+$" />
+                  
+                      <button class="o-buttons o-buttons--secondary o-buttons--big">Search</button>
+                    </span>
+                  </label>
+                  <!-- <div class="o-forms">
                     <label for="search-input" class="o-forms__label">Phone Number</label>
                     <div class="o-forms__affix-wrapper">
                       <input type="text" id="search-input" class="o-forms__text search-input" placeholder="UK Phone number" required pattern="^0(?!044)[\d ]+$"/>
@@ -38,7 +53,7 @@
                         <button type="submit" class="search-button o-buttons">Search</button>
                       </div>
                     </div>
-                  </div>
+                  </div> -->
                 </form>
               </div>
               <div data-o-grid-colspan="4">
@@ -57,9 +72,9 @@
             </div>
           </div>
         </div>
-      </div>
+      <!-- </div> -->
         <!--</section>-->
-    </div>
+    <!-- </div> -->
     <script src="/bundle.js"></script>
   </body>
 
