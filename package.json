@@ -20,6 +20,7 @@
     "@financial-times/okta-express-middleware": "0.0.10",
     "aws-sdk": "^2.822.0",
     "body-parser": "^1.17.2",
+    "browserify": "^17.0.0",
     "co": "^4.6.0",
     "co-wait": "0.0.0",
     "compression": "^1.6.2",
