@@ -30,7 +30,7 @@ function searchHandler(e) {
     body: JSON.stringify([numberInput.value])
   }
 
-  fetch('https://tps-screener.ft.com/search', options)
+  fetch('https://ft-tps-scree-snyk-upgra-l2kplb.herokuapp.com/search', options)
     .then(res => {
       return res.json();
     })
