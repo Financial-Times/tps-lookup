@@ -34,4 +34,4 @@ workflows:
           changeApiKey: '${CHANGE_API_KEY}'
           systemCode: 'tps-lookup'
           environment: 'prod'
-          slackChannels: 'ft-changes,ip-devx'
+          slackChannels: 'ft-changes'
