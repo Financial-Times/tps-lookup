@@ -2,14 +2,14 @@
 <html lang="en">
 
   <head>
-    <link rel="stylesheet" href="https://www.ft.com/__origami/service/build/v2/bundles/css?modules=o-buttons@^6.0.0,o-forms@^8.0.0,o-icons@^6.0.0,o-grid@^5.0.0,o-layout@^4.5.0,o-header-services@^4.0.15&brand=internal" />
+    <link rel="stylesheet" href="https://www.ft.com/__origami/service/build/v3/bundles/css?components=o-buttons@^7.5.0,o-forms@^9.2.4,o-icons@^7.2.1,o-grid@^6.1.5,o-layout@^5.2.2,o-header-services@^5.2.2,o-autoinit@^3.1.1&brand=internal&system_code=ft-tps-screener" />
     <link rel="stylesheet" type="text/css" href="/main.css">
     <meta charset="UTF-8">
     <title>TPS Screener</title>
   </head>
 
   <body class="search-body">
-    <!-- <div class="o-layout o-layout--docs" data-o-component="o-layout"> -->
+    <div class="o-layout o-layout--landing" data-o-component="o-layout">
       <div class="o-layout__header">
         <header class="o-header-services" data-o-component="o-header-services">
           <div class="o-header-services__top">
@@ -25,57 +25,37 @@
           </div>
         </header>
       </div>
-    <!-- </div> -->
-    <!-- <div class="o-techdocs-container"> -->
-      <!-- <div class="o-techdocs-layout"> -->
-        <div class="o-layout-main">
-          <!--<section class="o-techdocs-content about">-->
-          <div class="o-grid-container">
-            <div class="o-grid-row">
-              <div data-o-grid-colspan="6">
-                <form class="search-form">
-                  <label class="o-forms-field">
-                    <span class="o-forms-title">
-                      <span class="o-forms-title__main">Phone Number</span>
-                    </span>
-                  
-                    <span class="o-forms-input o-forms-input--text o-forms-input--suffix">
-                      <input type="text" id="search-input" class="o-forms__text search-input" placeholder="UK Phone number" required pattern="^0(?!044)[\d ]+$" />
-                  
-                      <button class="o-buttons o-buttons--secondary o-buttons--big">Search</button>
-                    </span>
-                  </label>
-                  <!-- <div class="o-forms">
-                    <label for="search-input" class="o-forms__label">Phone Number</label>
-                    <div class="o-forms__affix-wrapper">
-                      <input type="text" id="search-input" class="o-forms__text search-input" placeholder="UK Phone number" required pattern="^0(?!044)[\d ]+$"/>
-                      <div class="o-forms__suffix">
-                        <button type="submit" class="search-button o-buttons">Search</button>
-                      </div>
-                    </div>
-                  </div> -->
-                </form>
-              </div>
-              <div data-o-grid-colspan="4">
-                Number must begin with a 0 and not include the country code.<br>
-                <strong>Example</strong>: 077xxxxxxxx
-              </div>
-            </div>
-            <div class="o-grid-row">
-              <div data-o-grid-colspan="12">
-                <div class="search-result">
-                  <span class="search-result-text"></span>
-                  <img id="img-cross" class="img-hidden" src="https://www.ft.com/__origami/service/image/v2/images/raw/fticon-v1:cross?source=o-icons&tint=ff0000">
-                  <img id="img-tick" class="img-hidden" src="https://www.ft.com/__origami/service/image/v2/images/raw/fticon-v1:tick?source=o-icons&tint=4BB543">
-                </div>
-              </div>
+      <div class="o-layout__main o-layout-typography" data-o-component="o-syntax-highlight">
+        <div class="o-grid-container">
+          <div data-o-grid-colspan="5">
+            <form class="search-form">
+              <label class="o-forms-field">
+                <span class="o-forms-title">
+                  <span class="o-forms-title__main">Phone Number</span>
+                </span>
+                <span class="o-forms-input o-forms-input--text o-forms-input--suffix">
+                  <input type="text" id="search-input" class="o-forms__text search-input" placeholder="UK Phone number" required pattern="^0(?!044)[\d ]+$" />
+                  <button class="o-buttons o-buttons--secondary o-buttons--big">Search</button>
+                </span>
+              </label>
+            </form>
+          </div>
+          <div data-o-grid-colspan="4">
+            Number must begin with a 0 and not include the country code.<br>
+            <strong>Example</strong>: 077xxxxxxxx
+          </div>
+        </div>
+        <div class="o-grid-row">
+          <div data-o-grid-colspan="12">
+            <div class="search-result">
+              <span class="search-result-text"></span>
+              <img id="img-cross" class="img-hidden" src="https://www.ft.com/__origami/service/image/v2/images/raw/fticon-v1:cross?source=o-icons&tint=ff0000">
+              <img id="img-tick" class="img-hidden" src="https://www.ft.com/__origami/service/image/v2/images/raw/fticon-v1:tick?source=o-icons&tint=4BB543">
             </div>
           </div>
         </div>
-      <!-- </div> -->
-        <!--</section>-->
-    <!-- </div> -->
+      </div>
+    </div>
     <script src="/bundle.js"></script>
   </body>
-
 </html>
