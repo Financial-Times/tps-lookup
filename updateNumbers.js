@@ -4,7 +4,7 @@ const fs = require('fs');
 const co = require('co');
 const wait = require('co-wait');
 const { spawnSync } = require('child_process');
-const Client = require('ssh2');
+const { Client } = require('ssh2');
 const AWS = require('aws-sdk');
 const config = require('./config');
 
