@@ -46,7 +46,7 @@ workflows:
       - nodejsscan/run-scan
       - build
       - deploy:
-          context: ip-shared-cred
+          context: ip-shared-creds
           requires:
             - nodejsscan/run-scan
           filters:
