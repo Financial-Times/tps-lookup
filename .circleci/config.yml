@@ -1,8 +1,19 @@
 version: 2.1
-
 orbs:
-    change-api: financial-times/change-api@0
+  node: circleci/node@3.0.0
+  nodejsscan: financial-times/nodejsscan@0.0.2
 
+commands:
+  deploy-to-heroku:
+    parameters:
+      app-name:
+        type: string
+    steps:
+      - run:
+          name: Git push to a heroku app
+          command: | 
+            REMOTE=git.heroku.com/<<parameters.app-name>>.git
+            git push https://heroku:$HEROKU_API_KEY@$REMOTE master
 jobs:
   build:
     docker:
@@ -20,18 +31,25 @@ jobs:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
+  deploy:
+    executor:
+      name: node/default
+      tag: '14.15'
+    steps:
+      - checkout
+      - deploy-to-heroku:
+          app-name: ft-tps-screener
+
 workflows:
-  version: 2
-  
-  build_and_test:
+  scan-and-deploy:
     jobs:
+      - nodejsscan/run-scan
       - build
-      - change-api/release-log:
+      - deploy:
+          context: ip-shared-creds
+          requires:
+            - nodejsscan/run-scan
           filters:
             branches:
               only:
                 - master
-          changeApiKey: '${CHANGE_API_KEY}'
-          systemCode: 'tps-lookup'
-          environment: 'prod'
-          slackChannels: 'ft-changes'
