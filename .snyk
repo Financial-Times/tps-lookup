@@ -1,5 +1,5 @@
 # Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
-version: v1.14.1
+version: v1.25.0
 # ignores vulnerabilities until expiry date; change duration by modifying expiry date
 ignore:
   SNYK-JS-LODASH-450202:
@@ -9,6 +9,10 @@ ignore:
     - s3o-middleware > node-rsa > lodash:
         reason: no fix available
         expires: '2020-07-09T12:11:16.127Z'
+    - '*':
+        reason: None Given
+        expires: 2022-12-01T13:47:04.344Z
+        created: 2022-11-01T13:47:04.355Z
   SNYK-JS-LODASH-567746:
     - dynamo-backup-to-s3 > lodash:
         reason: None given
@@ -16,6 +20,10 @@ ignore:
     - s3o-middleware > node-rsa > lodash:
         reason: no fix available
         expires: '2020-07-09T12:11:16.127Z'
+    - '*':
+        reason: None Given
+        expires: 2022-12-01T13:47:23.537Z
+        created: 2022-11-01T13:47:23.548Z
   SNYK-JS-LODASH-73638:
     - dynamo-backup-to-s3 > lodash:
         reason: None given
@@ -23,6 +31,10 @@ ignore:
     - s3o-middleware > node-rsa > lodash:
         reason: no fix available
         expires: '2020-07-09T12:11:16.127Z'
+    - '*':
+        reason: None Given
+        expires: 2022-12-01T13:48:00.161Z
+        created: 2022-11-01T13:48:00.173Z
   SNYK-JS-LODASH-73639:
     - dynamo-backup-to-s3 > lodash:
         reason: None given
@@ -30,6 +42,10 @@ ignore:
     - s3o-middleware > node-rsa > lodash:
         reason: no fix available
         expires: '2020-07-09T12:11:16.127Z'
+    - '*':
+        reason: None Given
+        expires: 2022-12-01T13:49:59.517Z
+        created: 2022-11-01T13:49:59.527Z
   'npm:lodash:20180130':
     - s3o-middleware > node-rsa > lodash:
         reason: no fix available
@@ -112,14 +128,26 @@ ignore:
     - dynamo-backup-to-s3 > s3-streaming-upload > aws-sdk:
         reason: None given
         expires: '2022-04-13T11:19:29.049Z'
+    - '*':
+        reason: None Given
+        expires: 2022-12-01T13:43:59.459Z
+        created: 2022-11-01T13:43:59.470Z
   SNYK-JS-LODASH-1018905:
     - dynamo-backup-to-s3 > lodash:
         reason: None given
         expires: '2022-04-13T11:19:29.050Z'
+    - '*':
+        reason: None Given
+        expires: 2022-12-01T13:45:59.034Z
+        created: 2022-11-01T13:45:59.044Z
   SNYK-JS-LODASH-1040724:
     - dynamo-backup-to-s3 > lodash:
         reason: None given
         expires: '2022-04-13T11:19:29.050Z'
+    - '*':
+        reason: None Given
+        expires: 2022-12-01T13:46:31.139Z
+        created: 2022-11-01T13:46:31.149Z
   SNYK-JS-LODASH-590103:
     - dynamo-backup-to-s3 > lodash:
         reason: None given
@@ -128,6 +156,10 @@ ignore:
     - dynamo-backup-to-s3 > lodash:
         reason: None given
         expires: '2022-04-13T11:19:29.050Z'
+    - '*':
+        reason: None Given
+        expires: 2022-12-01T13:47:38.448Z
+        created: 2022-11-01T13:47:38.458Z
   SNYK-JS-LODASHSET-1320032:
     - snyk > snyk-nodejs-lockfile-parser > lodash.set:
         reason: None given
@@ -138,6 +170,41 @@ ignore:
     - snyk > snyk-docker-plugin > snyk-nodejs-lockfile-parser > lodash.set:
         reason: None given
         expires: '2022-04-13T11:19:29.050Z'
+  SNYK-JS-GOT-2932019:
+    - '*':
+        reason: None Given
+        expires: 2022-12-01T13:44:18.987Z
+        created: 2022-11-01T13:44:18.997Z
+  SNYK-JS-JOSE-3018688:
+    - '*':
+        reason: None Given
+        expires: 2022-12-01T13:44:59.398Z
+        created: 2022-11-01T13:44:59.412Z
+  SNYK-JS-MINIMIST-2429795:
+    - '*':
+        reason: None Given
+        expires: 2022-12-01T13:48:35.220Z
+        created: 2022-11-01T13:48:35.229Z
+  SNYK-JS-MOMENT-2440688:
+    - '*':
+        reason: None Given
+        expires: 2022-12-01T13:48:56.716Z
+        created: 2022-11-01T13:48:56.725Z
+  SNYK-JS-PASSPORT-2840631:
+    - '*':
+        reason: None Given
+        expires: 2022-12-01T13:49:33.034Z
+        created: 2022-11-01T13:49:33.045Z
+  SNYK-JS-MOMENT-2944238:
+    - '*':
+        reason: None Given
+        expires: 2022-12-01T13:50:22.357Z
+        created: 2022-11-01T13:50:22.369Z
+  SNYK-JS-PATHPARSE-1077067:
+    - '*':
+        reason: None Given
+        expires: 2022-12-01T13:50:41.400Z
+        created: 2022-11-01T13:50:41.411Z
 # patches apply the minimum changes required to fix a vulnerability
 patch:
   SNYK-JS-LODASH-567746:
