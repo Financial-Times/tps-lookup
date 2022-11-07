@@ -17,7 +17,7 @@ commands:
 jobs:
   build:
     docker:
-      - image: circleci/node:14
+      - image: circleci/node:16
     working_directory: ~/repo
     steps:
       - checkout
@@ -34,7 +34,7 @@ jobs:
   deploy:
     executor:
       name: node/default
-      tag: '14.15'
+      tag: '16.17'
     steps:
       - checkout
       - deploy-to-heroku:

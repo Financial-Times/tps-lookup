@@ -16,8 +16,8 @@
   "license": "ISC",
   "dependencies": {
     "@financial-times/health-check": "^2.1.9",
-    "@financial-times/n-logger": "^6.2.0",
-    "@financial-times/okta-express-middleware": "0.0.10",
+    "@financial-times/n-logger": "^10.2.0",
+    "@financial-times/okta-express-middleware": "1.0.5",
     "aws-sdk": "^2.822.0",
     "body-parser": "^1.17.2",
     "browserify": "^17.0.0",
@@ -33,11 +33,11 @@
     "form-data": "^2.5.1",
     "sass": "^1.49.9",
     "semver": "^5.7.1",
-    "snyk": "^1.870.0",
+    "snyk": "^1.996.0",
     "ssh2": "^1.0.0"
   },
   "engines": {
-    "node": "14.x.x"
+    "node": "16.x"
   },
   "devDependencies": {
     "@financial-times/secret-squirrel": "^2.17.0",
