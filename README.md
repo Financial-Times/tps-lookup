@@ -37,6 +37,13 @@ npm start
 
 Run the command `npm run test` for tests
 
+**Logging**
+
+Splunk query for production application heroku scheduler file ```updateNumber.js``` logs:
+```
+index="restricted_crm_enablement_fs_prod" source="/var/log/apps/heroku/ft-ft-tps-screener.log"
+```
+
 ## Heroku Deployments
 
 Any merge to master will trigger a deployment to Heroku
