@@ -88,7 +88,6 @@ function ftpToFS(moveFrom, moveTo, filename) {
       if (err) {
         throw err;
       }
-      console.log('Retrieving new file from FTP');
       logger.info('Retrieving new file from FTP');
       sftp.fastGet(moveFrom, moveTo, {}, (downloadErr) => {
         if (downloadErr) {
@@ -96,7 +95,6 @@ function ftpToFS(moveFrom, moveTo, filename) {
           throw downloadErr;
         }
 
-        console.log('Finding deletions and additions since last update');
         logger.info({event:'Finding deletions and additions since last update', type: 'START'});
         const deletions = getDeletions(oldFile, newFile).filter(d => d.trim());
         const additions = getAdditions(oldFile, newFile).filter(a => a.trim());
@@ -107,35 +105,30 @@ function ftpToFS(moveFrom, moveTo, filename) {
         }
 
         co(function* () {
-          console.log(`Deleting ${deletions.length} records`);
           logger.info({ event: `Deleting ${deletions.length} records from Dynamo DB`, type: 'START' })
           for (const del of deletions) {
             yield removeFromDynamo(del);
             yield wait(100);
           }
-          console.log(`Adding ${additions.length} records`);
           logger.info({ event: `Adding ${additions.length} records`, type: 'START'})
           for (const add of additions) {
             yield addToDynamo(add);
             yield wait(100);
           }
 
-          console.log('Uploading new file to S3');
           logger.info({ event: 'Uploading new file to S3' });
           yield uploadToS3(fs.createReadStream(moveTo), filename);
           if (++done === 2) {
-            console.log('Done!');
+            logger.info({ event: 'Done!', type: 'COMPLETE'})
             process.exit(0);
           }
         }).catch((err) => {
-          console.log(err);
           logger.error({ event: 'Error while deleting or adding numbers and uploading to Dynamodb', type: 'FAILED', error: err.toString() })
           process.exit(1);
         });
       });
     });
   }).on('error', (err) => {
-    console.log(err);
     logger.error({ event: 'Connection error', type: 'FAILED', error: err.toString() })
     process.exit(1);
   }).connect(connSettings);
@@ -148,29 +141,24 @@ const oldCTPSFile = fs.createWriteStream('/tmp/ctps_original.txt');
 const oldTPSFile = fs.createWriteStream('/tmp/tps_original.txt');
 
 oldCTPSFile.on('close', () => {
-  console.log('Old CTPS file downloaded');
   logger.info({ event: 'Old CTPS file downloaded' });
   ftpToFS('./CTPS/ctps_ns.txt', '/tmp/ctps_new.txt', 'ctps.txt');
 });
 
 oldTPSFile.on('close', () => {
-  console.log('Old TPS file downloaded');
   logger.info({ event: 'Old TPS file downloaded' });
   ftpToFS('./tps/tps_ns.txt', '/tmp/tps_new.txt', 'tps.txt');
 });
 
-console.log('Downloading old files');
 logger.info({ event: 'Downloading old files from s3', type: 'START' });
 s3.getObject(s3ParamsCTPS)
   .createReadStream()
   .on('error', (err) => {
-    console.log(err);
     logger.error({ event: 'Failed to download old CTPS files from s3', type: 'FAILED', error: err.toString() })
   }).pipe(oldCTPSFile);
 
 s3.getObject(s3ParamsTPS)
   .createReadStream()
   .on('error', (err) => {
-    console.log(err);
     logger.error({ event: 'Failed to download old TPS files from s3', type: 'FAILED', error: err.toString() })
   }).pipe(oldTPSFile);
