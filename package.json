@@ -4,7 +4,7 @@
   "description": "Lookup TPS numbers",
   "main": "app.js",
   "scripts": {
-    "test": "snyk test && jest",
+    "test": "snyk-protect test && jest",
     "compileAll": "./bin/main.sh compileAll",
     "postinstall": "npm run compileAll",
     "start": "node app.js",
