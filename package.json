@@ -4,7 +4,7 @@
   "description": "Lookup TPS numbers",
   "main": "app.js",
   "scripts": {
-    "test": "snyk-protect test",
+    "test": "snyk test",
     "compileAll": "./bin/main.sh compileAll",
     "postinstall": "npm run compileAll",
     "start": "node app.js",
@@ -34,6 +34,7 @@
     "form-data": "^2.5.1",
     "sass": "^1.49.9",
     "semver": "^5.7.1",
+    "snyk": "^1.1069.0",
     "ssh2": "^1.0.0"
   },
   "engines": {
