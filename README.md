@@ -35,7 +35,9 @@ npm start
 
 **Tests**
 
-Run the command `npm run test` for tests
+Run the command `npm run test` for tests.  
+- This will run a `snyk test` as specified in the `scripts` in `package.json`  
+- No other testing is configured for now.
 
 **Logging**
 
