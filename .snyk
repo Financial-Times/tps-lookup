@@ -127,7 +127,7 @@ ignore:
   SNYK-JS-AWSSDK-1059424:
     - dynamo-backup-to-s3 > s3-streaming-upload > aws-sdk:
         reason: None given
-        expires: '2022-04-13T11:19:29.049Z'
+        expires: '2024-04-13T11:19:29.049Z'
     - '*':
         reason: None Given
         expires: 2022-12-01T13:43:59.459Z
