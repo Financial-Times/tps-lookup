@@ -7,7 +7,7 @@
     "test": "snyk test",
     "compileAll": "./bin/main.sh compileAll",
     "postinstall": "npm run compileAll",
-    "start": "doppler run --mount .env -- node app.js",
+    "start": "node app.js",
     "prepare": "npm run snyk-protect; npm run snyk-protect",
     "snyk-protect": "snyk-protect",
     "vault:env": "vault read --format json /secret/teams/internal-products/ft-tps-screener/development | jq -r \".data|to_entries|map(\\\"\\(.key)='\\(.value|tostring)'\\\")|.[]\" > .env"
