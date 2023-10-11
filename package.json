@@ -7,7 +7,7 @@
     "test": "snyk test",
     "compileAll": "./bin/main.sh compileAll",
     "postinstall": "npm run compileAll",
-    "start": "node app.js",
+    "start": "doppler run --mount .env -- node app.js",
     "prepare": "npm run snyk-protect; npm run snyk-protect",
     "snyk-protect": "snyk-protect",
     "vault:env": "vault read --format json /secret/teams/internal-products/ft-tps-screener/development | jq -r \".data|to_entries|map(\\\"\\(.key)='\\(.value|tostring)'\\\")|.[]\" > .env"
@@ -38,6 +38,13 @@
   },
   "engines": {
     "node": "18.x"
+  },
+  "overrides": {
+    "@financial-times/okta-express-middleware": {
+      "@okta/oidc-middleware": {
+        "passport": "0.5.3"
+      }
+    }
   },
   "devDependencies": {
     "@financial-times/secret-squirrel": "^2.17.0",
