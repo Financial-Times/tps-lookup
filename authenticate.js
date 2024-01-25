@@ -5,6 +5,7 @@ const config = require('./config');
 module.exports = (req, res, next) => {
   const apiKey = req.headers['x-api-key'];
   if (apiKey && apiKey === config.apiKey) {
+    log.info({ event: 'API Call', type: 'API request received' });
     return next()
   }
 

@@ -7,16 +7,15 @@
     "test": "snyk test",
     "compileAll": "./bin/main.sh compileAll",
     "postinstall": "npm run compileAll",
-    "start": "node app.js",
+    "start": "doppler run --project ft-tps-screener --config test --node app.js",
     "prepare": "npm run snyk-protect; npm run snyk-protect",
-    "snyk-protect": "snyk-protect",
-    "vault:env": "vault read --format json /secret/teams/internal-products/ft-tps-screener/development | jq -r \".data|to_entries|map(\\\"\\(.key)='\\(.value|tostring)'\\\")|.[]\" > .env"
+    "snyk-protect": "snyk-protect"
   },
   "author": "Andrew Snead",
   "license": "ISC",
   "dependencies": {
-    "@financial-times/health-check": "^2.1.9",
-    "@financial-times/n-logger": "^10.2.0",
+    "@dotcom-reliability-kit/logger": "^3.0.3",
+    "@financial-times/health-check": "^2.1.10",
     "@financial-times/okta-express-middleware": "1.0.6",
     "@snyk/protect": "^1.1060.0",
     "aws-sdk": "^2.822.0",
@@ -27,14 +26,13 @@
     "compression": "^1.6.2",
     "cookie-session": "^1.4.0",
     "dotenv": "^4.0.0",
-    "dynamo-backup-to-s3": "^0.6.1",
     "eslint-plugin-jest": "^23.20.0",
     "event-stream": "^3.3.4",
     "express": "^4.17.1",
     "form-data": "^2.5.1",
-    "sass": "^1.49.9",
+    "sass": "^1.70.0",
     "semver": "^6.3.1",
-    "ssh2": "^1.0.0"
+    "ssh2": "^1.15.0"
   },
   "engines": {
     "node": "18.x"
@@ -47,15 +45,10 @@
     }
   },
   "devDependencies": {
-    "@financial-times/secret-squirrel": "^2.17.0",
     "husky": "^1.3.1",
     "jest": "^26.6.3"
   },
   "husky": {
-    "hooks": {
-      "commit-msg": "secret-squirrel-commitmsg",
-      "pre-commit": "secret-squirrel"
-    }
   },
   "snyk": true
 }
