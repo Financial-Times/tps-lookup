@@ -29,19 +29,19 @@ function searchHandler(e) {
     },
     body: JSON.stringify([numberInput.value])
   }
+  const fetchUrl = process.env.NODE_ENV === 'production' ? process.env.FETCH_URL : 'http://localhost:3000'
 
-  fetch('https://tps-screener.ft.com/search', options)
+  fetch(`${fetchUrl}/search`, options)
     .then(res => {
+      console.log('we are fetching');
       return res.json();
     })
     .then(resJson => {
       let resText;
       if (resJson.results[0].canCall) {
         resText = 'Good news! This number is not on the TPS/CTPS list. ✅';
-        tickImg.classList.remove('img-hidden');
       } else {
         resText = '❌ This number IS ON the TPS/CTPS list. Please seek guidance before calling. ❌';
-        crossImg.classList.remove('img-hidden');
       }
       resultSection.innerHTML = resText;
     })

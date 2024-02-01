@@ -1,8 +1,6 @@
 require('dotenv').load({ silent: true });
 const logger = require('../lib/logger');
-const log = logger.createChildLogger({
-  requestId,
-});
+const log = logger.createChildLogger({});
 
 const fs = require('fs');
 const co = require('co');
