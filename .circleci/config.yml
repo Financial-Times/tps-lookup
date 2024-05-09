@@ -34,7 +34,7 @@ jobs:
   deploy:
     executor:
       name: node/default
-      tag: '16.17'
+      tag: '18.16.1'
     steps:
       - checkout
       - deploy-to-heroku:
