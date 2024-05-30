@@ -18,7 +18,7 @@
     "@financial-times/health-check": "^2.1.9",
     "@financial-times/n-logger": "^10.2.0",
     "@financial-times/okta-express-middleware": "1.0.6",
-    "@snyk/protect": "^1.1060.0",
+    "@snyk/protect": "^1.1291.0",
     "aws-sdk": "^2.822.0",
     "body-parser": "^1.17.2",
     "browserify": "^17.0.0",
