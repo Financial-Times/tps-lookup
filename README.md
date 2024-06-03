@@ -12,7 +12,7 @@ Then, an FT service can internally query the TPS Screener to filter the list of 
 
 ## Usage
 
-**Setting up/Running the App**
+**Setting up/App run**
 
 
 - Node ^18.x.x
