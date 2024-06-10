@@ -1,5 +1,5 @@
 require('dotenv').load({ silent: true });
-const logger = require('@financial-times/n-logger').default;
+const logger = require('@dotcom-reliability-kit/logger').default;
 
 const fs = require('fs');
 const co = require('co');

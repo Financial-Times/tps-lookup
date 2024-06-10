@@ -8,31 +8,21 @@ If a number is registered with the TPS, organisations are legally required to re
 
 The TPS Screener application retrieves a list of people who have registered through [TPS](https://www.tpsonline.org.uk/).
 
-Then, an FT service can internally query the TPS Screener to filter the list of people to send marketing comminications to
+Then, an FT service can internally query the TPS Screener to filter the list of people to send marketing communications to
 
 ## Usage
 
-**Setting up**
+**Setting up/App run**
 
-1. Navigate to the project where you have cloned this to the machine.
-Run this command to install the packages needed for the app locally ( if it is the first time running this project locally)
 
-```shell
-npm run postinstall
-```
+- Node ^18.x.x
+- [Doppler](https://github.com/Financial-Times/ip-ftlive-api#doppler---secrets-management): If new to Doppler, please follow the instruction to install the [CLI](https://docs.doppler.com/docs/install-cli).
 
-2. If you haven't already, set up your Vault environment variables using this guide [Vault Wiki](https://github.com/Financial-Times/vault/wiki/Getting-Started-With-Vault), and log into the Internal Products' Vault with `vault login --method=github`. 
+Run `doppler login` command
+Run `npm run postinstall `command
+Run `npm run start ` command and follow instructions
+Enter a UK number in the browser's search bar; if registered, it cannot be called for sales and marketing.
 
-3. Run the following command to populate your `.env` file:
-
-```shell
-npm run vault:env
-```
-
-4. To spin up the local instance of the app, run the command below:
-
-```shell
-npm start
 ```
 
 **Tests**
@@ -48,7 +38,7 @@ Logging for the ```updateNumber.js``` file is sent to Splunk from Heroku. Functi
 See the Splunk query below:
 
 ```
-index="restricted_crm_enablement_fs_prod" source="/var/log/apps/heroku/ft-ft-tps-screener.log"
+index="heroku" host="https:/ft-tps-screener.herokuapp.com/"
 ```
 
 ## Heroku Deployments
