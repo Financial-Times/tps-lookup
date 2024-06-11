@@ -12,32 +12,23 @@ Then, an FT service can internally query the TPS Screener to filter the list of 
 
 ## Usage
 
-**Setting up**
+**Setting up/App run**
 
-1. Navigate to the project where you have cloned this to the machine.
-Run this command to install the packages needed for the app locally ( if it is the first time running this project locally)
-
-```shell
-npm run postinstall
+- Node ^18.x.x
+- [Doppler](https://github.com/Financial-Times/ip-ftlive-api#doppler---secrets-management): If new to Doppler, please follow the instruction to install the [CLI](https://docs.doppler.com/docs/install-cli).
 ```
+**To spin up the local instance of the app, run the commands below:**
 
-2. If you haven't already, set up your Vault environment variables using this guide [Vault Wiki](https://github.com/Financial-Times/vault/wiki/Getting-Started-With-Vault), and log into the Internal Products' Vault with `vault login --method=github`. 
+Replace the start command with "start": "doppler run -p ft-tps-screener -c prod -- node app.js" in package.json.
+**_Note: Ensure the start command is reverted to its original state before merge into prod._**
+Run `doppler login` command
+Run `npm run postinstall ` command
+Run `npm run start` command
+Enter a UK number in the browser's search bar; if it's registered, it's important to refrain from contacting for sales and marketing purposes.
 
-3. Run the following command to populate your `.env` file:
+** Snyk Tests**
 
-```shell
-npm run vault:env
-```
-
-4. To spin up the local instance of the app, run the command below:
-
-```shell
-npm start
-```
-
-**Tests**
-
-Run the command `npm run test` for tests.  
+Run`npm run test` command
 - This will run a `snyk test` as specified in the `scripts` in `package.json`  
 - No other testing is configured for now.
 

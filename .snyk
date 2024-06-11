@@ -44,12 +44,16 @@ ignore:
         expires: '2020-07-09T12:11:16.127Z'
     - '*':
         reason: None Given
-        expires: 2022-12-01T13:49:59.517Z
-        created: 2022-11-01T13:49:59.527Z
+        expires: 2024-07-11T10:50:52.438Z
+        created: 2024-06-11T10:50:52.447Z
   'npm:lodash:20180130':
     - s3o-middleware > node-rsa > lodash:
         reason: no fix available
         expires: '2020-07-09T12:11:16.127Z'
+    - '*':
+        reason: None Given
+        expires: 2024-07-11T10:59:27.835Z
+        created: 2024-06-11T10:59:27.849Z
   SNYK-JS-MINIMIST-559764:
     - browserify > subarg > minimist:
         reason: no fix available
@@ -138,8 +142,8 @@ ignore:
         expires: '2022-04-13T11:19:29.050Z'
     - '*':
         reason: None Given
-        expires: 2022-12-01T13:45:59.034Z
-        created: 2022-11-01T13:45:59.044Z
+        expires: 2024-07-11T10:49:37.018Z
+        created: 2024-06-11T10:49:37.029Z
   SNYK-JS-LODASH-1040724:
     - dynamo-backup-to-s3 > lodash:
         reason: None given
@@ -225,6 +229,16 @@ ignore:
         reason: None Given
         expires: 2024-06-27T13:25:28.905Z
         created: 2024-05-28T13:25:28.918Z
+  SNYK-JS-REQUEST-3361831:
+    - '*':
+        reason: None Given
+        expires: 2024-07-11T10:49:11.929Z
+        created: 2024-06-11T10:49:11.944Z
+  SNYK-20180130:
+    - '*':
+        reason: None Given
+        expires: 2024-07-11T10:51:35.013Z
+        created: 2024-06-11T10:51:35.026Z
 # patches apply the minimum changes required to fix a vulnerability
 patch:
   SNYK-JS-LODASH-567746:

@@ -7,10 +7,10 @@
     "test": "snyk test",
     "compileAll": "./bin/main.sh compileAll",
     "postinstall": "npm run compileAll",
-    "start": "node app.js",
+    "start": "doppler run -p ft-tps-screener -c prod -- node app.js",
     "prepare": "npm run snyk-protect; npm run snyk-protect",
     "snyk-protect": "snyk-protect",
-    "vault:env": "vault read --format json /secret/teams/internal-products/ft-tps-screener/development | jq -r \".data|to_entries|map(\\\"\\(.key)='\\(.value|tostring)'\\\")|.[]\" > .env"
+    "start:dev": "doppler run -p ft-tps-screener -c dev -- node app.js"
   },
   "author": "Andrew Snead",
   "license": "ISC",
