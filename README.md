@@ -2,24 +2,22 @@
 
 **Telephone Preference Service**
 
-The Telephone Preference Service (TPS) is the UK’s only official ‘Do Not Call’ register for landlines and Mobile numbers.
-It allows people and businesses to opt out of unsolicited live sales and marketing calls.
-If a number is registered with the TPS, organisations are legally required to refrain from calling it.
+The Telephone Preference Service (TPS) serves as the UK's sole official 'Do Not Call' register for both landlines and mobile numbers. It empowers individuals and businesses to opt out of receiving unsolicited live sales and marketing calls. Once a number is registered with the TPS, organisations are obligated by law to abstain from making calls to it.
 
-The TPS Screener application retrieves a list of people who have registered through [TPS](https://www.tpsonline.org.uk/).
+The TPS Screener application retrieves a compilation of individuals who have completed registration through the [TPS](https://www.tpsonline.org.uk/).
 
-Then, an FT service can internally query the TPS Screener to filter the list of people to send marketing comminications to
+Subsequently, an FT service can leverage the TPS Screener to intelligently refine the list of recipients, ensuring that marketing communications are directed only to the appropriate individuals.
 
 ## Usage
 
 **Setting up/App run**
 
 - Node ^18.x.x
-- [Doppler](https://github.com/Financial-Times/ip-ftlive-api#doppler---secrets-management): If new to Doppler, please follow the instruction to install the [CLI](https://docs.doppler.com/docs/install-cli).
+- [Doppler CLI](https://docs.doppler.com/docs/install-cli) if new to Doppler click to install the CLI.
 ```
 **To spin up the local instance of the app, run the commands below:**
 
-Replace the start command with "start": "doppler run -p ft-tps-screener -c prod -- node app.js" in package.json.
+Replace the start command with "start:prod-from-local": "doppler run -p ft-tps-screener -c prod -- node app.js" in package.json. 
 **_Note: Ensure the start command is reverted to its original state before merge into prod._**
 Run `doppler login` command
 Run `npm run postinstall ` command
@@ -28,9 +26,8 @@ Enter a UK number in the browser's search bar; if it's registered, it's importan
 
 ** Snyk Tests**
 
-Run`npm run test` command
-- This will run a `snyk test` as specified in the `scripts` in `package.json`  
-- No other testing is configured for now.
+Run`npm run test` command to trigger Snyk test to scan the app package.json dependencies for known vulnerabilities.
+It provide potential remediation steps, such as upgrading dependencies and applying patches.
 
 **Logging**
 
