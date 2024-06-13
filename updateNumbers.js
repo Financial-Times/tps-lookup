@@ -1,5 +1,5 @@
 require('dotenv').load({ silent: true });
-const logger = require('@financial-times/n-logger').default;
+const logger = require('helper/logger.js').default;
 
 const fs = require('fs');
 const co = require('co');

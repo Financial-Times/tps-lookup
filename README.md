@@ -36,7 +36,8 @@ Logging for the ```updateNumber.js``` file is sent to Splunk from Heroku. Functi
 See the Splunk query below:
 
 ```
-index="restricted_crm_enablement_fs_prod" source="/var/log/apps/heroku/ft-ft-tps-screener.log"
+index="heroku" source="/var/log/apps/heroku/ft-ft-tps-screener.log"
+
 ```
 
 ## Heroku Deployments
