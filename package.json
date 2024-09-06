@@ -17,7 +17,7 @@
   "dependencies": {
     "@dotcom-reliability-kit/logger": "^3.1.1",
     "@financial-times/health-check": "^2.1.9",
-    "@financial-times/okta-express-middleware": "1.0.6",
+    "@financial-times/okta-express-middleware": "1.0.8",
     "@snyk/protect": "^1.1060.0",
     "aws-sdk": "^2.822.0",
     "body-parser": "^1.17.2",
@@ -28,7 +28,7 @@
     "cookie-session": "^1.4.0",
     "dotenv": "^4.0.0",
     "dynamo-backup-to-s3": "^0.6.1",
-    "eslint-plugin-jest": "^23.20.0",
+    "eslint-plugin-jest": "^26.0.0",
     "event-stream": "^3.3.4",
     "express": "^4.19.2 ",
     "form-data": "^2.5.1",
