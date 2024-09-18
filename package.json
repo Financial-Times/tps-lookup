@@ -30,9 +30,9 @@
     "dynamo-backup-to-s3": "^0.6.1",
     "eslint-plugin-jest": "^23.20.0",
     "event-stream": "^3.3.4",
-    "express": "^4.19.2 ",
+    "express": "^4.20.0",
     "form-data": "^2.5.1",
-    "sass": "^1.49.9",
+    "sass": "^1.79.0",
     "semver": "^6.3.1",
     "ssh2": "^1.0.0"
   },
