@@ -1,6 +1,7 @@
 version: 2.1
 orbs:
   node: circleci/node@3.0.0
+  nodejsscan: financial-times/nodejsscan@0.0.2
 
 commands:
   deploy-to-heroku:
@@ -10,7 +11,7 @@ commands:
     steps:
       - run:
           name: Git push to a heroku app
-          command: |
+          command: | 
             REMOTE=git.heroku.com/<<parameters.app-name>>.git
             git push https://heroku:$HEROKU_API_KEY@$REMOTE master
 jobs:
@@ -33,7 +34,7 @@ jobs:
   deploy:
     executor:
       name: node/default
-      tag: "18.16.1"
+      tag: '18.16.1'
     steps:
       - checkout
       - deploy-to-heroku:
@@ -42,9 +43,12 @@ jobs:
 workflows:
   scan-and-deploy:
     jobs:
+      - nodejsscan/run-scan
       - build
       - deploy:
           context: ip-shared-creds
+          requires:
+            - nodejsscan/run-scan
           filters:
             branches:
               only:
