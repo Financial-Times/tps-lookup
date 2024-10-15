@@ -23,7 +23,7 @@ Subsequently, an FT service can leverage the TPS Screener to intelligently refin
 - **_Note: Ensure the start command is reverted to its original state before merge into prod._**
 
 - Run `doppler login` command
-- Run `npm run postinstall ` command
+- Run `npm run postinstall` command
 - Run `npm run start` command
 
 Enter a UK number in the browser's search bar; if it's registered, it's important to refrain from contacting for sales and marketing purposes.
@@ -34,7 +34,11 @@ Logging for the `updateNumber.js` file is sent to Splunk from Heroku. Functions 
 
 See the Splunk query below:
 
-`index="heroku" source="/var/log/apps/heroku/ft-ft-tps-screener.log"`
+`index=heroku source="ft-tps-screener" host="ft-tps-screener.herokuapp.com"`
+
+View errors using this search query
+
+`index=heroku source="ft-tps-screener" host="ft-tps-screener.herokuapp.com" error`
 
 ## Heroku Deployments
 
