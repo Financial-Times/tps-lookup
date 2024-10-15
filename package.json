@@ -4,12 +4,9 @@
   "description": "Lookup TPS numbers",
   "main": "app.js",
   "scripts": {
-    "test": "snyk test",
     "compileAll": "./bin/main.sh compileAll",
     "postinstall": "npm run compileAll",
     "start": "node app.js",
-    "prepare": "npm run snyk-protect; npm run snyk-protect",
-    "snyk-protect": "snyk-protect",
     "start:dev": "doppler run -p ft-tps-screener -c dev -- node app.js"
   },
   "author": "Andrew Snead",
@@ -18,7 +15,6 @@
     "@dotcom-reliability-kit/logger": "^3.1.1",
     "@financial-times/health-check": "^2.1.9",
     "@financial-times/okta-express-middleware": "1.0.6",
-    "@snyk/protect": "^1.1060.0",
     "aws-sdk": "^2.822.0",
     "body-parser": "^1.17.2",
     "browserify": "^17.0.0",
@@ -56,6 +52,5 @@
       "commit-msg": "secret-squirrel-commitmsg",
       "pre-commit": "secret-squirrel"
     }
-  },
-  "snyk": true
+  }
 }
