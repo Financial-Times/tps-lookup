@@ -1,7 +1,11 @@
 version: 2.1
 orbs:
   node: circleci/node@3.0.0
-
+  change-api: financial-times/change-api@1
+executors:
+  node-executor:
+    docker:
+      - image: cimg/node:18.16.1
 commands:
   deploy-to-heroku:
     parameters:
@@ -15,8 +19,7 @@ commands:
             git push https://heroku:$HEROKU_API_KEY@$REMOTE master
 jobs:
   build:
-    docker:
-      - image: cimg/node:18.16.1
+    executor: node-executor
     working_directory: ~/repo
     steps:
       - checkout
@@ -31,20 +34,29 @@ jobs:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
   deploy:
-    executor:
-      name: node/default
-      tag: "18.16.1"
+    executor: node-executor
     steps:
       - checkout
       - deploy-to-heroku:
           app-name: ft-tps-screener
 
 workflows:
-  scan-and-deploy:
+  deploy:
     jobs:
       - build
       - deploy:
           context: ip-shared-creds
+          filters:
+            branches:
+              only:
+                - master
+      - change-api/change-log:
+          requires:
+            - deploy
+          context: change-api-orb
+          system-code: "ft-tps-screener"
+          environment: "prod"
+          slack-channels: "crme-alerts"
           filters:
             branches:
               only:
