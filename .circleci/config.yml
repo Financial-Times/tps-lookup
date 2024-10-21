@@ -2,7 +2,10 @@ version: 2.1
 orbs:
   node: circleci/node@3.0.0
   change-api: financial-times/change-api@1
-
+executors:
+  node-executor:
+    docker:
+      - image: cimg/node:18.16.1
 commands:
   deploy-to-heroku:
     parameters:
@@ -16,8 +19,7 @@ commands:
             git push https://heroku:$HEROKU_API_KEY@$REMOTE master
 jobs:
   build:
-    docker:
-      - image: cimg/node:18.16.1
+    executor: node-executor
     working_directory: ~/repo
     steps:
       - checkout
@@ -32,9 +34,7 @@ jobs:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
   deploy:
-    executor:
-      name: node/default
-      tag: "18.16.1"
+    executor: node-executor
     steps:
       - checkout
       - deploy-to-heroku:
