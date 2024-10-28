@@ -17,7 +17,7 @@ Subsequently, an FT service can leverage the TPS Screener to intelligently refin
 
 ### Run the app locally
 
-**To spin up the local instance of the app, run the commands below:**
+**To spin up the local instance of the production app, run the commands below:**
 
 - Replace the start command with `"start:prod-from-local": "doppler run -p ft-tps-screener -c prod -- node app.js"` in package.json.
 - **_Note: Ensure the start command is reverted to its original state before merge into prod._**
@@ -28,9 +28,15 @@ Subsequently, an FT service can leverage the TPS Screener to intelligently refin
 
 Enter a UK number in the browser's search bar; if it's registered, it's important to refrain from contacting for sales and marketing purposes.
 
+### Testing
+
+There is currently no staging environment to test this app.
+
 ### Logging
 
-Logging for the `updateNumber.js` file is sent to Splunk from Heroku. Functions in this file update the numbers stored in `email-platform-ftcom-tps` S3 bucket after checking [TPS](https://www.tpsonline.org.uk/) as necessary. `updateNumber.js` runs everyday at 11p.m as specified in [Heroku scheduler](https://dashboard.heroku.com/apps/ft-tps-screener/scheduler).
+Logging for the `updateNumber.js` file is sent to Splunk from Heroku. Functions in this file update the numbers stored in the `email-platform-ftcom-tps` S3 bucket after checking [TPS](https://www.tpsonline.org.uk/) as necessary. Updates to numbers found are written to the `ft-email_platform_tps_lookup` DynamoDB table.
+
+`updateNumber.js` runs everyday at 11pm as specified in the [Heroku scheduler](https://dashboard.heroku.com/apps/ft-tps-screener/scheduler).
 
 See the Splunk query below:
 
@@ -38,8 +44,14 @@ See the Splunk query below:
 
 View errors using this search query
 
-`index=heroku source="ft-tps-screener" host="ft-tps-screener.herokuapp.com" error`
+`index=heroku source="ft-tps-screener" host="ft-tps-screener.herokuapp.com" level="error"`
+
+There is currently no alerting for this app.
+
+## Change API
+
+This system uses Change API to log changes to this app. A deployment will trigger a Change API alert in the #CRM Alerts Slack channel
 
 ## Heroku Deployments
 
-Any merge to master will trigger a deployment to Heroku
+Any merge to master will trigger a deployment to Heroku.
