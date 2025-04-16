@@ -4,10 +4,10 @@ const config = require('./config');
 const { docClient } = require('./db');
 const { ensureHttps } = require('./ensureHttps');
 const authenticate = require('./authenticate');
-const session = require('cookie-session');
-const { okta, cookieOptions } = require('./okta.js');
+const { okta, sessionOptions } = require('./okta.js');
 
 const router = express.Router();
+router.use(sessionOptions);
 
 function validateNumber(phoneNum) {
   return /^0(?!044)[\d ]+$/.test(phoneNum);
@@ -18,7 +18,6 @@ module.exports = (app) => {
     router.use(ensureHttps);
   }
 
-  router.use(session(cookieOptions));
   router.use(okta.router);
   router.use(authenticate);
 
