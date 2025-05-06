@@ -40,7 +40,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
       fetch('/search', options)
       .then((res) => {
-        console.log('Response status:', res.status);
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);
         }
