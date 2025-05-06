@@ -14,7 +14,7 @@
   "dependencies": {
     "@dotcom-reliability-kit/logger": "^3.1.1",
     "@financial-times/health-check": "^2.1.9",
-    "@financial-times/okta-express-middleware": "1.0.6",
+    "@financial-times/okta-express-middleware": "1.1.0",
     "aws-sdk": "^2.822.0",
     "body-parser": "^1.17.2",
     "browserify": "^17.0.0",
@@ -26,18 +26,16 @@
     "dynamo-backup-to-s3": "^0.6.1",
     "event-stream": "^3.3.4",
     "express": "^4.19.2 ",
+    "express-session": "^1.18.1",
     "form-data": "^2.5.1",
     "sass": "^1.49.9",
     "ssh2": "^1.0.0"
   },
   "engines": {
-    "node": "18.x"
+    "node": "20.x"
   },
-  "overrides": {
-    "@financial-times/okta-express-middleware": {
-      "@okta/oidc-middleware": {
-        "passport": "0.5.3"
-      }
-    }
+  "overrides": {},
+  "volta": {
+    "node": "20.19.0"
   }
 }

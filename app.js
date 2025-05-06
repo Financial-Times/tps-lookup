@@ -14,7 +14,7 @@ app.use(compression());
 app.use(bodyParser.json());
 
 app.post(`/logout`, (req, res) => {
-  res.cookie('express.sess','', { maxAge: -1, httpOnly: true });
+  req.session = null;
   return res.redirect('/');
 });
 app.get('/__gtg', (req, res) => {
