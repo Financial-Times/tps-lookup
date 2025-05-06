@@ -47,7 +47,6 @@ document.addEventListener('DOMContentLoaded', () => {
       })
       .then((resJson) => {
         let resText;
-        console.log('Response JSON:', resJson);
         if (resJson.results[0].canCall) {
           resText = 'Good news! This number is not on the TPS/CTPS list.';
           if (tickImg) tickImg.classList.remove('img-hidden');
