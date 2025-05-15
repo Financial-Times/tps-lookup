@@ -33,6 +33,20 @@ jobs:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
+
+  test:
+      executor: node-executor
+      working_directory: ~/repo
+      steps:
+        - checkout
+        - restore_cache:
+            keys:
+              - v1-dependencies-{{ checksum "package.json" }}
+              - v1-dependencies-
+        - run:
+            name: Run Jest Tests
+            command: npm test
+
   deploy:
     executor: node-executor
     steps:
@@ -44,7 +58,12 @@ workflows:
   deploy:
     jobs:
       - build
+      - test:
+          requires:
+            - build
       - deploy:
+          requires:
+            - test
           context: ip-shared-creds
           filters:
             branches:
