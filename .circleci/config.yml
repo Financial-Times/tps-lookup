@@ -5,7 +5,7 @@ orbs:
 executors:
   node-executor:
     docker:
-      - image: cimg/node:18.16.1
+      - image: cimg/node:20.19.0
 commands:
   deploy-to-heroku:
     parameters:
