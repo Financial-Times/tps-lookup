@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for config.js</title>
+    <title>Code coverage report for authenticate.js</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="prettify.css" />
     <link rel="stylesheet" href="base.css" />
@@ -19,34 +19,34 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="index.html">All files</a> config.js</h1>
+        <h1><a href="index.html">All files</a> authenticate.js</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>12/12</span>
+                <span class='fraction'>8/8</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">60% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>6/10</span>
+                <span class='fraction'>4/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/0</span>
+                <span class='fraction'>1/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>12/12</span>
+                <span class='fraction'>8/8</span>
             </div>
         
             
@@ -78,45 +78,36 @@
 <a name='L13'></a><a href='#L13'>13</a>
 <a name='L14'></a><a href='#L14'>14</a>
 <a name='L15'></a><a href='#L15'>15</a>
-<a name='L16'></a><a href='#L16'>16</a>
-<a name='L17'></a><a href='#L17'>17</a>
-<a name='L18'></a><a href='#L18'>18</a>
-<a name='L19'></a><a href='#L19'>19</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L16'></a><a href='#L16'>16</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">const config = exports;
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">const { okta } = require('./okta.js');
+const oktaNoRedirect = okta.verifyJwts({redirect:false});
+const config = require('./config');
 &nbsp;
-// Server
-config.NODE_ENV = process.env.NODE_ENV || <span class="branch-1 cbranch-no" title="branch not covered" >'development';</span>
-config.PORT = process.env.PORT || 3000;
+module.exports = (req, res, next) =&gt; {
+  const apiKey = req.headers['x-api-key'];
+  if (apiKey &amp;&amp; apiKey === config.apiKey) {
+    return next()
+  }
 &nbsp;
-// FTP
-config.sftpHost = process.env.SFTP_HOST;
-config.sftpPort = process.env.SFTP_PORT;
-config.sftpUsername = process.env.SFTP_USERNAME;
-config.sftpPassword = process.env.SFTP_PASSWORD;
+  return oktaNoRedirect(req, res, next);
+};
 &nbsp;
-// AWS
-config.tableName = process.env.TABLE_NAME || <span class="branch-1 cbranch-no" title="branch not covered" >'ft-email_platform_tps_lookup';</span>
-config.awsAccessKeyId = process.env.AWS_ACCESS_KEY_ID;
-config.awsSecretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
-config.awsRegion = process.env.AWS_REGION || <span class="branch-1 cbranch-no" title="branch not covered" >'eu-west-1';</span>
-config.apiKey = process.env.API_KEY || <span class="branch-1 cbranch-no" title="branch not covered" >'development';</span>
+&nbsp;
+&nbsp;
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
