@@ -36,11 +36,9 @@ describe('/search route', () => {
       promise: () => Promise.resolve({ Item: { phone: '07712345678' } })
     });    
     docClient.update.mockReturnValueOnce(mockDynamoResponse({}));
-    console.log('🚀 Sending request...');
     const res = await request(app)
       .post('/search')
       .send(['07712345678']);
-      console.log('✅ Got response:', res.body);
 
     expect(res.status).toBe(200);
     expect(res.body.results[0]).toEqual({ number: '07712345678', canCall: false });
