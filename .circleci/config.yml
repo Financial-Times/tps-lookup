@@ -1,82 +1,67 @@
 version: 2.1
 orbs:
-  node: circleci/node@3.0.0
   change-api: financial-times/change-api@1
-executors:
-  node-executor:
-    docker:
-      - image: cimg/node:20.19.0
-commands:
-  deploy-to-heroku:
-    parameters:
-      app-name:
-        type: string
-    steps:
-      - run:
-          name: Git push to a heroku app
-          command: |
-            REMOTE=git.heroku.com/<<parameters.app-name>>.git
-            git push https://heroku:$HEROKU_API_KEY@$REMOTE master
+  hako: ft-circleci-orbs/hako@1.0
+  cloudsmith-docker: ft-circleci-orbs/cloudsmith-docker@0.0.4
+
 jobs:
-  build:
-    executor: node-executor
-    working_directory: ~/repo
+  build_tag_and_push_image:
+    docker:
+      - image: cimg/node:22.14.0
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "package.json" }}
-            - v1-dependencies-
-
-      - run: npm install
-      - save_cache:
-          paths:
-            - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
-
-  test:
-      executor: node-executor
-      working_directory: ~/repo
-      steps:
-        - checkout
-        - restore_cache:
-            keys:
-              - v1-dependencies-{{ checksum "package.json" }}
-              - v1-dependencies-
-        - run:
-            name: Run Jest Tests
-            command: npm test
-
-  deploy:
-    executor: node-executor
-    steps:
-      - checkout
-      - deploy-to-heroku:
-          app-name: ft-tps-screener
-
+      - run: echo "A first hello"
+      - run: npm install --no-save
+      - run: npm run test -- --runInBand
+      - setup_remote_docker
+      - cloudsmith-docker/build_image:
+          image_name: ft-tps-screener
+          image_registry: docker.packages.ft.com/ip-container-registry
+      - cloudsmith-docker/push_image:
+          image_name: ft-tps-screener
+          image_registry: docker.packages.ft.com/ip-container-registry
 workflows:
-  deploy:
+  version: 2.1
+  build_and_deploy_review:
     jobs:
-      - build
-      - test:
+      - build_tag_and_push_image:
+          filters:
+            branches:
+              ignore:
+                - master
+      - hako/deploy_image:
           requires:
-            - build
-      - deploy:
-          requires:
-            - test
-          context: ip-shared-creds
+            - build_tag_and_push_image
+          name: Deploy to AWS (Review EU)
+          image_tag: git-$(git rev-parse --short=8 HEAD)
+          image_name: ${CIRCLE_PROJECT_REPONAME}
+          aws_account_id: $AWS_ACCOUNT_ID
+          aws_region: eu-west-1
+          context: circleci-oidc-empty-context
+          hako_app: ${CIRCLE_PROJECT_REPONAME}
+          hako_env: crm-review-eu-west-1
+  build_and_deploy_prod:
+    jobs:
+      - build_tag_and_push_image:
           filters:
             branches:
               only:
                 - master
+      - hako/deploy_image:
+          requires:
+            - build_tag_and_push_image
+          name: Deploy to AWS (Prod EU)
+          image_tag: "git-${CIRCLE_SHA1:0:8}"
+          image_name: ${CIRCLE_PROJECT_REPONAME}
+          aws_account_id: $AWS_ACCOUNT_ID
+          aws_region: eu-west-1
+          context: circleci-oidc-empty-context
+          hako_app: ${CIRCLE_PROJECT_REPONAME}
+          hako_env: crm-prod-eu-west-1
       - change-api/change-log:
           requires:
-            - deploy
+            - Deploy to AWS (Prod EU)
           context: change-api-orb
-          system-code: "ft-tps-screener"
-          environment: "prod"
-          slack-channels: "crme-alerts"
-          filters:
-            branches:
-              only:
-                - master
+          system-code: ft-tps-screener
+          environment: prod
+          slack-channels: crme-alerts
