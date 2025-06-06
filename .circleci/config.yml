@@ -34,11 +34,11 @@ workflows:
             - build_tag_and_push_image
           name: Deploy to AWS (Review EU)
           image_tag: git-$(git rev-parse --short=8 HEAD)
-          image_name: ${CIRCLE_PROJECT_REPONAME}
+          image_name: ft-tps-screener
           aws_account_id: $AWS_ACCOUNT_ID
           aws_region: eu-west-1
           context: circleci-oidc-empty-context
-          hako_app: ${CIRCLE_PROJECT_REPONAME}
+          hako_app: ft-tps-screener
           hako_env: crm-review-eu-west-1
   build_and_deploy_prod:
     jobs:
@@ -52,11 +52,11 @@ workflows:
             - build_tag_and_push_image
           name: Deploy to AWS (Prod EU)
           image_tag: "git-${CIRCLE_SHA1:0:8}"
-          image_name: ${CIRCLE_PROJECT_REPONAME}
+          image_name: ft-tps-screener
           aws_account_id: $AWS_ACCOUNT_ID
           aws_region: eu-west-1
           context: circleci-oidc-empty-context
-          hako_app: ${CIRCLE_PROJECT_REPONAME}
+          hako_app: ft-tps-screener
           hako_env: crm-prod-eu-west-1
       - change-api/change-log:
           requires:
