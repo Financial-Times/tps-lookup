@@ -12,7 +12,7 @@ Subsequently, an FT service can leverage the TPS Screener to intelligently refin
 
 ### Setting up/App run
 
-- Node ^20.x.x
+- Node ^22.x.x
 - [Doppler CLI](https://docs.doppler.com/docs/install-cli) if new to Doppler click to install the CLI.
 
 ### Run the app locally

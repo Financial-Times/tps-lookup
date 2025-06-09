@@ -36,11 +36,24 @@ stacks:
               - arn:aws:s3:::email-platform-ftcom-tps 
               - arn:aws:s3:::email-platform-ftcom-tps /*
 
+  scheduled-task:
+    type: scheduled-task
+    parameters:
+      TaskCpuArchitecture: ARM64
+      ContainerRegistry: docker.packages.ft.com/ip-container-registry
+      ContainerRegistryCredentialsSecretName: /hako/registry-credential/cloudsmith/crm-en-full-stack-read-only
+      TaskCpu: 256
+      TaskMemory: 512
+      TaskSchedule: "daily at 15:25"
+      ContainerCommand: npm run update-numbers
+      LogDestination: splunk
+
   circleci-deployment-role:
     type: circleci-deployment-role
     parameters:
       CircleciProjectId: c9d89113-1fb3-43c5-869c-ad0b8eacf9d2 
       CircleciOrgName: Financial-Times
+
 
 tags:
   systemCode: ft-tps-screener

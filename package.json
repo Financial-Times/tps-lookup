@@ -10,7 +10,8 @@
     "start:dev": "doppler run -p ft-tps-screener -c dev -- node app.js",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "update-numbers": "doppler run -p ft-tps-screener -c dev -- node updateNumbers.js"
   },
   "author": "Andrew Snead",
   "license": "ISC",
