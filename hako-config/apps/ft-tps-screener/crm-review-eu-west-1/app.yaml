@@ -34,7 +34,7 @@ stacks:
               - "s3:ListBucket"
             Resource:
               - arn:aws:s3:::email-platform-ftcom-tps 
-              - arn:aws:s3:::email-platform-ftcom-tps /*
+              - arn:aws:s3:::email-platform-ftcom-tps/*
 
   scheduled-task:
     type: scheduled-task
@@ -44,8 +44,8 @@ stacks:
       ContainerRegistryCredentialsSecretName: /hako/registry-credential/cloudsmith/crm-en-full-stack-read-only
       TaskCpu: 256
       TaskMemory: 512
-      TaskSchedule: "daily at 17:35"
-      ContainerCommand: npm run update-numbers
+      TaskSchedule: "daily at 19:45"
+      ContainerCommand: npm run updateNumbers.js
       LogDestination: splunk
 
   circleci-deployment-role:
