@@ -18,6 +18,27 @@ AWS.config.update({
 const s3 = new AWS.S3({});
 const docClient = new AWS.DynamoDB.DocumentClient();
 
+async function checkAwsAccess() {
+  try {
+    // S3: List first 1 object in the bucket
+    const s3Result = await s3.listObjectsV2({ Bucket: "email-platform-ftcom-tps", MaxKeys: 1 }).promise();
+    logger.info({ event: "S3 access check successful", objects: s3Result.Contents.length });
+
+    // DynamoDB: List tables as a simple check
+    const dynamoResult = await docClient.service.listTables({ Limit: 1 }).promise();
+    logger.info({ event: "DynamoDB access check successful", tables: dynamoResult.TableNames });
+  } catch (err) {
+    logger.error({ event: "AWS access check failed", error: err.toString() });
+    process.exit(1);
+  }
+}
+
+// Call the check before main logic
+checkAwsAccess().then(() => {
+  logger.info({ event: "AWS access confirmed, continuing with main script..." });
+  // ...existing code continues here...
+});
+
 // both files uploaded and complete === 2
 let done = 0;
 
