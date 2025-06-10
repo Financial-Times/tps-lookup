@@ -23,12 +23,11 @@ async function checkAwsAccess() {
     // S3: List first 1 object in the bucket
     const s3Result = await s3.listObjectsV2({ Bucket: "email-platform-ftcom-tps", MaxKeys: 1 }).promise();
     logger.info({ event: "S3 access check successful", objects: s3Result.Contents.length });
+    const result = await docClient.service.describeTable({ TableName: config.tableName }).promise();
+    logger.info({ event: "DynamoDB table access check successful", table: result.Table.TableName });
 
-    // DynamoDB: List tables as a simple check
-    const dynamoResult = await docClient.service.listTables({ Limit: 1 }).promise();
-    logger.info({ event: "DynamoDB access check successful", tables: dynamoResult.TableNames });
   } catch (err) {
-    logger.error({ event: "AWS access check failed", error: err.toString() });
+    logger.error({ event: "DynamoDB table access check failed", error: err.toString() });
     process.exit(1);
   }
 }

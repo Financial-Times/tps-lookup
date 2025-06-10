@@ -26,6 +26,7 @@ stacks:
               - "dynamodb:Scan"
               - "dynamodb:ListTables"
               - "dynamodb:DeleteItem"
+              - "dynamodb:Scan"
             Resource:
               - arn:aws:dynamodb:eu-west-1:027104099916:table/ft-email_platform_tps_lookup*
           - Sid: "AccessS3Buckets"
@@ -46,7 +47,7 @@ stacks:
       ContainerRegistryCredentialsSecretName: /hako/registry-credential/cloudsmith/crm-en-full-stack-read-only
       TaskCpu: 256
       TaskMemory: 512
-      TaskSchedule: "daily at 16:22"
+      TaskSchedule: "daily at 17:57"
       ContainerCommand: npm run update
       LogDestination: splunk
 
