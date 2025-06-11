@@ -26,7 +26,6 @@ stacks:
               - "dynamodb:Scan"
               - "dynamodb:ListTables"
               - "dynamodb:DeleteItem"
-              - "dynamodb:Scan"
             Resource:
               - arn:aws:dynamodb:eu-west-1:027104099916:table/ft-email_platform_tps_lookup*
           - Sid: "AccessS3Buckets"
