@@ -32,8 +32,7 @@ async function checkAwsAccess() {
 }
 
 checkAwsAccess().then(() => {
-  logger.info({ event: "AWS access confirmed, continuing with main script..." });
-  // ...existing code continues here...
+  logger.info({ event: 'AWS access confirmed' });
 });
 
 let done = 0;
