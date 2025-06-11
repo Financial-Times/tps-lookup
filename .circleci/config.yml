@@ -51,7 +51,7 @@ workflows:
           requires:
             - build_tag_and_push_image
           name: Deploy to AWS (Prod EU)
-          image_tag: "git-${CIRCLE_SHA1:0:8}"
+          image_tag: git-$(git rev-parse --short=8 HEAD)
           image_name: ft-tps-screener
           aws_account_id: $AWS_ACCOUNT_ID
           aws_region: eu-west-1

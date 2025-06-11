@@ -20,7 +20,6 @@ const docClient = new AWS.DynamoDB.DocumentClient();
 
 async function checkAwsAccess() {
   try {
-    // S3: List first 1 object in the bucket
     const s3Result = await s3.listObjectsV2({ Bucket: "email-platform-ftcom-tps", MaxKeys: 1 }).promise();
     logger.info({ event: "S3 access check successful", objects: s3Result.Contents.length });
     const result = await docClient.service.describeTable({ TableName: config.tableName }).promise();
@@ -32,13 +31,11 @@ async function checkAwsAccess() {
   }
 }
 
-// Call the check before main logic
 checkAwsAccess().then(() => {
   logger.info({ event: "AWS access confirmed, continuing with main script..." });
   // ...existing code continues here...
 });
 
-// both files uploaded and complete === 2
 let done = 0;
 
 function uploadToS3(fileStream, key) {
