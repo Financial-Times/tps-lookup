@@ -1,0 +1,62 @@
+application: ft-tps-screener #System code of the app
+environment: crm-review-eu-west-1  # This should already exist under environments of the ip-crm-hako-config repo
+
+stacks:
+  web:
+    type: public-load-balanced-web-service
+    parameters:
+      TaskCount: 1
+      TaskCpu: 256
+      TaskCpuArchitecture: ARM64
+      TaskMemory: 512
+      ContainerRegistry: docker.packages.ft.com/ip-container-registry
+      ContainerRegistryCredentialsSecretName: /hako/registry-credential/cloudsmith/crm-en-full-stack-read-only
+      ContainerGoodToGoEndpoint: /__gtg
+      LogDestination: splunk 
+      TaskPolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: "AccessDynamoDBTables"
+            Effect: "Allow"
+            Action:
+              - "dynamodb:GetItem"
+              - "dynamodb:PutItem"
+              - "dynamodb:UpdateItem"
+              - "dynamodb:Query"
+              - "dynamodb:Scan"
+              - "dynamodb:ListTables"
+              - "dynamodb:DeleteItem"
+            Resource:
+              - arn:aws:dynamodb:eu-west-1:027104099916:table/ft-email_platform_tps_lookup*
+          - Sid: "AccessS3Buckets"
+            Effect: "Allow"
+            Action:
+              - "s3:GetObject"
+              - "s3:PutObject"
+              - "s3:ListBucket"
+            Resource:
+              - arn:aws:s3:::email-platform-ftcom-tps 
+              - arn:aws:s3:::email-platform-ftcom-tps/*
+
+  scheduled-task:
+    type: scheduled-task
+    parameters:
+      TaskCpuArchitecture: ARM64
+      ContainerRegistry: docker.packages.ft.com/ip-container-registry
+      ContainerRegistryCredentialsSecretName: /hako/registry-credential/cloudsmith/crm-en-full-stack-read-only
+      TaskCpu: 256
+      TaskMemory: 512
+      TaskSchedule: "daily at 17:57"
+      ContainerCommand: npm run update
+      LogDestination: splunk
+
+  circleci-deployment-role:
+    type: circleci-deployment-role
+    parameters:
+      CircleciProjectId: c9d89113-1fb3-43c5-869c-ad0b8eacf9d2 
+      CircleciOrgName: Financial-Times
+
+
+tags:
+  systemCode: ft-tps-screener
+  environment: d

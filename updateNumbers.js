@@ -18,7 +18,23 @@ AWS.config.update({
 const s3 = new AWS.S3({});
 const docClient = new AWS.DynamoDB.DocumentClient();
 
-// both files uploaded and complete === 2
+async function checkAwsAccess() {
+  try {
+    const s3Result = await s3.listObjectsV2({ Bucket: "email-platform-ftcom-tps", MaxKeys: 1 }).promise();
+    logger.info({ event: "S3 access check successful", objects: s3Result.Contents.length });
+    const result = await dynamoDB.describeTable({ TableName: config.tableName }).promise();
+    logger.info({ event: "DynamoDB table access check successful", table: result.Table.TableName });
+
+  } catch (err) {
+    logger.error({ event: "DynamoDB table access check failed", error: err.toString() });
+    process.exit(1);
+  }
+}
+
+checkAwsAccess().then(() => {
+  logger.info({ event: 'AWS access confirmed' });
+});
+
 let done = 0;
 
 function uploadToS3(fileStream, key) {
