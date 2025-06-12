@@ -5,6 +5,14 @@ orbs:
   cloudsmith-docker: ft-circleci-orbs/cloudsmith-docker@0.0.4
 
 jobs:
+  test:
+    docker:
+      - image: cimg/node:22.14.0
+    steps:
+      - checkout
+      - run: npm install --no-save
+      - run: npm run test -- --runInBand
+
   build_tag_and_push_image:
     docker:
       - image: cimg/node:22.14.0
@@ -12,7 +20,6 @@ jobs:
       - checkout
       - run: echo "A first hello"
       - run: npm install --no-save
-      - run: npm run test -- --runInBand
       - setup_remote_docker
       - cloudsmith-docker/build_image:
           image_name: ft-tps-screener
@@ -21,11 +28,13 @@ jobs:
           image_name: ft-tps-screener
           image_registry: docker.packages.ft.com/ip-container-registry
 workflows:
-  version: 2.1
   build_and_deploy_review:
     jobs:
+      - test
       - build_tag_and_push_image:
-          filters:
+          requires:
+            - test
+          filters:            
             branches:
               ignore:
                 - master
@@ -42,7 +51,10 @@ workflows:
           hako_env: crm-review-eu-west-1
   build_and_deploy_prod:
     jobs:
+      - test
       - build_tag_and_push_image:
+          requires:
+            - test
           filters:
             branches:
               only:

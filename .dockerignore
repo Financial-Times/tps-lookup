@@ -1,6 +1,5 @@
 node_modules
 .dockerignore
-Dockerfile
 .env
 .gitignore
 .github/
