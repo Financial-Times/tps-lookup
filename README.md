@@ -30,10 +30,15 @@ Enter a UK number in the browser's search bar; if it's registered, it's importan
 
 ### Testing
 
-There is currently no staging environment to test this app.
+- There is currently no staging environment to test this app. However one may test the app running it locally with the command:   
+`npm run start:dev`
+
+- This will use the environment variables in the [dev Doppler config](https://dashboard.doppler.com/workplace/99fbb11f5bea112e94dd/projects/ft-tps-screener/configs/dev).    
+- Use `http://localhost:3000` to access TPS Screener. 
+
 
 ## Where and How tps-lookup Runs
-`ft-tps-screener` is hosted in AWS ECS via Hako.
+`ft-tps-screener` is hosted in AWS ECS via Hako in the CRM prod AWS account.
 
 ### Where to find it
 Production environment:
@@ -48,34 +53,36 @@ AWS Console – EventBridge Schedules
 Filter for the app name to view or confirm scheduled job times.
 
 ### Scheduled Task Timing
-`ft-tps-screener` runs on a an EventBridge Scheduler configured via the app.yaml under the [scheduled-task stack](https://github.com/Financial-Times/tps-lookup/blob/818770c095b92494966cd58a331821168d9145de/hako-config/apps/ft-tps-screener/crm-prod-eu-west-1/app.yaml#L40-L50) using the TaskSchedule parameter.
+The only scheduled task in ft-tps-screener is to run `updateNumber.js` daily at 11pm UTC.
+
+This is handled in AWS using EventBridge Scheduler, configured via the app.yaml in the scheduled-task stack.
 
 Example:
+
 ```yaml
 scheduled-task:
   type: scheduled-task
   parameters:
     TaskSchedule: "daily at 23:00"
-```
-  
-Times are always specified in UTC, so for UK times, adjust accordingly (e.g. 20:00 UTC = 9:00 PM UK during BST).
+ ```
+⚠️ Times are always in UTC — so adjust accordingly for UK time (e.g. 23:00 UTC = midnight BST).
 
-How to change the schedule:  
-1. Pull the repo and open your `app.yaml` for the relevant environment:
+How to change the schedule
+1. Pull the repo and open:
+`hako-config/apps/ft-tps-screener/crm-prod-eu-west-1/app.yaml`
 
-`hako-config/apps/ft-tps-screener/crm-prod-eu-west-1/app.yaml`  
+2. Update the TaskSchedule under the scheduled-task stack.
 
-2. Update the TaskSchedule line under the scheduled-task stack.
+3. Re-deploy using Hako:
 
-3. Re-deploy the app via hako:  
-- Follow steps 1 and 2 from the [Login and Deploy](https://financialtimes.atlassian.net/wiki/spaces/SF/pages/9086500865/CRM+Guide+Heroku+to+AWS+Migration+using+Hako#%3Aaws%3A---Login-%26-Deploy) section in the CRM Migration guide.
-Note: This deploy uses the default Hako image.
+Follow [Login and Deploy](https://financialtimes.atlassian.net/wiki/spaces/SF/pages/9086500865/CRM+Guide+Heroku+to+AWS+Migration+using+Hako#%3Aaws%3A---Login-%26-Deploy) steps 1 and 2.
 
-4. If you're making the change via a PR or draft PR, this will also automatically deploy to the review environment, so you can validate the change before merging to main.
+4. If you're working on a PR or draft PR, it will automatically deploy to the review environment so you can validate the change.
 
-5. Once validated, merge to master to apply the schedule update in production.
+5. Once validated, merge to master to apply the schedule in production.
 
-6. Confirm the new schedule in the AWS EventBridge Console - `Amazon EventBridge/Schedules`
+6. Confirm the schedule in the AWS Console under:
+Amazon EventBridge → Schedules
 
 
 For more detail on hako:  
@@ -93,7 +100,7 @@ Once this is resolved/we have a workaround, we’ll use PR numbers in the app na
 
 Logging for the `updateNumber.js` file is sent to Splunk from AWS. Functions in this file update the numbers stored in the `email-platform-ftcom-tps` S3 bucket after checking [TPS](https://www.tpsonline.org.uk/) as necessary. Updates to numbers found are written to the `ft-email_platform_tps_lookup` DynamoDB table.
 
-`updateNumber.js` runs everyday at 11pm as specified in the [Heroku scheduler](https://dashboard.heroku.com/apps/ft-tps-screener/scheduler).
+`updateNumber.js` runs everyday at 11pm as specified in the scheduler described above.
 
 See the Splunk query below:
 
@@ -109,6 +116,6 @@ There is currently no alerting for this app.
 
 This system uses Change API to log changes to this app. A deployment will trigger a Change API alert in the #CRM Alerts Slack channel
 
-## Heroku Deployments
+## Deployments
 
-Any merge to master will trigger a deployment to Heroku.
+Any merge to master will trigger a deployment to AWS ECS Prod cluster.
