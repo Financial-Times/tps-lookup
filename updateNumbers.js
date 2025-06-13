@@ -17,6 +17,7 @@ AWS.config.update({
 
 const s3 = new AWS.S3({});
 const docClient = new AWS.DynamoDB.DocumentClient();
+const dynamoDB = new AWS.DynamoDB();
 
 async function checkAwsAccess() {
   try {
