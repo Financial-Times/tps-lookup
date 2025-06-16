@@ -12,6 +12,8 @@ stacks:
       ContainerRegistry: docker.packages.ft.com/ip-container-registry
       ContainerRegistryCredentialsSecretName: /hako/registry-credential/cloudsmith/crm-en-full-stack-read-only
       ContainerGoodToGoEndpoint: /__gtg
+      CustomDomainName: tps-screener.ft.com
+      CustomDomainCertificateArn: arn:aws:acm:eu-west-1:615638662720:certificate/34132e9f-3be6-48b8-a085-9beb931d8dc4
       LogDestination: splunk 
       TaskPolicyDocument:
         Version: "2012-10-17"
@@ -45,7 +47,7 @@ stacks:
       ContainerRegistryCredentialsSecretName: /hako/registry-credential/cloudsmith/crm-en-full-stack-read-only
       TaskCpu: 256
       TaskMemory: 512
-      TaskSchedule: "daily at 11:15"
+      TaskSchedule: "daily at 23:00"
       ContainerCommand: npm run update
       LogDestination: splunk
 
