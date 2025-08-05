@@ -67,7 +67,7 @@ scheduled-task:
  ```
 ⚠️ Times are always in UTC — so adjust accordingly for UK time (e.g. 23:00 UTC = midnight BST).
 
-How to change the schedule
+How to change the schedule:
 1. Pull the repo and open:
 `hako-config/apps/ft-tps-screener/crm-prod-eu-west-1/app.yaml`
 
