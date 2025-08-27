@@ -17,24 +17,25 @@ Subsequently, an FT service can leverage the TPS Screener to intelligently refin
 
 ### Run the app locally
 
+- Run `npm i`
+- Run `doppler login`
+- Run `npm run postinstall`
+- Run `npm run start:dev`
+
 **To spin up the local instance of the production app, run the commands below:**
 
 - Replace the start command with `"start:prod-from-local": "doppler run -p ft-tps-screener -c prod -- node app.js"` in package.json.
 - **_Note: Ensure the start command is reverted to its original state before merge into prod._**
 
-- Run `doppler login` command
-- Run `npm run postinstall` command
-- Run `npm run start` command
-
 Enter a UK number in the browser's search bar; if it's registered, it's important to refrain from contacting for sales and marketing purposes.
 
 ### Testing
 
-- There is currently no staging environment to test this app. However one may test the app running it locally with the command:   
+- There is currently no staging environment to test this app. However one may test the app running it locally with the command:
 `npm run start:dev`
 
-- This will use the environment variables in the [dev Doppler config](https://dashboard.doppler.com/workplace/99fbb11f5bea112e94dd/projects/ft-tps-screener/configs/dev).    
-- Use `http://localhost:3000` to access TPS Screener. 
+- This will use the environment variables in the [dev Doppler config](https://dashboard.doppler.com/workplace/99fbb11f5bea112e94dd/projects/ft-tps-screener/configs/dev).
+- Use `http://localhost:3000` to access TPS Screener.
 
 
 ## Where and How tps-lookup Runs
@@ -42,7 +43,7 @@ Enter a UK number in the browser's search bar; if it's registered, it's importan
 
 ### Where to find it
 Production environment:
-AWS Console – ECS Prod Cluster (`crm-prod-eu-west-1`) 
+AWS Console – ECS Prod Cluster (`crm-prod-eu-west-1`)
 Look for the `ft-tps-screener` service
 
 Review environment:
@@ -85,14 +86,14 @@ Follow [Login and Deploy](https://financialtimes.atlassian.net/wiki/spaces/SF/pa
 Amazon EventBridge → Schedules
 
 
-For more detail on hako:  
+For more detail on hako:
 - See the [CRM Hako Migration Guide](https://financialtimes.atlassian.net/wiki/spaces/SF/pages/9086500865/CRM+Guide+Heroku+to+AWS+Migration+using+Hako)
 - Refer to the [Hako Wiki](https://github.com/Financial-Times/hako-cli/wiki)
 
 ## Development
-When you push your branch to the remote repo and a PR is opened (including draft PR), if CircleCI checks are successful, `ft-tps-screener` is deployed to the AWS crm-review-eu-west-1 environment. We are not appending the PR number to the app name as with other configs due to a character limit when using Scheduled Task stacks:  
+When you push your branch to the remote repo and a PR is opened (including draft PR), if CircleCI checks are successful, `ft-tps-screener` is deployed to the AWS crm-review-eu-west-1 environment. We are not appending the PR number to the app name as with other configs due to a character limit when using Scheduled Task stacks:
 
-`Properties validation failed for TaskEventBridgeScheduler with message: [#/Name:expected maxLength: 64, actual: 68]`             
+`Properties validation failed for TaskEventBridgeScheduler with message: [#/Name:expected maxLength: 64, actual: 68]`
 
 Once this is resolved/we have a workaround, we’ll use PR numbers in the app name.
 
