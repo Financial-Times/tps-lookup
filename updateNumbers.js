@@ -1,4 +1,7 @@
+console.log('Loading environment variables'); 
 require("dotenv").load({ silent: true });
+console.log('Environment variables loaded');
+
 const logger = require("./helper/logger.js");
 
 const fs = require("fs");
@@ -18,6 +21,9 @@ AWS.config.update({
 const s3 = new AWS.S3({});
 const docClient = new AWS.DynamoDB.DocumentClient();
 const dynamoDB = new AWS.DynamoDB();
+
+console.log('Starting number update process');
+logger.info({ event: 'Starting number update process' });
 
 async function checkAwsAccess() {
   try {
