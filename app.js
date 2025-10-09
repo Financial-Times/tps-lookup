@@ -20,6 +20,9 @@ app.get('/__health', healthCheck.handle);
 
 // require routes and mount to app
 app.use(express.static(`${__dirname}/dist`));
+app.get('/favicon.ico', (req, res) => {
+  res.status(204).set('Cache-Control', 'private, max-age=86400').end();
+});
 require('./searchRoutes')(app);
 require('./indexRoutes')(app);
 
@@ -29,4 +32,3 @@ app.use(errorMiddleware);
 app.listen(config.PORT, () => {
   console.log(`App listening on port ${config.PORT}`);
 });
-
