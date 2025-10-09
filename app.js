@@ -5,7 +5,7 @@ const config = require('./config');
 const healthCheck = require('./healthCheck');
 const { notFound, errorMiddleware } = require('./errors');
 
-const app = new express();
+const app = express();
 
 app.use(compression());
 app.use(bodyParser.json());
@@ -29,4 +29,3 @@ app.use(errorMiddleware);
 app.listen(config.PORT, () => {
   console.log(`App listening on port ${config.PORT}`);
 });
-
