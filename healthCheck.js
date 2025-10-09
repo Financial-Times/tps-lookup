@@ -7,6 +7,7 @@ const logger = require('./helper/logger');
 let isDBUp = true;
 let dbUpLastUpdated;
 
+setTimeout(() => {
 const healthcheck = new HealthCheck({
   checks: [{
     type: 'ping-url',
@@ -21,6 +22,7 @@ const healthcheck = new HealthCheck({
     panicGuide: 'Please contact us on #crm-enablement-team',
   }]
 });
+}, 5000);
 
 function checkDBUp() {
   co(function* () {
