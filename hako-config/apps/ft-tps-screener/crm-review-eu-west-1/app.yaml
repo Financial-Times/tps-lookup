@@ -46,7 +46,7 @@ stacks:
       ContainerRegistryCredentialsSecretName: /hako/registry-credential/cloudsmith/crm-en-full-stack-read-only
       TaskCpu: 256
       TaskMemory: 512
-      TaskSchedule: "daily at 10:47"
+      TaskSchedule: "daily at 13:00"
       ContainerCommand: npm run update
       LogDestination: splunk
 
