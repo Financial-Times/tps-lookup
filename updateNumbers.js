@@ -1,5 +1,7 @@
+
 require("dotenv").load({ silent: true });
 const logger = require("./helper/logger.js");
+logger.info({ event: "Starting updateNumbers.js" });
 
 const fs = require("fs");
 const co = require("co");
@@ -8,6 +10,7 @@ const { spawnSync } = require("child_process");
 const { Client } = require("ssh2");
 const AWS = require("aws-sdk");
 const config = require("./config");
+const { log } = require("console");
 
 AWS.config.update({
   accessKeyId: config.awsAccessKeyId,
@@ -19,6 +22,9 @@ const s3 = new AWS.S3({});
 const docClient = new AWS.DynamoDB.DocumentClient();
 const dynamoDB = new AWS.DynamoDB();
 
+logger.info({ event: "AWS SDK configured" });
+
+logger.info({ event: "Checking access to S3 and DynamoDB" });
 async function checkAwsAccess() {
   try {
     const s3Result = await s3.listObjectsV2({ Bucket: "email-platform-ftcom-tps", MaxKeys: 1 }).promise();
@@ -46,6 +52,7 @@ function uploadToS3(fileStream, key) {
   };
   return s3.upload(params).promise();
 }
+logger.info({ event: "Upload to S3 function" });
 
 function addToDynamo(phone) {
   const params = {
@@ -56,6 +63,7 @@ function addToDynamo(phone) {
   };
   return docClient.put(params).promise();
 }
+logger.info({ event: "Add to Dynamo function" });
 
 function removeFromDynamo(phone) {
   const params = {
@@ -66,6 +74,7 @@ function removeFromDynamo(phone) {
   };
   return docClient.delete(params).promise();
 }
+logger.info({ event: "Remove from Dynamo function" });
 
 function getDeletions(oldFile, newFile) {
   const deletionCheck = spawnSync(
@@ -84,6 +93,7 @@ function getDeletions(oldFile, newFile) {
 
   return deletionCheck.stdout.split("\r\n");
 }
+logger.info({ event: "Get deletions function" });
 
 function getAdditions(oldFile, newFile) {
   const additionCheck = spawnSync(
@@ -102,6 +112,7 @@ function getAdditions(oldFile, newFile) {
 
   return additionCheck.stdout.split("\r\n");
 }
+logger.info({ event: "Get additions function" });
 
 function ftpToFS(moveFrom, moveTo, filename) {
   const conn = new Client();
@@ -115,7 +126,7 @@ function ftpToFS(moveFrom, moveTo, filename) {
 
   const newFile = moveTo.split("/tmp/")[1];
   const oldFile = newFile.replace("new", "original");
-
+  logger.info({ event: `Beginning FTP transfer of ${filename}` });
   conn
     .on("ready", () => {
       conn.sftp((err, sftp) => {
@@ -195,7 +206,7 @@ function ftpToFS(moveFrom, moveTo, filename) {
     })
     .connect(connSettings);
 }
-
+logger.info({ event: "FTP to FS function" });
 // Get file from S3, then from FTP
 const s3ParamsTPS = { Bucket: "email-platform-ftcom-tps", Key: "tps.txt" };
 const s3ParamsCTPS = { Bucket: "email-platform-ftcom-tps", Key: "ctps.txt" };
