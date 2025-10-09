@@ -2,6 +2,7 @@ const co = require('co');
 const { dynamoDb } = require('./db');
 const config = require('./config');
 const HealthCheck = require('@financial-times/health-check');
+const logger = require('./helper/logger');
 
 let isDBUp = true;
 let dbUpLastUpdated;
@@ -30,7 +31,11 @@ function checkDBUp() {
       isDBUp = true;
     }
   }).catch((err) => {
-    console.log(err);
+    logger.error({
+      message: 'Error checking DynamoDB status',
+      event: 'DYNAMODB_STATUS_CHECK_FAILED',
+      error: err
+    });
     isDBUp = false;
   });
 }

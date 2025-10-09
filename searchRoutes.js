@@ -5,6 +5,7 @@ const { docClient } = require('./db');
 const { ensureHttps } = require('./ensureHttps');
 const authenticate = require('./authenticate');
 const { okta, sessionOptions } = require('./okta.js');
+const logger = require('./helper/logger');
 
 const router = express.Router();
 router.use(sessionOptions);
@@ -24,6 +25,7 @@ module.exports = (app) => {
   router.post('/', (req, res, next) => {
     // check body with regex for british phone number
     if (!Array.isArray(req.body)) {
+      logger.error('Invalid request body', { body: req.body });
       return next({ message: 'Must provide array of numbers', status: 400 })
     }
     co(function* () {
@@ -72,7 +74,7 @@ module.exports = (app) => {
       res.json({ results });
       
     }).catch((err) => {
-      console.log(err);
+      logger.error(err);
       next(err);
     });
   });

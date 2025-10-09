@@ -1,8 +1,5 @@
-require('dotenv').load({ silent: true });
-
 const express = require('express');
 const bodyParser = require('body-parser');
-const path = require('path');
 const compression = require('compression');
 const config = require('./config');
 const healthCheck = require('./healthCheck');
@@ -12,7 +9,6 @@ const app = new express();
 
 app.use(compression());
 app.use(bodyParser.json());
-
 app.post(`/logout`, (req, res) => {
   req.session = null;
   return res.redirect('/');
