@@ -1,4 +1,4 @@
-const logger = require('./helper/logger');
+const logger = require('../utils/logger');
 
 function notFound(req, res, next) {
   const err = new Error('Page Not Found');
@@ -10,17 +10,17 @@ function notFound(req, res, next) {
 function errorMiddleware(err, req, res, next) {
   res.status(err.status || err.statusCode || 500);
 
-    const errorContext = {
-      message: err.message,
-      stack: err.stack,
-      request: {
-        method: req.method,
-        url: req.originalUrl,
-        body: req.body,
-        headers: {
-          'user-agent': req.headers['user-agent']
-        },
+  const errorContext = {
+    message: err.message,
+    stack: err.stack,
+    request: {
+      method: req.method,
+      url: req.originalUrl,
+      body: req.body,
+      headers: {
+        'user-agent': req.headers['user-agent']
       },
+    },
   };
   logger.error('Express error', errorContext);
 

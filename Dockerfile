@@ -23,5 +23,5 @@ RUN npm ci --omit=dev --ignore-scripts && npm cache clean --force
 # Copy the rest of the app source code
 COPY --chown=node:node . .
 
-# Set the default command to run your ETL script
-CMD ["node", "app.js"]
+# Set the default command to run the server
+CMD ["node", "src/server.js"]

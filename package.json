@@ -2,17 +2,17 @@
   "name": "tps-lookup",
   "version": "1.0.0",
   "description": "Lookup TPS numbers",
-  "main": "app.js",
+  "main": "src/server.js",
   "scripts": {
     "compileAll": "./bin/main.sh compileAll",
     "postinstall": "npm run compileAll",
-    "start": "node app.js",
-    "start:dev": "doppler run -p ft-tps-screener -c dev -- node app.js",
+    "start": "node src/server.js",
+    "start:dev": "doppler run -p ft-tps-screener -c dev -- node src/server.js",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "update-numbers": "doppler run -p ft-tps-screener -c dev -- node updateNumbers.js",
-    "update": "node updateNumbers.js"
+    "update-numbers": "doppler run -p ft-tps-screener -c dev -- node scripts/updateNumbers.js",
+    "update": "node scripts/updateNumbers.js"
   },
   "author": "Andrew Snead",
   "license": "ISC",

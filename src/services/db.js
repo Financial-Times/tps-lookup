@@ -1,5 +1,5 @@
 const AWS = require('aws-sdk');
-const config = require('./config');
+const config = require('../config');
 
 AWS.config.update({
   accessKeyId: config.awsAccessKeyId,
@@ -14,4 +14,3 @@ module.exports = {
   docClient,
   dynamoDb
 };
-

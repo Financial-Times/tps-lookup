@@ -1,11 +1,11 @@
 const express = require('express');
 const co = require('co');
-const config = require('./config');
-const { docClient } = require('./db');
-const { ensureHttps } = require('./ensureHttps');
-const authenticate = require('./authenticate');
-const { okta, sessionOptions } = require('./okta.js');
-const logger = require('./helper/logger');
+const config = require('../config');
+const { docClient } = require('../services/db');
+const { ensureHttps } = require('../middleware/ensureHttps');
+const authenticate = require('../middleware/authenticate');
+const { okta, sessionOptions } = require('../services/okta');
+const logger = require('../utils/logger');
 
 const router = express.Router();
 router.use(sessionOptions);
@@ -26,7 +26,7 @@ module.exports = (app) => {
     // check body with regex for british phone number
     if (!Array.isArray(req.body)) {
       logger.error('Invalid request body', { body: req.body });
-      return next({ message: 'Must provide array of numbers', status: 400 })
+      return next({ message: 'Must provide array of numbers', status: 400 });
     }
     co(function* () {
       const results = [];
@@ -81,4 +81,3 @@ module.exports = (app) => {
   
   app.use('/search', router);
 };
-

@@ -7,7 +7,7 @@ const fs = require('fs');
 const AWS = require('aws-sdk');
 const es = require('event-stream');
 const Stream = require('stream');
-const config = require('./config');
+const config = require('../src/config');
 
 AWS.config.update({
   accessKeyId: config.awsAccessKeyId,

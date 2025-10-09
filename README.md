@@ -24,7 +24,7 @@ Subsequently, an FT service can leverage the TPS Screener to intelligently refin
 
 **To spin up the local instance of the production app, run the commands below:**
 
-- Replace the start command with `"start:prod-from-local": "doppler run -p ft-tps-screener -c prod -- node app.js"` in package.json.
+- Replace the start command with `"start:prod-from-local": "doppler run -p ft-tps-screener -c prod -- node src/server.js"` in package.json.
 - **_Note: Ensure the start command is reverted to its original state before merge into prod._**
 
 Enter a UK number in the browser's search bar; if it's registered, it's important to refrain from contacting for sales and marketing purposes.
@@ -54,7 +54,7 @@ AWS Console – EventBridge Schedules
 Filter for the app name to view or confirm scheduled job times.
 
 ### Scheduled Task Timing
-The only scheduled task in ft-tps-screener is to run `updateNumber.js` daily at 11pm UTC.
+The only scheduled task in ft-tps-screener is to run `scripts/updateNumbers.js` daily at 11pm UTC.
 
 This is handled in AWS using EventBridge Scheduler, configured via the app.yaml in the scheduled-task stack.
 
@@ -99,9 +99,9 @@ Once this is resolved/we have a workaround, we’ll use PR numbers in the app na
 
 ### Logging
 
-Logging for the `updateNumber.js` file is sent to Splunk from AWS. Functions in this file update the numbers stored in the `email-platform-ftcom-tps` S3 bucket after checking [TPS](https://www.tpsonline.org.uk/) as necessary. Updates to numbers found are written to the `ft-email_platform_tps_lookup` DynamoDB table.
+Logging for the `scripts/updateNumbers.js` file is sent to Splunk from AWS. Functions in this file update the numbers stored in the `email-platform-ftcom-tps` S3 bucket after checking [TPS](https://www.tpsonline.org.uk/) as necessary. Updates to numbers found are written to the `ft-email_platform_tps_lookup` DynamoDB table.
 
-`updateNumber.js` runs everyday at 11pm as specified in the scheduler described above.
+`scripts/updateNumbers.js` runs everyday at 11pm as specified in the scheduler described above.
 
 See the Splunk query below:
 

@@ -1,9 +1,12 @@
+const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const compression = require('compression');
 const config = require('./config');
-const healthCheck = require('./healthCheck');
-const { notFound, errorMiddleware } = require('./errors');
+const healthCheck = require('./health');
+const { notFound, errorMiddleware } = require('./middleware/errors');
+const registerSearchRoutes = require('./routes/search');
+const registerIndexRoutes = require('./routes/index');
 
 const app = express();
 
@@ -19,9 +22,9 @@ app.get('/__gtg', (req, res) => {
 app.get('/__health', healthCheck.handle);
 
 // require routes and mount to app
-app.use(express.static(`${__dirname}/dist`));
-require('./searchRoutes')(app);
-require('./indexRoutes')(app);
+app.use(express.static(path.join(__dirname, '..', 'dist')));
+registerSearchRoutes(app);
+registerIndexRoutes(app);
 
 app.use(notFound);
 app.use(errorMiddleware);

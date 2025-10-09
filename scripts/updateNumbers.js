@@ -1,13 +1,13 @@
-require("dotenv").load({ silent: true });
-const logger = require("./helper/logger.js");
+require('dotenv').load({ silent: true });
+const logger = require('../src/utils/logger');
 
 const fs = require("fs");
 const co = require("co");
 const wait = require("co-wait");
 const { spawnSync } = require("child_process");
 const { Client } = require("ssh2");
-const AWS = require("aws-sdk");
-const config = require("./config");
+const AWS = require('aws-sdk');
+const config = require('../src/config');
 
 AWS.config.update({
   accessKeyId: config.awsAccessKeyId,

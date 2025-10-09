@@ -1,8 +1,8 @@
 const co = require('co');
-const { dynamoDb } = require('./db');
-const config = require('./config');
+const { dynamoDb } = require('../services/db');
+const config = require('../config');
 const HealthCheck = require('@financial-times/health-check');
-const logger = require('./helper/logger');
+const logger = require('../utils/logger');
 
 let isDBUp = true;
 let dbUpLastUpdated;
