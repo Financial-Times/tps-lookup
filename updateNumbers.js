@@ -28,7 +28,7 @@ async function checkAwsAccess() {
 
   } catch (err) {
     logger.error({ event: "DynamoDB table access check failed", error: err.toString() });
-    process.exit(1);
+    // process.exit(1);
   }
 }
 
@@ -171,7 +171,7 @@ function ftpToFS(moveFrom, moveTo, filename) {
             yield uploadToS3(fs.createReadStream(moveTo), filename);
             if (++done === 2) {
               logger.info({ event: "Done!", type: "COMPLETE" });
-              process.exit(0);
+              // process.exit(0);
             }
           }).catch((err) => {
             logger.error({
@@ -180,7 +180,7 @@ function ftpToFS(moveFrom, moveTo, filename) {
               type: "FAILED",
               error: err.toString(),
             });
-            process.exit(1);
+            // process.exit(1);
           });
         });
       });
@@ -191,7 +191,7 @@ function ftpToFS(moveFrom, moveTo, filename) {
         type: "FAILED",
         error: err.toString(),
       });
-      process.exit(1);
+      // process.exit(1);
     })
     .connect(connSettings);
 }
