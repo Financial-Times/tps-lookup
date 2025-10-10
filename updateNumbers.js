@@ -1,6 +1,6 @@
 require("dotenv").load({ silent: true });
 const logger = require("./helper/logger.js");
-
+logger.info({ event: "Starting updateNumbers.js" });
 const fs = require("fs");
 const co = require("co");
 const wait = require("co-wait");
