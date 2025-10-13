@@ -50,9 +50,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (resJson.results[0].canCall) {
           resText = 'Good news! This number is not on the TPS/CTPS list.';
           if (tickImg) tickImg.classList.remove('img-hidden');
+          if (crossImg) crossImg.classList.add('img-hidden');
         } else {
           resText = 'This number IS ON the TPS/CTPS list. Please seek guidance before calling.';
           if (crossImg) crossImg.classList.remove('img-hidden');
+          if (tickImg) tickImg.classList.add('img-hidden');
         }
         if (resultSection) resultSection.innerHTML = resText;
       })
