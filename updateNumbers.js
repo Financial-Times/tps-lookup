@@ -27,7 +27,7 @@ async function checkAwsAccess() {
     logger.info({ event: "DynamoDB table access check successful", table: result.Table.TableName });
 
   } catch (err) {
-    logger.error({ event: "DynamoDB table access check failed", error: err.toString() });
+    logger.error({ event: "DynamoDB table access check failed", error: err });
     process.exit(1);
   }
 }
@@ -120,6 +120,11 @@ function ftpToFS(moveFrom, moveTo, filename) {
     .on("ready", () => {
       conn.sftp((err, sftp) => {
         if (err) {
+          logger.error({
+            event: "SFTP connection error",
+            type: "FAILED",
+            error: err,
+          });
           throw err;
         }
         logger.info("Retrieving new file from FTP");
@@ -144,7 +149,7 @@ function ftpToFS(moveFrom, moveTo, filename) {
             logger.error({
               event: "List appears to be incomplete - halting sync",
               type: "FAILED",
-              error: err.toString(),
+              error: err,
             });
             throw new Error("List appears to be incomplete - halting sync");
           }
@@ -178,7 +183,7 @@ function ftpToFS(moveFrom, moveTo, filename) {
               event:
                 "Error while deleting or adding numbers and uploading to Dynamodb",
               type: "FAILED",
-              error: err.toString(),
+              error: err,
             });
             process.exit(1);
           });
@@ -189,7 +194,7 @@ function ftpToFS(moveFrom, moveTo, filename) {
       logger.error({
         event: "Connection error",
         type: "FAILED",
-        error: err.toString(),
+        error: err,
       });
       process.exit(1);
     })
@@ -219,7 +224,7 @@ s3.getObject(s3ParamsCTPS)
     logger.error({
       event: "Failed to download old CTPS files from s3",
       type: "FAILED",
-      error: err.toString(),
+      error: err,
     });
   })
   .pipe(oldCTPSFile);
@@ -230,7 +235,7 @@ s3.getObject(s3ParamsTPS)
     logger.error({
       event: "Failed to download old TPS files from s3",
       type: "FAILED",
-      error: err.toString(),
+      error: err,
     });
   })
   .pipe(oldTPSFile);
