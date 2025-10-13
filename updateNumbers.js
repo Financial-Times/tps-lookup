@@ -124,7 +124,7 @@ function ftpToFS(moveFrom, moveTo, filename) {
             event: "SFTP connection error",
             type: "FAILED",
             error: err,
-          })
+          });
           throw err;
         }
         logger.info("Retrieving new file from FTP");
