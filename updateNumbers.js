@@ -78,7 +78,7 @@ function getDeletions(oldFile, newFile) {
       comm -23 "$oldS" "$newS"
       rm -f "$oldS" "$newS"
     `],
-    { cwd: '/tmp', encoding: 'utf-8', env: { ...process.env, oldFile, newFile } }
+    { cwd: '/tmp', encoding: 'utf-8'}
   );
 
   if (status !== 0 || error) {
