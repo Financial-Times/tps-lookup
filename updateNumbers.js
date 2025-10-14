@@ -1,10 +1,9 @@
 require("dotenv").load({ silent: true });
 const logger = require("./helper/logger.js");
-
+const { spawn } = require('child_process');
 const fs = require("fs");
 const co = require("co");
 const wait = require("co-wait");
-const { spawnSync } = require("child_process");
 const SHELL = fs.existsSync('/bin/bash') ? '/bin/bash' : '/bin/sh';
 const { Client } = require("ssh2");
 const AWS = require("aws-sdk");
@@ -68,61 +67,81 @@ function removeFromDynamo(phone) {
   return docClient.delete(params).promise();
 }
 
+
+
 function getDeletions(oldFile, newFile) {
-  const { stdout, stderr, status, error } = spawnSync(
-    SHELL,
-    ['-c', `
-      set -euo pipefail
-      oldS=/tmp/.old.$$; newS=/tmp/.new.$$
-      sort -n -- "${oldFile}" > "$oldS"
-      sort -n -- "${newFile}" > "$newS"
-      comm -23 "$oldS" "$newS"
-      rm -f "$oldS" "$newS"
-    `],
-    { cwd: '/tmp', encoding: 'utf-8'}
-  );
+  return new Promise((resolve, reject) => {
+    const proc = spawn(SHELL, [
+      '-c',
+      `
+        set -eu
+        oldS=$(mktemp /tmp/old.XXXXXX); newS=$(mktemp /tmp/new.XXXXXX)
+        sort -n -- "${oldFile}" > "$oldS"
+        sort -n -- "${newFile}" > "$newS"
+        comm -23 "$oldS" "$newS"
+        rm -f "$oldS" "$newS"
+      `
+    ], { cwd: '/tmp' });
 
-  if (status !== 0 || error) {
-    logger.error({
-      event: 'GET_DELETIONS',
-      message: 'getDeletions failed',
-      status,
-      stderr,
-      error
+    let output = '';
+    let error = '';
+
+    proc.stdout.on('data', chunk => { output += chunk.toString(); });
+    proc.stderr.on('data', chunk => { error += chunk.toString(); });
+
+    proc.on('close', code => {
+      if (code !== 0) {
+        logger.error({
+          event: 'GET_DELETIONS_FAILED',
+          stderr: error,
+          code
+        });
+
+        reject(new Error('getDeletions shell command failed'));
+      } else {
+        resolve(output.split(/\r?\n/).filter(Boolean));
+      }
     });
-    throw new Error('getDeletions shell command failed');
-  }
-
-  return String(stdout || '').split(/\r?\n/).filter(Boolean);
+  });
 }
 
 function getAdditions(oldFile, newFile) {
-  const { stdout, stderr, status, error } = spawnSync(
-    SHELL,
-    ['-c', `
-      set -euo pipefail
-      oldS=/tmp/.old.$$; newS=/tmp/.new.$$
-      sort -n -- "${oldFile}" > "$oldS"
-      sort -n -- "${newFile}" > "$newS"
-      comm -13 "$oldS" "$newS"
-      rm -f "$oldS" "$newS"
-    `],
-    { cwd: '/tmp', encoding: 'utf-8' }
-  );
+  return new Promise((resolve, reject) => {
+    const proc = spawn(
+      SHELL,
+      ['-c', `
+        set -eu
+        oldS=$(mktemp /tmp/old.XXXXXX); newS=$(mktemp /tmp/new.XXXXXX)
+        sort -n -- "${oldFile}" > "$oldS"
+        sort -n -- "${newFile}" > "$newS"
+        comm -13 "$oldS" "$newS"
+        rm -f "$oldS" "$newS"
+      `],
+      { cwd: '/tmp' }
+    );
 
-  if (status !== 0 || error) {
-    logger.error({
-      event: 'GET_ADDITIONS',
-      message: 'getAdditions failed',
-      status,
-      stderr,
-      error
+    let out = '';
+    let err = '';
+
+    proc.stdout.on('data', c => { out += c.toString(); });
+    proc.stderr.on('data', c => { err += c.toString(); });
+
+    proc.on('close', code => {
+      if (code !== 0) {
+        logger.error({
+          event: 'GET_ADDITIONS_FAILED',
+          stderr: err,
+          code
+        });
+        
+        reject(new Error('getAdditions shell command failed'));
+      } else {
+        resolve(out.split(/\r?\n/).filter(Boolean));
+      }
     });
-    throw new Error('getAdditions shell command failed');
-  }
-
-  return String(stdout || '').split(/\r?\n/).filter(Boolean);
+  });
 }
+
 
 
 function ftpToFS(moveFrom, moveTo, filename) {
