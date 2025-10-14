@@ -1,10 +1,10 @@
 require("dotenv").load({ silent: true });
 const logger = require("./helper/logger.js");
-
+const { spawn } = require('child_process');
 const fs = require("fs");
 const co = require("co");
 const wait = require("co-wait");
-const { spawnSync } = require("child_process");
+const SHELL = fs.existsSync('/bin/bash') ? '/bin/bash' : '/bin/sh';
 const { Client } = require("ssh2");
 const AWS = require("aws-sdk");
 const config = require("./config");
@@ -67,41 +67,82 @@ function removeFromDynamo(phone) {
   return docClient.delete(params).promise();
 }
 
-function getDeletions(oldFile, newFile) {
-  const deletionCheck = spawnSync(
-    "/bin/bash",
-    [
-      "-c",
-      `
-  comm -23 <(sort -n ${oldFile}) <(sort -n ${newFile})
-    `,
-    ],
-    {
-      cwd: "/tmp",
-      encoding: "utf-8",
-    }
-  );
 
-  return deletionCheck.stdout.split("\r\n");
+
+function getDeletions(oldFile, newFile) {
+  return new Promise((resolve, reject) => {
+    const proc = spawn(SHELL, [
+      '-c',
+      `
+        set -eu
+        oldS=$(mktemp /tmp/old.XXXXXX); newS=$(mktemp /tmp/new.XXXXXX)
+        sort -n -- "${oldFile}" > "$oldS"
+        sort -n -- "${newFile}" > "$newS"
+        comm -23 "$oldS" "$newS"
+        rm -f "$oldS" "$newS"
+      `
+    ], { cwd: '/tmp' });
+
+    let output = '';
+    let error = '';
+
+    proc.stdout.on('data', chunk => { output += chunk.toString(); });
+    proc.stderr.on('data', chunk => { error += chunk.toString(); });
+
+    proc.on('close', code => {
+      if (code !== 0) {
+        logger.error({
+          event: 'GET_DELETIONS_FAILED',
+          stderr: error,
+          code
+        });
+
+        reject(new Error('getDeletions shell command failed'));
+      } else {
+        resolve(output.split(/\r?\n/).filter(Boolean));
+      }
+    });
+  });
 }
 
 function getAdditions(oldFile, newFile) {
-  const additionCheck = spawnSync(
-    "/bin/bash",
-    [
-      "-c",
-      `
-  comm -13 <(sort -n ${oldFile}) <(sort -n ${newFile})
-    `,
-    ],
-    {
-      cwd: "/tmp",
-      encoding: "utf-8",
-    }
-  );
+  return new Promise((resolve, reject) => {
+    const proc = spawn(
+      SHELL,
+      ['-c', `
+        set -eu
+        oldS=$(mktemp /tmp/old.XXXXXX); newS=$(mktemp /tmp/new.XXXXXX)
+        sort -n -- "${oldFile}" > "$oldS"
+        sort -n -- "${newFile}" > "$newS"
+        comm -13 "$oldS" "$newS"
+        rm -f "$oldS" "$newS"
+      `],
+      { cwd: '/tmp' }
+    );
 
-  return additionCheck.stdout.split("\r\n");
+    let out = '';
+    let err = '';
+
+    proc.stdout.on('data', c => { out += c.toString(); });
+    proc.stderr.on('data', c => { err += c.toString(); });
+
+    proc.on('close', code => {
+      if (code !== 0) {
+        logger.error({
+          event: 'GET_ADDITIONS_FAILED',
+          stderr: err,
+          code
+        });
+
+        reject(new Error('getAdditions shell command failed'));
+      } else {
+        resolve(out.split(/\r?\n/).filter(Boolean));
+      }
+    });
+  });
 }
+
+
 
 function ftpToFS(moveFrom, moveTo, filename) {
   const conn = new Client();
@@ -128,7 +169,7 @@ function ftpToFS(moveFrom, moveTo, filename) {
           throw err;
         }
         logger.info("Retrieving new file from FTP");
-        sftp.fastGet(moveFrom, moveTo, {}, (downloadErr) => {
+        sftp.fastGet(moveFrom, moveTo, {}, async (downloadErr) => {
           if (downloadErr) {
             logger.error({ event: "Download error", error: downloadErr });
             throw downloadErr;
@@ -138,36 +179,50 @@ function ftpToFS(moveFrom, moveTo, filename) {
             event: "Finding deletions and additions since last update",
             type: "START",
           });
-          const deletions = getDeletions(oldFile, newFile).filter((d) =>
-            d.trim()
-          );
-          const additions = getAdditions(oldFile, newFile).filter((a) =>
-            a.trim()
-          );
+          let cleanDeletions = [];
+          let cleanAdditions = [];
+          try {
+            const [deletions, additions] = await Promise.all([
+              getDeletions(oldFile, newFile),
+              getAdditions(oldFile, newFile)
+            ]);
 
-          if (deletions.length > 1000000) {
+            cleanDeletions = deletions.filter((d) => d.trim());
+            cleanAdditions = additions.filter((a) => a.trim());
+          } catch (err) {
+            logger.error({
+              event: "Error finding deletions and additions", 
+              type: "FAILED",
+              error: err 
+            });
+            process.exit(1);
+          }
+          if (cleanDeletions.length > 1000000) {
+            const e = new Error("List appears to be incomplete - halting sync");
+            
             logger.error({
               event: "List appears to be incomplete - halting sync",
               type: "FAILED",
-              error: err,
+              error: e
             });
-            throw new Error("List appears to be incomplete - halting sync");
+            try { conn.end(); } catch {}
+            throw e;
           }
 
           co(function* () {
             logger.info({
-              event: `Deleting ${deletions.length} records from Dynamo DB`,
+              event: `Deleting ${cleanDeletions.length} records from Dynamo DB`,
               type: "START",
             });
-            for (const del of deletions) {
+            for (const del of cleanDeletions) {
               yield removeFromDynamo(del);
               yield wait(100);
             }
             logger.info({
-              event: `Adding ${additions.length} records`,
+              event: `Adding ${cleanAdditions.length} records`,
               type: "START",
             });
-            for (const add of additions) {
+            for (const add of cleanAdditions) {
               yield addToDynamo(add);
               yield wait(100);
             }
@@ -185,6 +240,7 @@ function ftpToFS(moveFrom, moveTo, filename) {
               type: "FAILED",
               error: err,
             });
+            try { conn.end(); } catch {}
             process.exit(1);
           });
         });
