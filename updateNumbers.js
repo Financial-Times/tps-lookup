@@ -5,6 +5,7 @@ const fs = require("fs");
 const co = require("co");
 const wait = require("co-wait");
 const { spawnSync } = require("child_process");
+const SHELL = fs.existsSync('/bin/bash') ? '/bin/bash' : '/bin/sh';
 const { Client } = require("ssh2");
 const AWS = require("aws-sdk");
 const config = require("./config");
@@ -69,7 +70,7 @@ function removeFromDynamo(phone) {
 
 function getDeletions(oldFile, newFile) {
   const { stdout, stderr, status, error } = spawnSync(
-    '/bin/bash',
+    SHELL,
     ['-c', `
       set -euo pipefail
       oldS=/tmp/.old.$$; newS=/tmp/.new.$$
@@ -97,7 +98,7 @@ function getDeletions(oldFile, newFile) {
 
 function getAdditions(oldFile, newFile) {
   const { stdout, stderr, status, error } = spawnSync(
-    '/bin/bash',
+    SHELL,
     ['-c', `
       set -euo pipefail
       oldS=/tmp/.old.$$; newS=/tmp/.new.$$
