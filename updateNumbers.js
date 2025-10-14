@@ -68,40 +68,61 @@ function removeFromDynamo(phone) {
 }
 
 function getDeletions(oldFile, newFile) {
-  const deletionCheck = spawnSync(
-    "/bin/bash",
-    [
-      "-c",
-      `
-  comm -23 <(sort -n ${oldFile}) <(sort -n ${newFile})
-    `,
-    ],
-    {
-      cwd: "/tmp",
-      encoding: "utf-8",
-    }
+  const { stdout, stderr, status, error } = spawnSync(
+    '/bin/bash',
+    ['-c', `
+      set -euo pipefail
+      oldS=/tmp/.old.$$; newS=/tmp/.new.$$
+      sort -n -- "${oldFile}" > "$oldS"
+      sort -n -- "${newFile}" > "$newS"
+      comm -23 "$oldS" "$newS"
+      rm -f "$oldS" "$newS"
+    `],
+    { cwd: '/tmp', encoding: 'utf-8', env: { ...process.env, oldFile, newFile } }
   );
 
-  return deletionCheck.stdout.split("\r\n");
+  if (status !== 0 || error) {
+    logger.error({
+      event: 'GET_DELETIONS',
+      message: 'getDeletions failed',
+      status,
+      stderr,
+      error
+    });
+    throw new Error('getDeletions shell command failed');
+  }
+
+  return String(stdout || '').split(/\r?\n/).filter(Boolean);
 }
 
 function getAdditions(oldFile, newFile) {
-  const additionCheck = spawnSync(
-    "/bin/bash",
-    [
-      "-c",
-      `
-  comm -13 <(sort -n ${oldFile}) <(sort -n ${newFile})
-    `,
-    ],
-    {
-      cwd: "/tmp",
-      encoding: "utf-8",
-    }
+  const { stdout, stderr, status, error } = spawnSync(
+    '/bin/bash',
+    ['-c', `
+      set -euo pipefail
+      oldS=/tmp/.old.$$; newS=/tmp/.new.$$
+      sort -n -- "${oldFile}" > "$oldS"
+      sort -n -- "${newFile}" > "$newS"
+      comm -13 "$oldS" "$newS"
+      rm -f "$oldS" "$newS"
+    `],
+    { cwd: '/tmp', encoding: 'utf-8' }
   );
 
-  return additionCheck.stdout.split("\r\n");
+  if (status !== 0 || error) {
+    logger.error({
+      event: 'GET_ADDITIONS',
+      message: 'getAdditions failed',
+      status,
+      stderr,
+      error
+    });
+    throw new Error('getAdditions shell command failed');
+  }
+
+  return String(stdout || '').split(/\r?\n/).filter(Boolean);
 }
+
 
 function ftpToFS(moveFrom, moveTo, filename) {
   const conn = new Client();
