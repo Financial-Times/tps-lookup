@@ -133,7 +133,7 @@ function getAdditions(oldFile, newFile) {
           stderr: err,
           code
         });
-        
+
         reject(new Error('getAdditions shell command failed'));
       } else {
         resolve(out.split(/\r?\n/).filter(Boolean));
@@ -169,7 +169,7 @@ function ftpToFS(moveFrom, moveTo, filename) {
           throw err;
         }
         logger.info("Retrieving new file from FTP");
-        sftp.fastGet(moveFrom, moveTo, {}, (downloadErr) => {
+        sftp.fastGet(moveFrom, moveTo, {}, async (downloadErr) => {
           if (downloadErr) {
             logger.error({ event: "Download error", error: downloadErr });
             throw downloadErr;
@@ -179,36 +179,50 @@ function ftpToFS(moveFrom, moveTo, filename) {
             event: "Finding deletions and additions since last update",
             type: "START",
           });
-          const deletions = getDeletions(oldFile, newFile).filter((d) =>
-            d.trim()
-          );
-          const additions = getAdditions(oldFile, newFile).filter((a) =>
-            a.trim()
-          );
+          let cleanDeletions = [];
+          let cleanAdditions = [];
+          try {
+            const [deletions, additions] = await Promise.all([
+              getDeletions(oldFile, newFile),
+              getAdditions(oldFile, newFile)
+            ]);
 
-          if (deletions.length > 1000000) {
+            cleanDeletions = deletions.filter((d) => d.trim());
+            cleanAdditions = additions.filter((a) => a.trim());
+          } catch (err) {
+            logger.error({
+              event: "Error finding deletions and additions", 
+              type: "FAILED",
+              error: err 
+            });
+            process.exit(1);
+          }
+          if (cleanDeletions.length > 1000000) {
+            const e = new Error("List appears to be incomplete - halting sync");
+            
             logger.error({
               event: "List appears to be incomplete - halting sync",
               type: "FAILED",
-              error: err,
+              error: e
             });
-            throw new Error("List appears to be incomplete - halting sync");
+            try { conn.end(); } catch {}
+            throw e;
           }
 
           co(function* () {
             logger.info({
-              event: `Deleting ${deletions.length} records from Dynamo DB`,
+              event: `Deleting ${cleanDeletions.length} records from Dynamo DB`,
               type: "START",
             });
-            for (const del of deletions) {
+            for (const del of cleanDeletions) {
               yield removeFromDynamo(del);
               yield wait(100);
             }
             logger.info({
-              event: `Adding ${additions.length} records`,
+              event: `Adding ${cleanAdditions.length} records`,
               type: "START",
             });
-            for (const add of additions) {
+            for (const add of cleanAdditions) {
               yield addToDynamo(add);
               yield wait(100);
             }
@@ -226,6 +240,7 @@ function ftpToFS(moveFrom, moveTo, filename) {
               type: "FAILED",
               error: err,
             });
+            try { conn.end(); } catch {}
             process.exit(1);
           });
         });
