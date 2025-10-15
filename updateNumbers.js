@@ -53,20 +53,16 @@ async function addToDynamo(phone) {
     const params = {
       TableName: config.tableName,
       Item: {
-        phone,
-        updatedAt: new Date().toISOString(),
+        phone
       },
     };
-
-    logger.info({ event: 'Adding to Dynamo', phone });
-
     const response = await docClient.put(params).promise();
-
-    logger.info({ event: 'Added to Dynamo', response, phone });
+    
+    logger.info({ event: 'Added to Dynamo' });
 
     return response;
   } catch (err) {
-    logger.error({ event: 'Error adding to Dynamo', error: err, phone });
+    logger.error({ event: 'Error adding to Dynamo', error: err });
   }
 }
 
@@ -78,12 +74,12 @@ async function removeFromDynamo(phone) {
       phone,
     },
   };
-  logger.info({ event: 'Removing from Dynamo', phone });
+  logger.info({ event: 'Removing from Dynamo' });
   const response = await docClient.delete(params).promise();
-  logger.info({ event: 'Removed from Dynamo', response, phone });
+  logger.info({ event: 'Removed from Dynamo' });
   return response;
   } catch (err) {
-    logger.error({ event: 'Error removing from Dynamo', error: err, phone });
+    logger.error({ event: 'Error removing from Dynamo', error: err });
   }
 }
 
@@ -205,8 +201,6 @@ function ftpToFS(moveFrom, moveTo, filename) {
             logger.info({ event: "Done!", type: "COMPLETE" });
             process.exit(0);
           }
-          logger.info({ event: "All done!", type: "COMPLETE" });
-          throw new Error('Stopping here for safety - please remove this line to continue the process');
           if (deletions.length > 1000000) {
             logger.error({
               event: "List appears to be incomplete - halting sync",
