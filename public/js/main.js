@@ -24,7 +24,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // form submission
   if (searchForm) {
+    console.log('Search form found');
     searchForm.addEventListener('submit', (e) => {
+      console.log('Form submitted');
+      
       e.preventDefault();
 
       clearMessages();
@@ -40,6 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       fetch('/search', options)
       .then((res) => {
+        console.log('Response received');
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);
         }
@@ -64,6 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (searchButton) {
+    console.log('Search button found');
     searchButton.addEventListener('click', () => {
       clearMessages();
     });
