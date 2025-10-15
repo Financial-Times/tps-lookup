@@ -46,6 +46,23 @@ stacks:
       TaskCpuArchitecture: ARM64
       ContainerRegistry: docker.packages.ft.com/ip-container-registry
       ContainerRegistryCredentialsSecretName: /hako/registry-credential/cloudsmith/crm-en-full-stack-read-only
+      TaskPolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: "AccessDynamoDBTables"
+            Effect: "Allow"
+            Action:
+              - "dynamodb:GetItem"
+              - "dynamodb:PutItem"
+              - "dynamodb:UpdateItem"
+              - "dynamodb:Query"
+              - "dynamodb:Scan"
+              - "dynamodb:ListTables"
+              - "dynamodb:DeleteItem"
+              - "dynamodb:DescribeTable"
+            Resource:
+              - arn:aws:dynamodb:eu-west-1:027104099916:table/test-table
+              
       TaskCpu: 2048
       TaskMemory: 4096
       TaskSchedule: "daily at 13:30"
