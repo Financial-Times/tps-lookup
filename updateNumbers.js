@@ -38,7 +38,7 @@ checkAwsAccess().then(() => {
 
 let done = 0;
 
-function uploadToS3(fileStream, key) {
+async function uploadToS3(fileStream, key) {
   const params = {
     Bucket: "email-platform-ftcom-tps",
     Key: key,
@@ -47,27 +47,47 @@ function uploadToS3(fileStream, key) {
   return s3.upload(params).promise();
 }
 
-function addToDynamo(phone) {
-  const params = {
-    TableName: config.tableName,
-    Item: {
-      phone,
-    },
-  };
-  return docClient.put(params).promise();
+async function addToDynamo(phone) {
+
+  try {
+    const params = {
+      TableName: config.tableName,
+      Item: {
+        phone,
+        updatedAt: new Date().toISOString(),
+      },
+    };
+
+    logger.info({ event: 'Adding to Dynamo', phone });
+
+    const response = await docClient.put(params).promise();
+
+    logger.info({ event: 'Added to Dynamo', response, phone });
+
+    return response;
+  } catch (err) {
+    logger.error({ event: 'Error adding to Dynamo', error: err, phone });
+  }
 }
 
-function removeFromDynamo(phone) {
+async function removeFromDynamo(phone) {
+  try {
   const params = {
     TableName: config.tableName,
     Key: {
       phone,
     },
   };
-  return docClient.delete(params).promise();
+  logger.info({ event: 'Removing from Dynamo', phone });
+  const response = await docClient.delete(params).promise();
+  logger.info({ event: 'Removed from Dynamo', response, phone });
+  return response;
+  } catch (err) {
+    logger.error({ event: 'Error removing from Dynamo', error: err, phone });
+  }
 }
 
-function getDeletions(oldFile, newFile) {
+async function getDeletions(oldFile, newFile) {
   const deletionCheck = spawnSync(
     "/bin/bash",
     [
@@ -85,7 +105,7 @@ function getDeletions(oldFile, newFile) {
   return deletionCheck.stdout.split("\r\n");
 }
 
-function getAdditions(oldFile, newFile) {
+async function getAdditions(oldFile, newFile) {
   const additionCheck = spawnSync(
     "/bin/bash",
     [
@@ -128,7 +148,7 @@ function ftpToFS(moveFrom, moveTo, filename) {
           throw err;
         }
         logger.info("Retrieving new file from FTP");
-        sftp.fastGet(moveFrom, moveTo, {}, (downloadErr) => {
+        sftp.fastGet(moveFrom, moveTo, {}, async (downloadErr) => {
           if (downloadErr) {
             logger.error({ event: "Download error", error: downloadErr });
             throw downloadErr;
@@ -138,13 +158,55 @@ function ftpToFS(moveFrom, moveTo, filename) {
             event: "Finding deletions and additions since last update",
             type: "START",
           });
-          const deletions = getDeletions(oldFile, newFile).filter((d) =>
-            d.trim()
-          );
-          const additions = getAdditions(oldFile, newFile).filter((a) =>
-            a.trim()
-          );
+          
 
+          additions = await getAdditions(oldFile, newFile)
+          deletions = await getDeletions(oldFile, newFile);
+          for(let i = 0; i < deletions.length; i++) {
+            deletions[i] = deletions[i].trim();
+            if (deletions[i] === '') {
+              deletions.splice(i, 1);
+              i--;
+            }
+          }
+          for(let i = 0; i < additions.length; i++) {
+            additions[i] = additions[i].trim();
+            if (additions[i] === '') {
+              additions.splice(i, 1);
+              i--;
+            }
+          }
+          logger.info({
+            event: `Found ${deletions.length} deletions and ${additions.length} additions`,
+            type: "COMPLETE",
+            deletions: deletions.length,
+            additions: additions.length,
+          });
+          for (const del of deletions) {
+              await removeFromDynamo(del);
+              await wait(100);
+            }
+          
+          logger.info({
+            event: `Deletions complete`,
+            type: "COMPLETE"
+          });
+          
+          for (const add of additions) {
+              await addToDynamo(add);
+              await wait(100);
+          }
+
+          logger.info({ event: `Additions complete`, type: "COMPLETE" });
+          logger.info({ event: "Uploading new file to S3" });
+          
+          await uploadToS3(fs.createReadStream(moveTo), filename);
+          if (++done === 2) {
+            logger.info({ event: "Done!", type: "COMPLETE" });
+            process.exit(0);
+          }
+          logger.info({ event: "All done!", type: "COMPLETE" });
+          throw new Error('Stopping here for safety - please remove this line to continue the process');
           if (deletions.length > 1000000) {
             logger.error({
               event: "List appears to be incomplete - halting sync",
@@ -153,40 +215,6 @@ function ftpToFS(moveFrom, moveTo, filename) {
             });
             throw new Error("List appears to be incomplete - halting sync");
           }
-
-          co(function* () {
-            logger.info({
-              event: `Deleting ${deletions.length} records from Dynamo DB`,
-              type: "START",
-            });
-            for (const del of deletions) {
-              yield removeFromDynamo(del);
-              yield wait(100);
-            }
-            logger.info({
-              event: `Adding ${additions.length} records`,
-              type: "START",
-            });
-            for (const add of additions) {
-              yield addToDynamo(add);
-              yield wait(100);
-            }
-
-            logger.info({ event: "Uploading new file to S3" });
-            yield uploadToS3(fs.createReadStream(moveTo), filename);
-            if (++done === 2) {
-              logger.info({ event: "Done!", type: "COMPLETE" });
-              process.exit(0);
-            }
-          }).catch((err) => {
-            logger.error({
-              event:
-                "Error while deleting or adding numbers and uploading to Dynamodb",
-              type: "FAILED",
-              error: err,
-            });
-            process.exit(1);
-          });
         });
       });
     })
