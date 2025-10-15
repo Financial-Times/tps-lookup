@@ -48,7 +48,6 @@ async function uploadToS3(fileStream, key) {
 }
 
 async function addToDynamo(phone) {
-
   try {
     const params = {
       TableName: config.tableName,
@@ -74,9 +73,10 @@ async function removeFromDynamo(phone) {
       phone,
     },
   };
-  logger.info({ event: 'Removing from Dynamo' });
   const response = await docClient.delete(params).promise();
+
   logger.info({ event: 'Removed from Dynamo' });
+
   return response;
   } catch (err) {
     logger.error({ event: 'Error removing from Dynamo', error: err });
@@ -158,6 +158,7 @@ function ftpToFS(moveFrom, moveTo, filename) {
 
           additions = await getAdditions(oldFile, newFile)
           deletions = await getDeletions(oldFile, newFile);
+
           for(let i = 0; i < deletions.length; i++) {
             deletions[i] = deletions[i].trim();
             if (deletions[i] === '') {
@@ -165,6 +166,7 @@ function ftpToFS(moveFrom, moveTo, filename) {
               i--;
             }
           }
+
           for(let i = 0; i < additions.length; i++) {
             additions[i] = additions[i].trim();
             if (additions[i] === '') {

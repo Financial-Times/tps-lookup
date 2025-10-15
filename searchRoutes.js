@@ -61,6 +61,12 @@ module.exports = (app) => {
             });
             yield docClient.update(updateParams).promise();
           }
+          // Leaving this in for testing especially with UI
+          logger.info({
+            event: 'Checked number',
+            table: config.tableName,
+            canCall: !result.Item
+          })
       
           return {
             number: num,
