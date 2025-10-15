@@ -6,9 +6,9 @@ stacks:
     type: public-load-balanced-web-service
     parameters:
       TaskCount: 1
-      TaskCpu: 256
+      TaskCpu: 2048
       TaskCpuArchitecture: ARM64
-      TaskMemory: 512
+      TaskMemory: 4096
       ContainerRegistry: docker.packages.ft.com/ip-container-registry
       ContainerRegistryCredentialsSecretName: /hako/registry-credential/cloudsmith/crm-en-full-stack-read-only
       ContainerGoodToGoEndpoint: /__gtg
