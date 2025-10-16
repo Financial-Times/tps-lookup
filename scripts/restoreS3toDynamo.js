@@ -1,7 +1,7 @@
 require('dotenv').load({ silent: true });
 
 const DynamoRestore = require('dynamo-backup-to-s3').Restore;
-const config = require('./config');
+const config = require('../config');
 
 const restore = new DynamoRestore({
   source: 's3://email-platform-ftcom-signup/test/files/tps.json',
