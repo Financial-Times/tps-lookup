@@ -27,7 +27,6 @@
     "co-wait": "0.0.0",
     "compression": "^1.6.2",
     "cookie-session": "^1.4.0",
-    "dotenv": "^4.0.0",
     "dynamo-backup-to-s3": "^0.6.1",
     "event-stream": "^3.3.4",
     "express": "^4.19.2 ",

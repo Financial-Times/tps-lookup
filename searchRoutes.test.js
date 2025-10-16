@@ -2,7 +2,6 @@ const request = require('supertest');
 const express = require('express');
 const { docClient } = require('./db');
 const searchRoutes = require('./searchRoutes');
-
 jest.mock('./db', () => ({
   docClient: {
     get: jest.fn(),

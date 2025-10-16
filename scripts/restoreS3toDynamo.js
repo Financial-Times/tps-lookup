@@ -1,5 +1,3 @@
-require('dotenv').load({ silent: true });
-
 const DynamoRestore = require('dynamo-backup-to-s3').Restore;
 const config = require('../config');
 
