@@ -3,7 +3,7 @@ const config = require("../../config");
 const logger = require("../../helper/logger.js");
 
 module.exports = async function checkAwsAccess() {
-  const { accessKeyId, secretAccessKey, region = "eu-west-1", tableName } = config;
+  const { accessKeyId, secretAccessKey, region = process.env.AWS_REGION || "eu-west-1", tableName } = config;
   
   AWS.config.update({
     accessKeyId,
