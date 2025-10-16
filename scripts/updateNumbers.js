@@ -103,16 +103,21 @@ function getDeletions(oldFile, newFile) {
     [
       "-c",
       `
-  comm -23 <(sort -n ${oldFile}) <(sort -n ${newFile})
-    `,
+        LC_ALL=C comm -23 <(sort -u -n "${oldFile}") <(sort -u -n "${newFile}")
+      `,
     ],
     {
       cwd: "/tmp",
       encoding: "utf-8",
+      stdio: ["pipe", "pipe", "pipe"],
     }
   );
 
-  return deletionCheck.stdout.split("\r\n");
+  if (deletionCheck.error || deletionCheck.status !== 0) {
+    throw new Error(`comm failed: ${deletionCheck.stderr || deletionCheck.error}`);
+  }
+
+  return deletionCheck.stdout.split("\n").filter(Boolean);
 }
 
 function getAdditions(oldFile, newFile) {
@@ -121,17 +126,23 @@ function getAdditions(oldFile, newFile) {
     [
       "-c",
       `
-  comm -13 <(sort -n ${oldFile}) <(sort -n ${newFile})
-    `,
+        LC_ALL=C comm -13 <(sort -u -n "${oldFile}") <(sort -u -n "${newFile}")
+      `,
     ],
     {
       cwd: "/tmp",
       encoding: "utf-8",
+      stdio: ["pipe", "pipe", "pipe"],
     }
   );
 
-  return additionCheck.stdout.split("\r\n");
+  if (additionCheck.error || additionCheck.status !== 0) {
+    throw new Error(`comm failed: ${additionCheck.stderr || additionCheck.error}`);
+  }
+  
+  return additionCheck.stdout.split("\n").filter(Boolean);
 }
+
 
 function ftpToFS(moveFrom, moveTo, filename) {
   const conn = new Client();
