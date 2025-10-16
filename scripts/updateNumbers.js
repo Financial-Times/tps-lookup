@@ -1,12 +1,12 @@
-const logger = require("./helper/logger.js");
-const checkAwsAccess = require("./src/aws/check-aws-access.js");
+const logger = require("../helper/logger.js");
+const checkAwsAccess = require("../src/aws/check-aws-access.js");
 const fs = require("fs");
 const co = require("co");
 const wait = require("co-wait");
 const { spawnSync } = require("child_process");
 const { Client } = require("ssh2");
 const AWS = require("aws-sdk");
-const config = require("./config");
+const config = require("../config.js");
 
 let done = 0;
 const { AWS_REGION } = process.env;
