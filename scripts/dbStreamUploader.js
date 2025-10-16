@@ -1,5 +1,3 @@
-require('dotenv').load({ silent: true });
-
 const FormData = require('form-data');
 const fetch = require('node-fetch');
 const co = require('co');
