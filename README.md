@@ -101,7 +101,7 @@ Once this is resolved/we have a workaround, we’ll use PR numbers in the app na
 
 Logging for the `updateNumber.js` file is sent to Splunk from AWS. Functions in this file update the numbers stored in the `email-platform-ftcom-tps` S3 bucket after checking [TPS](https://www.tpsonline.org.uk/) as necessary. Updates to numbers found are written to the `ft-email_platform_tps_lookup` DynamoDB table.
 
-`scripts/updateNumber.js` runs everyday at 11pm as specified in the scheduler described above.
+`scripts/updateNumber.js` runs every day at 11pm as specified in the scheduler described above.
 
 See the Splunk query below:
 
