@@ -1,6 +1,5 @@
-require("dotenv").load({ silent: true });
 const logger = require("./helper/logger.js");
-
+const checkAwsAccess = require("./src/aws/check-aws-access.js");
 const fs = require("fs");
 const co = require("co");
 const wait = require("co-wait");
@@ -9,34 +8,65 @@ const { Client } = require("ssh2");
 const AWS = require("aws-sdk");
 const config = require("./config");
 
-AWS.config.update({
-  accessKeyId: config.awsAccessKeyId,
-  secretAccessKey: config.awsSecretAccessKey,
-  region: config.awsRegion,
-});
-
-const s3 = new AWS.S3({});
+let done = 0;
+const { AWS_REGION } = process.env;
+const s3 = new AWS.S3({ region: AWS_REGION });
 const docClient = new AWS.DynamoDB.DocumentClient();
 const dynamoDB = new AWS.DynamoDB();
 
-async function checkAwsAccess() {
-  try {
-    const s3Result = await s3.listObjectsV2({ Bucket: "email-platform-ftcom-tps", MaxKeys: 1 }).promise();
-    logger.info({ event: "S3 access check successful", objects: s3Result.Contents.length });
-    const result = await dynamoDB.describeTable({ TableName: config.tableName }).promise();
-    logger.info({ event: "DynamoDB table access check successful", table: result.Table.TableName });
+const updateNumbers = async () => {
+  logger.info({ event: "Starting TPS/CTPS update", type: "START" });
 
-  } catch (err) {
-    logger.error({ event: "DynamoDB table access check failed", error: err });
+  const hasAwsAccess = await checkAwsAccess();
+
+  if (!hasAwsAccess) {
+    logger.error({ event: 'No AWS access - exiting' });
     process.exit(1);
   }
-}
+  // Get file from S3, then from FTP
+  const s3ParamsTPS = { Bucket: "email-platform-ftcom-tps", Key: "tps.txt" };
+  const s3ParamsCTPS = { Bucket: "email-platform-ftcom-tps", Key: "ctps.txt" };
+  const oldCTPSFile = fs.createWriteStream("/tmp/ctps_original.txt");
+  const oldTPSFile = fs.createWriteStream("/tmp/tps_original.txt");
 
-checkAwsAccess().then(() => {
-  logger.info({ event: 'AWS access confirmed' });
-});
+  oldCTPSFile.on("close", () => {
+  logger.info({ event: "Old CTPS file downloaded" });
+  ftpToFS("./CTPS/ctps_ns.txt", "/tmp/ctps_new.txt", "ctps.txt");
+  });
 
-let done = 0;
+  oldTPSFile.on("close", () => {
+    logger.info({ event: "Old TPS file downloaded" });
+    ftpToFS("./tps/tps_ns.txt", "/tmp/tps_new.txt", "tps.txt");
+  });
+
+    logger.info({ event: "Downloading old files from s3", type: "START" });
+
+  s3.getObject(s3ParamsTPS)
+  .createReadStream()
+  .on("error", (err) => {
+    logger.error({
+      event: "Failed to download old TPS files from s3",
+      type: "FAILED",
+      error: err,
+    });
+  })
+  .pipe(oldTPSFile);
+
+  logger.info({ event: "Downloading old files from s3", type: "START" });
+
+  s3.getObject(s3ParamsCTPS)
+    .createReadStream()
+    .on("error", (err) => {
+      logger.error({
+        event: "Failed to download old CTPS files from s3",
+        type: "FAILED",
+        error: err,
+      });
+    })
+    .pipe(oldCTPSFile);
+};
+
+
 
 function uploadToS3(fileStream, key) {
   const params = {
@@ -201,41 +231,8 @@ function ftpToFS(moveFrom, moveTo, filename) {
     .connect(connSettings);
 }
 
-// Get file from S3, then from FTP
-const s3ParamsTPS = { Bucket: "email-platform-ftcom-tps", Key: "tps.txt" };
-const s3ParamsCTPS = { Bucket: "email-platform-ftcom-tps", Key: "ctps.txt" };
-const oldCTPSFile = fs.createWriteStream("/tmp/ctps_original.txt");
-const oldTPSFile = fs.createWriteStream("/tmp/tps_original.txt");
+updateNumbers();
 
-oldCTPSFile.on("close", () => {
-  logger.info({ event: "Old CTPS file downloaded" });
-  ftpToFS("./CTPS/ctps_ns.txt", "/tmp/ctps_new.txt", "ctps.txt");
-});
 
-oldTPSFile.on("close", () => {
-  logger.info({ event: "Old TPS file downloaded" });
-  ftpToFS("./tps/tps_ns.txt", "/tmp/tps_new.txt", "tps.txt");
-});
 
-logger.info({ event: "Downloading old files from s3", type: "START" });
-s3.getObject(s3ParamsCTPS)
-  .createReadStream()
-  .on("error", (err) => {
-    logger.error({
-      event: "Failed to download old CTPS files from s3",
-      type: "FAILED",
-      error: err,
-    });
-  })
-  .pipe(oldCTPSFile);
 
-s3.getObject(s3ParamsTPS)
-  .createReadStream()
-  .on("error", (err) => {
-    logger.error({
-      event: "Failed to download old TPS files from s3",
-      type: "FAILED",
-      error: err,
-    });
-  })
-  .pipe(oldTPSFile);
