@@ -31,6 +31,7 @@ module.exports = async function checkAwsAccess() {
     logger.info({
       event: "S3 access check successful",
       objectCount: s3Result.Contents?.length || 0,
+      bucket: s3Result.Name,
     });
 
     const tableResult = await dynamoDB

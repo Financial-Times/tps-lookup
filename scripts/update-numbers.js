@@ -15,7 +15,7 @@ const docClient = new AWS.DynamoDB.DocumentClient();
 const dynamoDB = new AWS.DynamoDB();
 
 const updateNumbers = async () => {
-  logger.info({ event: "Starting TPS/CTPS update", type: "START" });
+  logger.info({ event: "UPDATE_NUMBERS", type: "START", message: "Starting updateNumbers script" });
 
   const hasAwsAccess = await checkAwsAccess();
 
@@ -66,8 +66,6 @@ const updateNumbers = async () => {
     .pipe(oldCTPSFile);
 };
 
-
-
 function uploadToS3(fileStream, key) {
   const params = {
     Bucket: "email-platform-ftcom-tps",
@@ -81,7 +79,7 @@ function addToDynamo(phone) {
   const params = {
     TableName: config.tableName,
     Item: {
-      phone,
+      phone: phone.trim(),
     },
   };
   return docClient.put(params).promise();
@@ -91,7 +89,7 @@ function removeFromDynamo(phone) {
   const params = {
     TableName: config.tableName,
     Key: {
-      phone,
+      phone: phone.trim(),
     },
   };
   return docClient.delete(params).promise();
@@ -103,17 +101,24 @@ function getDeletions(oldFile, newFile) {
     [
       "-c",
       `
-  comm -23 <(sort -n ${oldFile}) <(sort -n ${newFile})
-    `,
+        LC_ALL=C comm -23 <(tr -d '\r' < "${oldFile}" | sort -u) <(tr -d '\r' < "${newFile}" | sort -u)
+      `,
     ],
     {
       cwd: "/tmp",
       encoding: "utf-8",
+      stdio: ["pipe", "pipe", "pipe"],
     }
   );
 
-  return deletionCheck.stdout.split("\r\n");
+  if (deletionCheck.error || deletionCheck.status !== 0) {
+    throw new Error(`comm failed: ${deletionCheck.stderr || deletionCheck.error}`);
+  }
+
+  return deletionCheck.stdout.split("\n").filter(Boolean);
 }
+
+
 
 function getAdditions(oldFile, newFile) {
   const additionCheck = spawnSync(
@@ -121,17 +126,23 @@ function getAdditions(oldFile, newFile) {
     [
       "-c",
       `
-  comm -13 <(sort -n ${oldFile}) <(sort -n ${newFile})
-    `,
+      LC_ALL=C comm -13 <(tr -d '\r' < "${oldFile}" | sort -u) <(tr -d '\r' < "${newFile}" | sort -u)
+      `,
     ],
     {
       cwd: "/tmp",
       encoding: "utf-8",
+      stdio: ["pipe", "pipe", "pipe"],
     }
   );
 
-  return additionCheck.stdout.split("\r\n");
+  if (additionCheck.error || additionCheck.status !== 0) {
+    throw new Error(`comm failed: ${additionCheck.stderr || additionCheck.error}`);
+  }
+  
+  return additionCheck.stdout.split("\n").filter(Boolean);
 }
+
 
 function ftpToFS(moveFrom, moveTo, filename) {
   const conn = new Client();
@@ -231,8 +242,6 @@ function ftpToFS(moveFrom, moveTo, filename) {
     .connect(connSettings);
 }
 
-updateNumbers();
-
-
+updateNumbers()
 
 
