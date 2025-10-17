@@ -25,3 +25,7 @@ COPY --chown=node:node . .
 
 # Set the default command to run your ETL script
 CMD ["node", "app.js"]
+
+# install bash and coreutils for comm and sort
+USER root
+RUN apk add --no-cache bash coreutils
