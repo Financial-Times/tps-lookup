@@ -208,9 +208,11 @@ function ftpToFS(moveFrom, moveTo, filename) {
             }
 
             const now = new Date();
-            const date = now.toISOString().slice(0, 10).replace(/-/g, "/");
-            const time = now.toISOString().slice(11, 19).replace(/:/g, "");
-            const timestamp = `${date}_${time}`;
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, "0");
+            const day = String(now.getDate()).padStart(2, "0");
+            const time = now.toISOString().slice(11, 19).replace(/:/g, ""); // "142533"
+            const datePath = `${year}/${month}/${day}`; // "2025/10/19"
 
             const uploads = [];
 
@@ -219,7 +221,7 @@ function ftpToFS(moveFrom, moveTo, filename) {
               uploads.push(
                 s3.upload({
                   Bucket: "email-platform-ftcom-tps",
-                  Key: `diffs/additions_${timestamp}.txt`,
+                  Key: `diffs/${datePath}/additions_${time}.txt`,
                   Body: additionsBody,
                 }).promise()
               );
@@ -230,7 +232,7 @@ function ftpToFS(moveFrom, moveTo, filename) {
               uploads.push(
                 s3.upload({
                   Bucket: "email-platform-ftcom-tps",
-                  Key: `diffs/deletions_${timestamp}.txt`,
+                  Key: `diffs/${datePath}/deletions_${time}.txt`,
                   Body: deletionsBody,
                 }).promise()
               );
@@ -242,9 +244,19 @@ function ftpToFS(moveFrom, moveTo, filename) {
               event: "Uploaded diff files to S3",
               additionsUploaded: additionsCount,
               deletionsUploaded: deletionsCount,
-              timestamp,
+              path: `diffs/${datePath}`,
+              timestamp: time,
             });
           }
+
+          await saveDiffsToS3(additions, deletions).catch((err) => {
+            logger.error({
+              event: "Error uploading diff files to S3",
+              type: "FAILED",
+              error: err,
+            });
+          });
+
 
           await saveDiffsToS3(additions, deletions).catch((err) => {
             logger.error({
