@@ -194,35 +194,58 @@ function ftpToFS(moveFrom, moveTo, filename) {
             });
             throw new Error("List appears to be incomplete - halting sync");
           }
+          
           async function saveDiffsToS3(additions, deletions) {
+            const additionsCount = additions?.length || 0;
+            const deletionsCount = deletions?.length || 0;
+
+            if (additionsCount === 0 && deletionsCount === 0) {
+              logger.info({
+                event: "No additions or deletions detected",
+                message: "Skipping S3 upload as there are no differences",
+              });
+              return;
+            }
+
             const now = new Date();
-            const date = now.toISOString().slice(0,10).replace(/-/g, "/"); // "2025/10/19"
-            const time = now.toISOString().slice(11,19).replace(/:/g, ""); // "142533" (for 14:25:33)
-            const timestamp = `${date}_${time}`; // "2025/10/19_142533"
+            const date = now.toISOString().slice(0, 10).replace(/-/g, "/");
+            const time = now.toISOString().slice(11, 19).replace(/:/g, "");
+            const timestamp = `${date}_${time}`;
 
-            const additionsBody = additions.join("\n") + "\n";
-            const deletionsBody = deletions.join("\n") + "\n";
+            const uploads = [];
 
-            await Promise.all([
-              s3.upload({
-                Bucket: "email-platform-ftcom-tps",
-                Key: `diffs/additions_${timestamp}.txt`,
-                Body: additionsBody,
-              }).promise(),
-              s3.upload({
-                Bucket: "email-platform-ftcom-tps",
-                Key: `diffs/deletions_${timestamp}.txt`,
-                Body: deletionsBody,
-              }).promise(),
-            ]);
+            if (additionsCount > 0) {
+              const additionsBody = additions.join("\n") + "\n";
+              uploads.push(
+                s3.upload({
+                  Bucket: "email-platform-ftcom-tps",
+                  Key: `diffs/additions_${timestamp}.txt`,
+                  Body: additionsBody,
+                }).promise()
+              );
+            }
 
+            if (deletionsCount > 0) {
+              const deletionsBody = deletions.join("\n") + "\n";
+              uploads.push(
+                s3.upload({
+                  Bucket: "email-platform-ftcom-tps",
+                  Key: `diffs/deletions_${timestamp}.txt`,
+                  Body: deletionsBody,
+                }).promise()
+              );
+            }
+
+            await Promise.all(uploads);
 
             logger.info({
               event: "Uploaded diff files to S3",
-              additionsKey: `diffs/additions_${timestamp}.txt`,
-              deletionsKey: `diffs/deletions_${timestamp}.txt`,
+              additionsUploaded: additionsCount,
+              deletionsUploaded: deletionsCount,
+              timestamp,
             });
           }
+
           await saveDiffsToS3(additions, deletions).catch((err) => {
             logger.error({
               event: "Error uploading diff files to S3",
@@ -230,6 +253,7 @@ function ftpToFS(moveFrom, moveTo, filename) {
               error: err,
             });
           });
+
 
           logger.info({
             event: `Found ${deletions.length} deletions and ${additions.length} additions`,
