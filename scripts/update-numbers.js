@@ -169,7 +169,7 @@ function ftpToFS(moveFrom, moveTo, filename) {
           throw err;
         }
         logger.info("Retrieving new file from FTP");
-        sftp.fastGet(moveFrom, moveTo, {}, (downloadErr) => {
+        sftp.fastGet(moveFrom, moveTo, {}, async (downloadErr) => {
           if (downloadErr) {
             logger.error({ event: "Download error", error: downloadErr });
             throw downloadErr;
@@ -194,7 +194,47 @@ function ftpToFS(moveFrom, moveTo, filename) {
             });
             throw new Error("List appears to be incomplete - halting sync");
           }
+          async function saveDiffsToS3(additions, deletions) {
+            const now = new Date();
+            const date = now.toISOString().slice(0,10).replace(/-/g, "/"); // "2025/10/19"
+            const time = now.toISOString().slice(11,19).replace(/:/g, ""); // "142533" (for 14:25:33)
+            const timestamp = `${date}_${time}`; // "2025/10/19_142533"
 
+            const additionsBody = additions.join("\n") + "\n";
+            const deletionsBody = deletions.join("\n") + "\n";
+
+            await Promise.all([
+              s3.upload({
+                Bucket: "email-platform-ftcom-tps",
+                Key: `diffs/additions_${timestamp}.txt`,
+                Body: additionsBody,
+              }).promise(),
+              s3.upload({
+                Bucket: "email-platform-ftcom-tps",
+                Key: `diffs/deletions_${timestamp}.txt`,
+                Body: deletionsBody,
+              }).promise(),
+            ]);
+
+
+            logger.info({
+              event: "Uploaded diff files to S3",
+              additionsKey: `diffs/additions_${timestamp}.txt`,
+              deletionsKey: `diffs/deletions_${timestamp}.txt`,
+            });
+          }
+          await saveDiffsToS3(additions, deletions).catch((err) => {
+            logger.error({
+              event: "Error uploading diff files to S3",
+              type: "FAILED",
+              error: err,
+            });
+          });
+
+          logger.info({
+            event: `Found ${deletions.length} deletions and ${additions.length} additions`,
+            type: "COMPLETE",
+          });
           co(function* () {
             logger.info({
               event: `Deleting ${deletions.length} records from Dynamo DB`,
