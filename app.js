@@ -23,8 +23,8 @@ app.use(express.static(`${__dirname}/dist`));
 app.get('/favicon.ico', (req, res) => {
   res.status(204).set('Cache-Control', 'private, max-age=86400').end();
 });
-require('./searchRoutes')(app);
-require('./indexRoutes')(app);
+require('./src/routes/searchRoutes')(app);
+require('./src/routes/indexRoutes')(app);
 
 app.use(notFound);
 app.use(errorMiddleware);

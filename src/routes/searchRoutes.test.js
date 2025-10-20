@@ -1,15 +1,15 @@
 const request = require('supertest');
 const express = require('express');
-const { docClient } = require('./db');
+const { docClient } = require('../../db');
 const searchRoutes = require('./searchRoutes');
-jest.mock('./db', () => ({
+jest.mock('../../db', () => ({
   docClient: {
     get: jest.fn(),
     update: jest.fn(),
   },
 }));
 
-jest.mock('./okta', () => ({
+jest.mock('../../okta', () => ({
   okta: {
     router: jest.fn((req, res, next) => next()),
     ensureAuthenticated: jest.fn((req, res, next) => next()),
@@ -18,7 +18,7 @@ jest.mock('./okta', () => ({
   sessionOptions: (req, res, next) => next()
 }));
 
-jest.mock('./authenticate', () => jest.fn((req, res, next) => next()));
+jest.mock('../../authenticate', () => jest.fn((req, res, next) => next()));
 
 const mockDynamoResponse = (data) => ({
   promise: () => Promise.resolve(data)
