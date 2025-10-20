@@ -3,7 +3,7 @@ const checkAwsAccess = require("../src/aws/check-aws-access.js");
 const fs = require("fs");
 const co = require("co");
 const wait = require("co-wait");
-const { spawnSync } = require("child_process");
+const { getDeletions, getAdditions } = require("../src/helpers/deletions-and-additions.js");
 const { Client } = require("ssh2");
 const AWS = require("aws-sdk");
 const config = require("../config.js");
@@ -15,7 +15,7 @@ const docClient = new AWS.DynamoDB.DocumentClient();
 const dynamoDB = new AWS.DynamoDB();
 
 const updateNumbers = async () => {
-  logger.info({ event: "Starting TPS/CTPS update", type: "START" });
+  logger.info({ event: "UPDATE_NUMBERS", type: "START", message: "Starting updateNumbers script" });
 
   const hasAwsAccess = await checkAwsAccess();
 
@@ -66,8 +66,6 @@ const updateNumbers = async () => {
     .pipe(oldCTPSFile);
 };
 
-
-
 function uploadToS3(fileStream, key) {
   const params = {
     Bucket: "email-platform-ftcom-tps",
@@ -81,7 +79,7 @@ function addToDynamo(phone) {
   const params = {
     TableName: config.tableName,
     Item: {
-      phone,
+      phone: phone.trim(),
     },
   };
   return docClient.put(params).promise();
@@ -91,46 +89,10 @@ function removeFromDynamo(phone) {
   const params = {
     TableName: config.tableName,
     Key: {
-      phone,
+      phone: phone.trim(),
     },
   };
   return docClient.delete(params).promise();
-}
-
-function getDeletions(oldFile, newFile) {
-  const deletionCheck = spawnSync(
-    "/bin/bash",
-    [
-      "-c",
-      `
-  comm -23 <(sort -n ${oldFile}) <(sort -n ${newFile})
-    `,
-    ],
-    {
-      cwd: "/tmp",
-      encoding: "utf-8",
-    }
-  );
-
-  return deletionCheck.stdout.split("\r\n");
-}
-
-function getAdditions(oldFile, newFile) {
-  const additionCheck = spawnSync(
-    "/bin/bash",
-    [
-      "-c",
-      `
-  comm -13 <(sort -n ${oldFile}) <(sort -n ${newFile})
-    `,
-    ],
-    {
-      cwd: "/tmp",
-      encoding: "utf-8",
-    }
-  );
-
-  return additionCheck.stdout.split("\r\n");
 }
 
 function ftpToFS(moveFrom, moveTo, filename) {
@@ -231,8 +193,6 @@ function ftpToFS(moveFrom, moveTo, filename) {
     .connect(connSettings);
 }
 
-updateNumbers();
-
-
+updateNumbers()
 
 
