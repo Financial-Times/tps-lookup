@@ -18,7 +18,7 @@ jest.mock('../services/okta', () => ({
   sessionOptions: (req, res, next) => next()
 }));
 
-jest.mock('../../authenticate', () => jest.fn((req, res, next) => next()));
+jest.mock('../middleware/authenticate', () => jest.fn((req, res, next) => next()));
 
 const mockDynamoResponse = (data) => ({
   promise: () => Promise.resolve(data)

@@ -4,7 +4,7 @@ process.env.API_KEY = 'valid-key';
 describe('authenticate middleware', () => {
   it('should allow access with a valid API key', () => {
     jest.isolateModules(() => {
-      jest.doMock('./src/services/okta', () => ({
+      jest.doMock('../services/okta', () => ({
         okta: {
           verifyJwts: jest.fn(() => (req, res, next) => next()) // noop
         },
@@ -28,7 +28,7 @@ describe('authenticate middleware', () => {
         res.status(401).json({ error: 'unauthorised' });
       });
 
-      jest.doMock('./src/services/okta', () => ({
+      jest.doMock('../services/okta', () => ({
         okta: {
           verifyJwts: jest.fn(() => mockOktaMiddleware),
         },
