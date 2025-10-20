@@ -4,6 +4,7 @@ const fs = require("fs");
 const co = require("co");
 const wait = require("co-wait");
 const { getDeletions, getAdditions } = require("../src/helpers/deletions-and-additions.js");
+const { addToDynamo, removeFromDynamo } = require("../src/aws/dynamo.js");
 const { Client } = require("ssh2");
 const AWS = require("aws-sdk");
 const config = require("../config.js");
@@ -73,26 +74,6 @@ function uploadToS3(fileStream, key) {
     Body: fileStream,
   };
   return s3.upload(params).promise();
-}
-
-function addToDynamo(phone) {
-  const params = {
-    TableName: config.tableName,
-    Item: {
-      phone: phone.trim(),
-    },
-  };
-  return docClient.put(params).promise();
-}
-
-function removeFromDynamo(phone) {
-  const params = {
-    TableName: config.tableName,
-    Key: {
-      phone: phone.trim(),
-    },
-  };
-  return docClient.delete(params).promise();
 }
 
 function ftpToFS(moveFrom, moveTo, filename) {
