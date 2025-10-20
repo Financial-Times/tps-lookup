@@ -4,9 +4,8 @@ const { Client } = require("ssh2");
 const fs = require("fs");
 const logger = require("../helper/logger.js");
 const { addToDynamo, removeFromDynamo } = require("./aws/dynamo.js");
-const { uploadToS3 } = require("./aws/upload-to-s3.js");
-const { getDeletions, getAdditions } = require("../helper/compare-files.js");
-const config = require("../config.js");
+const uploadToS3 = require("./aws/upload-to-s3.js");
+const { getDeletions, getAdditions } = require("./helpers/deletions-and-additions.js");
 
 const AWS = require("aws-sdk");
 const config = require("../config.js");

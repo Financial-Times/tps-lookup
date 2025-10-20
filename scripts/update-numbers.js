@@ -1,6 +1,6 @@
 const logger = require("../helper/logger.js");
 const checkAwsAccess = require("../src/aws/check-aws-access.js");
-const { ftpToFS } = require("../src/ftp-to-fs.js");
+const ftpToFS = require("../src/ftp-to-fs.js");
 const fs = require("fs");
 const AWS = require("aws-sdk");
 
@@ -60,16 +60,6 @@ const updateNumbers = async () => {
     })
     .pipe(oldCTPSFile);
 };
-
-function uploadToS3(fileStream, key) {
-  const params = {
-    Bucket: "email-platform-ftcom-tps",
-    Key: key,
-    Body: fileStream,
-  };
-  return s3.upload(params).promise();
-}
-
 updateNumbers()
 
 
