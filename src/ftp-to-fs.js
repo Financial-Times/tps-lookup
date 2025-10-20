@@ -3,16 +3,10 @@ const wait = require("co-wait");
 const { Client } = require("ssh2");
 const fs = require("fs");
 const logger = require("../helper/logger.js");
+const config = require("../config.js");
 const { addToDynamo, removeFromDynamo } = require("./aws/dynamo.js");
 const uploadToS3 = require("./aws/upload-to-s3.js");
 const { getDeletions, getAdditions } = require("./helpers/deletions-and-additions.js");
-
-const AWS = require("aws-sdk");
-const config = require("../config.js");
-
-const { AWS_REGION } = process.env;
-const s3 = new AWS.S3({ region: AWS_REGION });
-
 
 let done = 0;
 function ftpToFS(moveFrom, moveTo, filename) {

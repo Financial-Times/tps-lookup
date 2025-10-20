@@ -1,4 +1,4 @@
-	const AWS = require("aws-sdk");
+const AWS = require("aws-sdk");
 const logger = require("../../helper/logger.js");
 const config = require("../../config.js");
 const { AWS_REGION } = process.env;

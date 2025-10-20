@@ -6,8 +6,7 @@ const AWS = require("aws-sdk");
 
 const { AWS_REGION } = process.env;
 const s3 = new AWS.S3({ region: AWS_REGION });
-const docClient = new AWS.DynamoDB.DocumentClient();
-const dynamoDB = new AWS.DynamoDB();
+
 
 const updateNumbers = async () => {
   logger.info({ event: "UPDATE_NUMBERS", type: "START", message: "Starting updateNumbers script" });
