@@ -1,15 +1,15 @@
 const request = require('supertest');
 const express = require('express');
-const { docClient } = require('../../db');
+const { docClient } = require('../services/db');
 const searchRoutes = require('./searchRoutes');
-jest.mock('../../db', () => ({
+jest.mock('../services/db', () => ({
   docClient: {
     get: jest.fn(),
     update: jest.fn(),
   },
 }));
 
-jest.mock('../../okta', () => ({
+jest.mock('../services/okta', () => ({
   okta: {
     router: jest.fn((req, res, next) => next()),
     ensureAuthenticated: jest.fn((req, res, next) => next()),

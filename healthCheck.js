@@ -1,5 +1,5 @@
 const co = require('co');
-const { dynamoDb } = require('./db');
+const { dynamoDb } = require('./src/services/db');
 const config = require('./config');
 const HealthCheck = require('@financial-times/health-check');
 const logger = require('./helper/logger');

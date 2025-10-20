@@ -1,10 +1,10 @@
 const express = require('express');
 const co = require('co');
 const config = require('../../config.js');
-const { docClient } = require('../../db.js');
+const { docClient } = require('../services/db.js');
 const { ensureHttps } = require('../../ensureHttps.js');
 const authenticate = require('../../authenticate.js');
-const { okta, sessionOptions } = require('../../okta.js');
+const { okta, sessionOptions } = require('../services/okta.js');
 const logger = require('../../helper/logger.js');
 
 const router = express.Router();

@@ -1,4 +1,4 @@
-const { okta } = require('./okta.js');
+const { okta } = require('./src/services/okta.js');
 const oktaNoRedirect = okta.verifyJwts({redirect:false});
 const config = require('./config');
 const logger = require('./helper/logger'); 
