@@ -29,3 +29,4 @@ CMD ["node", "app.js"]
 # install bash and coreutils for comm and sort
 USER root
 RUN apk add --no-cache bash coreutils
+USER node
