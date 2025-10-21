@@ -47,21 +47,9 @@ stacks:
       TaskCpu: 256
       TaskMemory: 512
       TaskSchedule: "daily at 13:30"
-      ContainerCommand: npm run update
-      LogDestination: splunk
-
-  trim-db-scheduled-task:
-    type: scheduled-task
-    parameters:
-      TaskCpuArchitecture: ARM64
-      ContainerRegistry: docker.packages.ft.com/ip-container-registry
-      ContainerRegistryCredentialsSecretName: /hako/registry-credential/cloudsmith/crm-en-full-stack-read-only
-      TaskCpu: 256
-      TaskMemory: 512
-      TaskSchedule: "hourly at minute 0"
       ContainerCommand: npm run trim-numbers-in-db
       LogDestination: splunk
-
+    
   circleci-deployment-role:
     type: circleci-deployment-role
     parameters:
