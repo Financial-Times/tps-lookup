@@ -1,7 +1,8 @@
 const express = require('express');
-const { okta, sessionOptions } = require('../../okta.js');
+const { okta, sessionOptions } = require('../services/okta.js');
 const config = require('../../config.js');
-const { redirectHttps } = require('../../ensureHttps.js');
+const { redirectHttps } = require('../middleware/ensureHttps.js');
+
 
 const router = express.Router();
 router.use(sessionOptions);
