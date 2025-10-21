@@ -1,4 +1,4 @@
-const logger = require('./helper/logger');
+const logger = require('../../helper/logger');
 
 function notFound(req, res, next) {
   const err = new Error('Page Not Found');
