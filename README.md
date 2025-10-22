@@ -5,12 +5,47 @@
 The Telephone Preference Service (TPS) serves as the UK's sole official 'Do Not Call' register for both landlines and mobile numbers.
 It empowers individuals and businesses to opt out of receiving unsolicited live sales and marketing calls. Once a number is registered with the TPS, organisations are obligated by law to abstain from making calls to it.
 
-The TPS Screener application retrieves a compilation of individuals who have completed registration through the [TPS](https://www.tpsonline.org.uk/).
+The TPS Screener application retrieves a compilation of individuals who have completed registration through the [TPS](https://www.tpsonline.org.uk/) and [CPTS](https://corporate.ctpsonline.org.uk/)
 
 Subsequently, an FT service can leverage the TPS Screener to intelligently refine the list of recipients, ensuring that marketing communications are directed only to the appropriate individuals.
+## Architecture
+- **UI & API:** Express serves a static bundle at `/` and a JSON endpoint at `/search`.
+- **Data pipeline:** `scripts/update-numbers.js` downloads the latest TPS/CTPS files from the TPS SFTP, diffs them against our S3 snapshot (`email-platform-ftcom-tps`), and applies additions or deletions to DynamoDB.
+- **Storage:** Production data lives in DynamoDB table `ft-email_platform_tps_lookup` (CRM prod account). A test/exploration table, `test-table`, is in the FT Tech IP Martech Prod account (`arn:aws:dynamodb:eu-west-1:307164329441:table/test-table`).
+- **Auth:** Okta (OIDC) protects the UI and API; internal services can supply an API key header instead.
+- **Hosting:** App runs in AWS ECS via Hako. CI deploys review builds to `crm-review-eu-west-1`; merges to `master` go to `crm-prod-eu-west-1`.
 
-## Usage
+## Configuration & Data
+- **DynamoDB (prod):** `ft-email_platform_tps_lookup` in account `FT Tech Infrastructure Prod (027104099916)`. Each item stores the phone number (primary key) plus `lastRetrieved`, which we update when a number is queried.
+- **DynamoDB (test):** `test-table` in account `FT Tech IP Martech Prod (307164329441)` for experimentation without touching prod data.
+- **S3:** `email-platform-ftcom-tps` bucket in the `FT Tech Infrastructure Prod(027104099916)` AWS account.
+- **Secrets:** Doppler project `ft-tps-screener` (configs `dev` and `prod`).
 
+## Using the App
+### API
+`POST https://tps-screener.ft.com/search`
+
+Body:
+```json
+["07400000000"]
+```
+
+Response:
+```json
+{
+  "results": [
+    {
+      "number": "07400000000",
+      "canCall": false
+    }
+  ]
+}
+```
+
+Salesforce is the primary consumer and relies on the `canCall` flag to suppress outbound dialling.
+
+### UI
+`https://tps-screener.ft.com/` provides a small form for manual lookups with visual pass/fail indicators.
 ### Setting up/App run
 
 - Node ^22.x.x
@@ -29,6 +64,26 @@ Subsequently, an FT service can leverage the TPS Screener to intelligently refin
 - **_Note: Ensure the start command is reverted to its original state before merge into prod._**
 
 Enter a UK number in the browser's search bar; if it's registered, it's important to refrain from contacting for sales and marketing purposes.
+
+
+### Update Numbers Script
+Purpose: Maintain an up to date TPS and CTPS lookup in DynamoDB by diffing the latest files from TPS SFTP against the copies stored in S3, then applying additions and deletions to the DynamoDB table.
+
+What the job does
+- Scheduled daily at 23:00 UTC via EventBridge
+- Fetch our most recently stored TPS and CTPS baseline files from the S3 bucket, filenames are  `tps.txt` and `ctps.txt`
+- Fetch the latest TPS and CTPS files from TPS SFTP also as txt files
+Compute two sets for each list
+-  additions: numbers present in the new file but not in the baseline
+-  deletions: numbers present in the baseline but not in the new file
+Apply changes to DynamoDB
+  - Add additions to the table 
+  - delete deletions from the table
+- Persist the new files back to S3 as the new baseline
+
+- Since this is a scheduled task, logs for this specific process can be found at `index=hako source="ft-tps-screener" host="scheduled-task.ft-tps-screener.eu-west-1.crm-review.ftweb.tech"`
+- trigger: runs daily at 23:00 UTC via the EventBridge scheduled task; you can also execute it manually with `npm run update` (prod creds) or `npm run update-numbers` (dev via Doppler).
+
 
 ### Testing
 
@@ -100,11 +155,11 @@ Once this is resolved/we have a workaround, we’ll use PR numbers in the app na
 
 ### Logging
 
-Logging for the `updateNumber.js` file is sent to Splunk from AWS. Functions in this file update the numbers stored in the `email-platform-ftcom-tps` S3 bucket after checking [TPS](https://www.tpsonline.org.uk/) as necessary. Updates to numbers found are written to the `ft-email_platform_tps_lookup` DynamoDB table.
-
-`scripts/updateNumber.js` runs every day at 11pm as specified in the scheduler described above.
-
-See the Splunk query below:
+Logs are sent to splunk for AWS. See the Splunk queries below:
+`update-number.js` script logs(scheduled task): 
+```
+index=hako source="ft-tps-screener" host="scheduled-task.ft-tps-screener.eu-west-1.crm-{{review or prod}}.ftweb.tech"
+```
 
 `index=hako source="ft-tps-screener" host="ft-tps-screener.eu-west-1.crm-prod.ftweb.tech"`
 
