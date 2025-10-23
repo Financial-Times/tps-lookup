@@ -18,6 +18,7 @@ const cleanExistingPhones = async () => {
 
   let lastKey;
   let totalCleaned = 0;
+  let batchLogs = [];
 
   do {
     const data = await docClient.scan(scanParams).promise();
@@ -27,14 +28,11 @@ const cleanExistingPhones = async () => {
       const p = item.phone;
       const trimmed = p.trim();
 
-      // skip if already clean
+      // Skip if already clean
       if (p === trimmed) continue;
 
-      logger.info({
-        event: "CLEANING_PHONE",
-        message: `Fixing "${p}" -> "${trimmed}"`,
-        totalCleaned: totalCleaned + 1,
-      });
+      batchLogs.push({ original: p, cleaned: trimmed });
+
       await docClient.transactWrite({
         TransactItems: [
           {
@@ -57,12 +55,31 @@ const cleanExistingPhones = async () => {
       }).promise();
 
       totalCleaned++;
+
+      // Log every 200 updates as a batch
+      if (batchLogs.length === 200) {
+        logger.info({
+          event: "CLEANING_BATCH",
+          message: `Processed 200 phone numbers so far (Total: ${totalCleaned})`,
+          batchDetails: batchLogs,
+        });
+        batchLogs = [];
+      }
     }
 
     lastKey = data.LastEvaluatedKey;
     scanParams.ExclusiveStartKey = lastKey;
 
   } while (lastKey);
+
+  // Log remaining numbers in the final batch
+  if (batchLogs.length > 0) {
+    logger.info({
+      event: "CLEANING_FINAL_BATCH",
+      message: `Processed final ${batchLogs.length} phone numbers (Total: ${totalCleaned})`,
+      batchDetails: batchLogs,
+    });
+  }
 
   logger.info({
     event: "CLEAN_COMPLETE",
@@ -75,7 +92,6 @@ cleanExistingPhones().catch((error) => {
     event: "CLEANING_ERROR",
     message: "Error cleaning phone numbers",
     error: error.message,
-    totalCleaned,
   });
   process.exit(1);
 });
