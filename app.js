@@ -1,9 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const compression = require('compression');
-const config = require('../config');
-const healthCheck = require('./health/healthCheck');
-const { notFound, errorMiddleware } = require('./errors');
+const config = require('./config');
+const healthCheck = require('./src/health/healthCheck');
+const { notFound, errorMiddleware } = require('./src/middleware/errors');
 
 const app = new express();
 
@@ -23,8 +23,8 @@ app.use(express.static(`${__dirname}/dist`));
 app.get('/favicon.ico', (req, res) => {
   res.status(204).set('Cache-Control', 'private, max-age=86400').end();
 });
-require('./routes/searchRoutes')(app);
-require('./routes/indexRoutes')(app);
+require('./src/routes/searchRoutes')(app);
+require('./src/routes/indexRoutes')(app);
 
 app.use(notFound);
 app.use(errorMiddleware);
