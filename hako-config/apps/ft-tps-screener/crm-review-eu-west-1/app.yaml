@@ -47,7 +47,7 @@ stacks:
       TaskCpu: 256
       TaskMemory: 512
       TaskSchedule: "daily at 13:30"
-      ContainerCommand: npm run trim-numbers-in-db
+      ContainerCommand: npm run trim-numbers-in-dbs
       LogDestination: splunk
     
   circleci-deployment-role:
