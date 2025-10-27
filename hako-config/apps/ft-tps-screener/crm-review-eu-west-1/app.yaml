@@ -12,6 +12,7 @@ stacks:
       ContainerRegistry: docker.packages.ft.com/ip-container-registry
       ContainerRegistryCredentialsSecretName: /hako/registry-credential/cloudsmith/crm-en-full-stack-read-only
       ContainerGoodToGoEndpoint: /__gtg
+      CustomDomainName: tps-screener-dev.ft.com
       LogDestination: splunk 
       TaskPolicyDocument:
         Version: "2012-10-17"
