@@ -3,7 +3,6 @@ const wait = require("co-wait");
 const { Client } = require("ssh2");
 const fs = require("fs");
 const logger = require("../helper/logger.js");
-const config = require("../config.js");
 const { addToDynamo, removeFromDynamo } = require("./aws/dynamo.js");
 const uploadToS3 = require("./aws/upload-to-s3.js");
 const { getDeletions, getAdditions } = require("./helpers/deletions-and-additions.js");
@@ -13,10 +12,10 @@ function ftpToFS(moveFrom, moveTo, filename) {
   const conn = new Client();
 
   const connSettings = {
-    host: config.sftpHost,
-    port: config.sftpPort,
-    username: config.sftpUsername,
-    password: config.sftpPassword,
+    host: process.env.SFTP_HOST,
+    port: process.env.SFTP_PORT,
+    username: process.env.SFTP_USERNAME,
+    password: process.env.SFTP_PASSWORD,
   };
 
   const newFile = moveTo.split("/tmp/")[1];

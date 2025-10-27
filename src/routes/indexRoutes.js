@@ -1,13 +1,12 @@
 const express = require('express');
 const { okta, sessionOptions } = require('../services/okta.js');
-const config = require('../../config.js');
 const { redirectHttps } = require('../middleware/ensureHttps.js');
 const path = require('path');
 
 const router = express.Router();
 router.use(sessionOptions);
 module.exports = (app) => {
-  if (config.NODE_ENV === 'production') {
+  if (process.env.NODE_ENV === 'production') {
     router.use(redirectHttps);
     app.enable('trust proxy');
   }

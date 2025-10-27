@@ -28,7 +28,7 @@ require('./src/routes/indexRoutes')(app);
 
 app.use(notFound);
 app.use(errorMiddleware);
-
-app.listen(config.PORT, () => {
-  console.log(`App listening on port ${config.PORT}`);
+const PORT = process.env.PORT || 3000
+app.listen(PORT, () => {
+  console.log(`App listening on port ${PORT}`);
 });
