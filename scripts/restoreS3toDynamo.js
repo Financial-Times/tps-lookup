@@ -14,31 +14,48 @@ const restore = new DynamoRestore({
   awsRegion: config.awsRegion
 });
 
-console.log(restore);
-
 restore.on('error', (message) => {
-  console.log(message);
+  logger.error({
+    event: 'DYNAMO_RESTORE_ERROR',
+    error: message
+  })
   process.exit(-1);
 });
 
 restore.on('warning', (message) => {
-  console.log(message);
+  logger.warn({
+    event: 'DYNAMO_RESTORE_WARNING',
+    warning: message
+  });
 });
 
 restore.on('finish-batch', (l) => {
-  console.log('finished batch, requests:', l);
+  logger.info({
+    event: 'DYNAMO_RESTORE_BATCH_FINISHED',
+    itemsInBatch: l
+  });
 });
 
 restore.on('send-batch', (batches, requests, streamMeta) => {
-  console.log(restore.options.concurrency);
-  console.log('Batch sent. %d in flight. %d Mb remaining to download...', requests, streamMeta.RemainingLength / (1024 * 1024));
-  console.log(`num cached batches ${batches}`);
+  logger.info({
+    event: 'DYNAMO_RESTORE_BATCH_SENT',
+    concurrency: restore.options.concurrency,
+    inFlightRequests: requests,
+    remainingLengthMb: streamMeta.RemainingLength / (1024 * 1024),
+    cachedBatches: batches
+  });
 });
 
 restore.on('finish', () => {
-  console.log('Finished restoring DynamoDB table');
+  logger.info({
+    event: 'DYNAMO_RESTORE_FINISHED',
+    table: restore.options.table
+  });
 });
 
 restore.run(() => {
-  console.log('Finished restoring DynamoDB table');
+  logger.info({
+    event: 'DYNAMO_RESTORE_RUN_FINISHED',
+    table: restore.options.table
+  });
 });

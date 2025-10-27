@@ -6,6 +6,8 @@ const AWS = require('aws-sdk');
 const es = require('event-stream');
 const Stream = require('stream');
 const config = require('../config');
+const logger = require('../helper/logger.js');
+
 
 AWS.config.update({
   accessKeyId: config.awsAccessKeyId,
@@ -36,7 +38,19 @@ co(function* () {
     const params = { Bucket: 'email-platform-ftcom-tps', Key: 'tps.json', Body: pass };
 
     s3.upload(params, (err, data) => {
-      console.log(err, data);
+      if (err) {
+        logger.error({
+          event: 'S3_UPLOAD_ERROR',
+          error: err
+        });
+      } else {
+        logger.info({
+          event: 'S3_UPLOAD_SUCCESS',
+          location: data.Location,
+          bucket: data.Bucket,
+          key: data.Key
+        });
+      }
     });
 
     return pass;
@@ -51,11 +65,17 @@ co(function* () {
     .pipe(es.split('\r\n'))
     .pipe(es.mapSync((data) => {
       if (data.trim()) {
-        console.log(count++);
+        logger.info({
+          event: 'PROCESSING_CTPS_LINE',
+          lineNumber: count++
+        });
         return `${JSON.stringify({ phone: { S: data.trim() } })}\n`;
       }
     }))
     .pipe(fs.createWriteStream('./tps.json'));
 }).catch((err) => {
-  console.log(err);
+  logger.error({
+    event: 'DB_STREAM_UPLOADER_ERROR',
+    error: err
+  });
 });

@@ -25,7 +25,7 @@ const updateNumbers = async () => {
 
   oldCTPSFile.on("close", () => {
   logger.info({ event: "Old CTPS file downloaded" });
-  ftpToFS("./CTPS/ctps_ns.txt", "/tmp/ctps_new.txt", "ctps.txt");
+  ftpToFS("./CTPS/ctps_ns.txt", "/tmp/ctps_new.txt", "ctps.txt",);
   });
 
   oldTPSFile.on("close", () => {
