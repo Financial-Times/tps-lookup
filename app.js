@@ -1,7 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const compression = require('compression');
-const config = require('./config');
 const healthCheck = require('./src/health/healthCheck');
 const { notFound, errorMiddleware } = require('./src/middleware/errors');
 
