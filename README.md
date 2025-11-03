@@ -153,6 +153,30 @@ When you push your branch to the remote repo and a PR is opened (including draft
 
 Once this is resolved/we have a workaround, we’ll use PR numbers in the app name.
 
+## Manual Checks
+To manually verify whether a number recently added to the official TPS or CTPS list has been successfully ingested into our system, follow these steps:
+- Go to the [Doppler TPS Production config](https://dashboard.doppler.com/workplace/99fbb11f5bea112e94dd/projects/ft-tps-screener/configs/prod)
+- Retrieve the `SFTP_USERNAME` and `SFTP_PASSWORD` credentials
+- Log in to the [TPS Corporate Dashboard](https://corporate.tpsonline.org.uk/login) using those credentials
+- Once logged in, navigate to Download TPS → Quick Online Download → Changes Since, then select a recent date.
+- Download the generated file, it contains numbers added since the selected date.
+- You can then test these numbers by either:
+  - Sending a request via Postman to https://tps-screener.ft.com/search
+  - Manually searching on https://tps-screener.ft.com
+
+### Fastly
+The front-end of this system is served through Fastly. To monitor incoming requests and their statuses, follow these steps:
+
+- Go to `ft.okta.com` and sign in.
+- Select `Signal Sciences` to access the `Fastly` dashboard.
+- Click on `Site` → `Internal Products`.
+- Use the following query to view recent traffic for the production URL:
+`from:-6h server:tps-screener.ft.com`. This shows the last 6 hours of traffic.
+- To view the last 7 days of traffic, adjust the query as follows:
+`from:-7d server:tps-screener.ft.com`
+- To view requests for the development environment, use:
+`from:-6h server:tps-screener-dev.ft.com`
+
 ### Logging
 
 Logs are sent to splunk for AWS. See the Splunk queries below:
