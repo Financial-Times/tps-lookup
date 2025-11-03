@@ -13,7 +13,7 @@ Subsequently, an FT service can leverage the TPS Screener to intelligently refin
 - **Data pipeline:** `scripts/update-numbers.js` downloads the latest TPS/CTPS files from the TPS SFTP, diffs them against our S3 snapshot (`email-platform-ftcom-tps`), and applies additions or deletions to DynamoDB.
 - **Storage:** Production data lives in DynamoDB table `ft-email_platform_tps_lookup` (CRM prod account). A test/exploration table, `test-table`, is in the FT Tech IP Martech Prod account (`arn:aws:dynamodb:eu-west-1:307164329441:table/test-table`).
 - **Auth:** Okta (OIDC) protects the UI and API; internal services can supply an API key header instead.
-- **Hosting:** App runs in AWS ECS via Hako. CI deploys review builds to `crm-review-eu-west-1`; merges to `master` go to `crm-prod-eu-west-1`.
+- **Hosting:** App runs in AWS ECS via Hako. CI deploys review builds to `crm-review-eu-west-1`; merges to `main` go to `crm-prod-eu-west-1`.
 
 ## Configuration & Data
 - **DynamoDB (prod):** `ft-email_platform_tps_lookup` in account `FT Tech Infrastructure Prod (027104099916)`. Each item stores the phone number (primary key) plus `lastRetrieved`, which we update when a number is queried.
@@ -136,7 +136,7 @@ Follow [Login and Deploy](https://financialtimes.atlassian.net/wiki/spaces/SF/pa
 
 4. If you're working on a PR or draft PR, it will automatically deploy to the review environment so you can validate the change.
 
-5. Once validated, merge to master to apply the schedule in production.
+5. Once validated, merge to main to apply the schedule in production.
 
 6. Confirm the schedule in the AWS Console under:
 Amazon EventBridge → Schedules
@@ -175,4 +175,4 @@ This system uses Change API to log changes to this app. A deployment will trigge
 
 ## Deployments
 
-Any merge to master will trigger a deployment to AWS ECS Prod cluster.
+Any merge to main will trigger a deployment to AWS ECS Prod cluster.
