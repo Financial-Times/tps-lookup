@@ -153,6 +153,17 @@ When you push your branch to the remote repo and a PR is opened (including draft
 
 Once this is resolved/we have a workaround, we’ll use PR numbers in the app name.
 
+## Manual Checks
+To manually verify whether a number recently added to the official TPS or CTPS list has been successfully ingested into our system, follow these steps:
+- Go to the [Doppler TPS Production config](https://dashboard.doppler.com/workplace/99fbb11f5bea112e94dd/projects/ft-tps-screener/configs/prod)
+- Retrieve the `SFTP_USERNAME` and `SFTP_PASSWORD` credentials
+- Log in to the [TPS Corporate Dashboard](https://corporate.tpsonline.org.uk/login) using those credentials
+- Once logged in, navigate to Download TPS → Quick Online Download → Changes Since, then select a recent date.
+- Download the generated file, it contains numbers added since the selected date.
+- You can then test these numbers by either:
+  - Sending a request via Postman to https://tps-screener.ft.com/search
+  - Manually searching on https://tps-screener.ft.com
+
 ### Fastly
 The front-end of this system is served through Fastly. To monitor incoming requests and their statuses, follow these steps:
 
