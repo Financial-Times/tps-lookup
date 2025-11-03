@@ -37,7 +37,7 @@ workflows:
           filters:            
             branches:
               ignore:
-                - master
+                - main
       - hako/deploy_image:
           requires:
             - build_tag_and_push_image
@@ -58,7 +58,7 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - main
       - hako/deploy_image:
           requires:
             - build_tag_and_push_image
