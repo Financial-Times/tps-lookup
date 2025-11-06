@@ -1,5 +1,6 @@
 application: ft-tps-screener #System code of the app
 environment: crm-review-eu-west-1  # This should already exist under environments of the ip-crm-hako-config repo
+ephemeralAppTTL: 2 days
 
 stacks:
   web:
