@@ -109,7 +109,7 @@ AWS Console – ECS Prod Cluster (`crm-prod-eu-west-1`)
 Look for the `ft-tps-screener` service
 
 Review environment:
-AWS Console – ECS Review Cluster (`crm-review-eu-west-1`). The system deploys an ephemeral app to this cluster which is removed after two days. You can also manually remove it before its TTL expires by using the following `hako` command, replacing the value in brackets with the emphemeral id created when you deployed:
+AWS Console – ECS Review Cluster (`crm-review-eu-west-1`). The system deploys an ephemeral app to this cluster which is removed after two days. You can also manually remove it before its TTL expires by using the following `hako` command, replacing the value in brackets with the ephemeral id created when you deployed:
 
 ```
 hako app delete --app ft-tps-screener-{ephemeral_id} --env crm-review-eu-west-1
