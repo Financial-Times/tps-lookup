@@ -13,7 +13,7 @@ Subsequently, an FT service can leverage the TPS Screener to intelligently refin
 - **Data pipeline:** `scripts/update-numbers.js` downloads the latest TPS/CTPS files from the TPS SFTP, diffs them against our S3 snapshot (`email-platform-ftcom-tps`), and applies additions or deletions to DynamoDB.
 - **Storage:** Production data lives in DynamoDB table `ft-email_platform_tps_lookup` (CRM prod account). A test/exploration table, `test-table`, is in the FT Tech IP Martech Prod account (`arn:aws:dynamodb:eu-west-1:307164329441:table/test-table`).
 - **Auth:** Okta (OIDC) protects the UI and API; internal services can supply an API key header instead.
-- **Hosting:** App runs in AWS ECS via Hako. CI deploys review builds to `crm-review-eu-west-1`; merges to `main` go to `crm-prod-eu-west-1`.
+- **Hosting:** App runs in AWS ECS via Hako. CI deploys ephemeral review builds to `crm-review-eu-west-1` with a default Time To Live (TTL) of two days; merges to `main` go to `crm-prod-eu-west-1`.
 
 ## Configuration & Data
 - **DynamoDB (prod):** `ft-email_platform_tps_lookup` in account `FT Tech Infrastructure Prod (027104099916)`. Each item stores the phone number (primary key) plus `lastRetrieved`, which we update when a number is queried.
@@ -103,7 +103,11 @@ AWS Console – ECS Prod Cluster (`crm-prod-eu-west-1`)
 Look for the `ft-tps-screener` service
 
 Review environment:
-AWS Console – ECS Review Cluster (`crm-review-eu-west-1`)
+AWS Console – ECS Review Cluster (`crm-review-eu-west-1`). The system deploys an ephemeral app to this cluster which is removed after two days. You can also delete it before it expires by using the following `hako` command, replacing the value in angle brackets with the emphemeral Service name you deployed:
+
+```
+hako app delete --app <ft-tps-screener-234567-web> --env crm-review-eu-west-1
+```
 
 Scheduled task configuration (EventBridge):
 AWS Console – EventBridge Schedules
@@ -134,7 +138,7 @@ How to change the schedule:
 
 Follow [Login and Deploy](https://financialtimes.atlassian.net/wiki/spaces/SF/pages/9086500865/CRM+Guide+Heroku+to+AWS+Migration+using+Hako#%3Aaws%3A---Login-%26-Deploy) steps 1 and 2.
 
-4. If you're working on a PR or draft PR, it will automatically deploy to the review environment so you can validate the change.
+4. If you're working on a PR or draft PR, it will automatically deploy to the review environment as an ephemeral app so you can validate the change.
 
 5. Once validated, merge to main to apply the schedule in production.
 
@@ -147,7 +151,9 @@ For more detail on hako:
 - Refer to the [Hako Wiki](https://github.com/Financial-Times/hako-cli/wiki)
 
 ## Development
-When you push your branch to the remote repo and a PR is opened (including draft PR), if CircleCI checks are successful, `ft-tps-screener` is deployed to the AWS crm-review-eu-west-1 environment. We are not appending the PR number to the app name as with other configs due to a character limit when using Scheduled Task stacks:
+When you push your branch to the remote repo and a PR is opened (including draft PR), if CircleCI checks are successful, `ft-tps-screener` is deployed to the AWS crm-review-eu-west-1 environment. 
+
+#TODO: check if this is still valid: We are not appending the PR number to the app name as with other configs due to a character limit when using Scheduled Task stacks:
 
 `Properties validation failed for TaskEventBridgeScheduler with message: [#/Name:expected maxLength: 64, actual: 68]`
 
@@ -165,7 +171,7 @@ To manually verify whether a number recently added to the official TPS or CTPS l
   - Manually searching on https://tps-screener.ft.com
 
 ### Fastly
-The front-end of this system is served through Fastly. To monitor incoming requests and their statuses, follow these steps:
+The front-end of this system in production is served through Fastly. To monitor incoming requests and their statuses, follow these steps:
 
 - Go to `ft.okta.com` and sign in.
 - Select `Signal Sciences` to access the `Fastly` dashboard.
@@ -174,8 +180,6 @@ The front-end of this system is served through Fastly. To monitor incoming reque
 `from:-6h server:tps-screener.ft.com`. This shows the last 6 hours of traffic.
 - To view the last 7 days of traffic, adjust the query as follows:
 `from:-7d server:tps-screener.ft.com`
-- To view requests for the development environment, use:
-`from:-6h server:tps-screener-dev.ft.com`
 
 ### Logging
 
