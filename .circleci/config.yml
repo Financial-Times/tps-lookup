@@ -58,7 +58,11 @@ workflows:
             fi; printf "%.7s" "$ID"')
   build_and_deploy_prod:
     jobs:
-      - test
+      - test:
+          filters:
+            branches:
+              only:
+                - main
       - build_tag_and_push_image:
           requires:
             - test
