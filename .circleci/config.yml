@@ -30,7 +30,11 @@ jobs:
 workflows:
   build_and_deploy_ephemeral:
     jobs:
-      - test
+      - test:
+          filters:
+            branches:
+              ignore:
+                - main
       - build_tag_and_push_image:
           requires:
             - test
@@ -87,4 +91,4 @@ workflows:
           context: change-api-orb
           system-code: ft-tps-screener
           environment: prod
-          slack-channels: crme-alerts
+          slack-channels: crme-reports
