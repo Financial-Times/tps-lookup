@@ -13,7 +13,7 @@ Subsequently, an FT service can leverage the TPS Screener to intelligently refin
 - **Data pipeline:** `scripts/update-numbers.js` downloads the latest TPS/CTPS files from the TPS SFTP, diffs them against our S3 snapshot (`email-platform-ftcom-tps`), and applies additions or deletions to DynamoDB.
 - **Storage:** Production data lives in DynamoDB table `ft-email_platform_tps_lookup` (CRM prod account). A test/exploration table, `test-table`, is in the FT Tech IP Martech Prod account (`arn:aws:dynamodb:eu-west-1:307164329441:table/test-table`).
 - **Auth:** Okta (OIDC) protects the UI and API; internal services can supply an API key header instead.
-- **Hosting:** App runs in AWS ECS via Hako. CI deploys review builds to `crm-review-eu-west-1`; merges to `main` go to `crm-prod-eu-west-1`.
+- **Hosting:** App runs in AWS ECS via Hako. CI deploys ephemeral review builds to `crm-review-eu-west-1` with a default Time To Live (TTL) of two days; merges to `main` go to `crm-prod-eu-west-1`.
 
 ## Configuration & Data
 - **DynamoDB (prod):** `ft-email_platform_tps_lookup` in account `FT Tech Infrastructure Prod (027104099916)`. Each item stores the phone number (primary key) plus `lastRetrieved`, which we update when a number is queried.
@@ -22,8 +22,11 @@ Subsequently, an FT service can leverage the TPS Screener to intelligently refin
 - **Secrets:** Doppler project `ft-tps-screener` (configs `dev` and `prod`).
 
 ## Using the App
-### API
+### API (production)
 `POST https://tps-screener.ft.com/search`
+
+### API (ephemeral)
+`POST https://ft-tps-screener-{ephemeral_id}.eu-west-1.crm-review.ftweb.tech/search`
 
 Body:
 ```json
@@ -81,16 +84,19 @@ Apply changes to DynamoDB
   - delete deletions from the table
 - Persist the new files back to S3 as the new baseline
 
-- Since this is a scheduled task, logs for this specific process can be found at `index=hako source="ft-tps-screener" host="scheduled-task.ft-tps-screener.eu-west-1.crm-review.ftweb.tech"`
+- Since this is a scheduled task, logs for this specific process can be found at `index=hako source="ft-tps-screener" host="scheduled-task.ft-tps-screener.eu-west-1.crm-prod.ftweb.tech"`
 - trigger: runs daily at 23:00 UTC via the EventBridge scheduled task; you can also execute it manually with `npm run update` (prod creds) or `npm run update-numbers` (dev via Doppler).
 
+*note* ephemeral apps have a TTL of two days so this scheduled task will only run if the ephemeral app exists in the `crm-review-eu-west-1` cluster at the scheduled time.
+If it runs, the logs can be viewed with this query:
+
+`index=hako source="ft-tps-screener" host="scheduled-task.ft-tps-screener-{ephemeral_id}.eu-west-1.crm-review.ftweb.tech"`
 
 ### Testing
 
-- There is currently no staging environment to test this app. However one may test the app running it locally with the command:
-`npm run start:dev`
-
-- This will use the environment variables in the [dev Doppler config](https://dashboard.doppler.com/workplace/99fbb11f5bea112e94dd/projects/ft-tps-screener/configs/dev).
+- When your development branch is pushed to Github an ephemeral app is created. You can test that the endpoint returns the `canCall` value using the instructions under the Using the App heading, above. 
+- You can also test the app running it locally with the command:
+`npm run start:dev`. This will use the environment variables in the [dev Doppler config](https://dashboard.doppler.com/workplace/99fbb11f5bea112e94dd/projects/ft-tps-screener/configs/dev).
 - Use `http://localhost:3000` to access TPS Screener.
 
 
@@ -103,7 +109,11 @@ AWS Console – ECS Prod Cluster (`crm-prod-eu-west-1`)
 Look for the `ft-tps-screener` service
 
 Review environment:
-AWS Console – ECS Review Cluster (`crm-review-eu-west-1`)
+AWS Console – ECS Review Cluster (`crm-review-eu-west-1`). The system deploys an ephemeral app to this cluster which is removed after two days. You can also manually remove it before its TTL expires by using the following `hako` command, replacing the value in brackets with the ephemeral id created when you deployed:
+
+```
+hako app delete --app ft-tps-screener-{ephemeral_id} --env crm-review-eu-west-1
+```
 
 Scheduled task configuration (EventBridge):
 AWS Console – EventBridge Schedules
@@ -134,7 +144,7 @@ How to change the schedule:
 
 Follow [Login and Deploy](https://financialtimes.atlassian.net/wiki/spaces/SF/pages/9086500865/CRM+Guide+Heroku+to+AWS+Migration+using+Hako#%3Aaws%3A---Login-%26-Deploy) steps 1 and 2.
 
-4. If you're working on a PR or draft PR, it will automatically deploy to the review environment so you can validate the change.
+4. If you're working on a PR or draft PR, it will automatically deploy to the review environment as an ephemeral app so you can validate the change.
 
 5. Once validated, merge to main to apply the schedule in production.
 
@@ -147,11 +157,9 @@ For more detail on hako:
 - Refer to the [Hako Wiki](https://github.com/Financial-Times/hako-cli/wiki)
 
 ## Development
-When you push your branch to the remote repo and a PR is opened (including draft PR), if CircleCI checks are successful, `ft-tps-screener` is deployed to the AWS crm-review-eu-west-1 environment. We are not appending the PR number to the app name as with other configs due to a character limit when using Scheduled Task stacks:
+When you push your branch to the remote repo and a PR is opened (including draft PR), if CircleCI checks are successful, `ft-tps-screener` is deployed to the AWS crm-review-eu-west-1 environment. 
 
-`Properties validation failed for TaskEventBridgeScheduler with message: [#/Name:expected maxLength: 64, actual: 68]`
-
-Once this is resolved/we have a workaround, we’ll use PR numbers in the app name.
+A truncated branch name or hashed version of such will be appended to the system name, for example: `ft-tps-screener-7ef538e-web` 
 
 ## Manual Checks
 To manually verify whether a number recently added to the official TPS or CTPS list has been successfully ingested into our system, follow these steps:
@@ -165,7 +173,7 @@ To manually verify whether a number recently added to the official TPS or CTPS l
   - Manually searching on https://tps-screener.ft.com
 
 ### Fastly
-The front-end of this system is served through Fastly. To monitor incoming requests and their statuses, follow these steps:
+The front-end of this system in production is served through Fastly. To monitor incoming requests and their statuses, follow these steps:
 
 - Go to `ft.okta.com` and sign in.
 - Select `Signal Sciences` to access the `Fastly` dashboard.
@@ -174,16 +182,11 @@ The front-end of this system is served through Fastly. To monitor incoming reque
 `from:-6h server:tps-screener.ft.com`. This shows the last 6 hours of traffic.
 - To view the last 7 days of traffic, adjust the query as follows:
 `from:-7d server:tps-screener.ft.com`
-- To view requests for the development environment, use:
-`from:-6h server:tps-screener-dev.ft.com`
 
 ### Logging
 
-Logs are sent to splunk for AWS. See the Splunk queries below:
+Logs are sent to splunk for AWS. See the Splunk query for production below:
 `update-number.js` script logs(scheduled task): 
-```
-index=hako source="ft-tps-screener" host="scheduled-task.ft-tps-screener.eu-west-1.crm-{{review or prod}}.ftweb.tech"
-```
 
 `index=hako source="ft-tps-screener" host="ft-tps-screener.eu-west-1.crm-prod.ftweb.tech"`
 

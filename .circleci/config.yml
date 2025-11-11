@@ -28,7 +28,7 @@ jobs:
           image_name: ft-tps-screener
           image_registry: docker.packages.ft.com/ip-container-registry
 workflows:
-  build_and_deploy_review:
+  build_and_deploy_ephemeral:
     jobs:
       - test
       - build_tag_and_push_image:
@@ -41,7 +41,7 @@ workflows:
       - hako/deploy_image:
           requires:
             - build_tag_and_push_image
-          name: Deploy to AWS (Review EU)
+          name: Deploy ephemeral app to AWS (Review EU)
           image_tag: git-$(git rev-parse --short=8 HEAD)
           image_name: ft-tps-screener
           aws_account_id: $AWS_ACCOUNT_ID
@@ -49,9 +49,20 @@ workflows:
           context: circleci-oidc-empty-context
           hako_app: ft-tps-screener
           hako_env: crm-review-eu-west-1
+          # use shortened branch name if available or fall back to sha value
+          ephemeral_id: $(bash -lc 'BR="$CIRCLE_BRANCH";
+            if [[ "$BR" =~ ([A-Za-z]{2,10})[-_/]*([0-9]{1,7}) ]]; then
+              ID="${BASH_REMATCH[1],,}${BASH_REMATCH[2]}";
+            else
+              ID="$(printf "%s" "$BR" | sha1sum | cut -c1-7)";
+            fi; printf "%.7s" "$ID"')
   build_and_deploy_prod:
     jobs:
-      - test
+      - test:
+          filters:
+            branches:
+              only:
+                - main
       - build_tag_and_push_image:
           requires:
             - test
