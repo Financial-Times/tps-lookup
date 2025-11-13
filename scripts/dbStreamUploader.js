@@ -5,12 +5,11 @@ const fs = require('fs');
 const AWS = require('aws-sdk');
 const es = require('event-stream');
 const Stream = require('stream');
-const config = require('../config');
 
 AWS.config.update({
-  accessKeyId: config.awsAccessKeyId,
-  secretAccessKey: config.awsSecretAccessKey,
-  region: config.awsRegion
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: process.env.AWS_REGION
 });
 
 //const s3 = new AWS.S3({ });

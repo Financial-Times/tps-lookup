@@ -1,9 +1,12 @@
 const AWS = require("aws-sdk");
-const config = require("../../config");
 const logger = require("../../helper/logger.js");
 
 module.exports = async function checkAwsAccess() {
-  const { accessKeyId, secretAccessKey, region = process.env.AWS_REGION || "eu-west-1", tableName } = config;
+
+  const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
+  const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
+  const region = process.env.AWS_REGION;
+  const tableName = process.env.TABLE_NAME;
   
   AWS.config.update({
     accessKeyId,
