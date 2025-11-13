@@ -25,8 +25,19 @@ function checkDBUp() {
   co(function* () {
     const check = yield dynamoDb.describeTable({ TableName: process.env.TABLE_NAME }).promise();
     if (!['UPDATING', 'ACTIVE'].includes(check.Table.TableStatus)) {
+      logger.info({
+        message: 'DynamoDB table is not active',
+        event: 'DYNAMODB_TABLE_NOT_ACTIVE',
+        status: check.Table.TableStatus 
+      })
       isDBUp = false;
     } else {
+      logger.info({
+        message: 'DynamoDB table is active',
+        event: 'DYNAMODB_TABLE_ACTIVE',
+        status: check.Table.TableStatus 
+      })
+      dbUpLastUpdated = new Date().toISOString();
       isDBUp = true;
     }
   }).catch((err) => {
