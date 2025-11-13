@@ -1,5 +1,4 @@
 const DynamoRestore = require('dynamo-backup-to-s3').Restore;
-const config = require('../config');
 
 const restore = new DynamoRestore({
   source: 's3://email-platform-ftcom-signup/test/files/tps.json',
@@ -8,10 +7,10 @@ const restore = new DynamoRestore({
   concurrency: 1000,
   partitionkey: 'phone',
   stopOnFailure: true,
-  awsAccessKey: config.awsAccessKeyId,
-  awsSecretKey: config.awsSecretAccessKey,
-  awsSecret: config.awsSecretAccessKey,
-  awsRegion: config.awsRegion
+  awsAccessKey: process.env.AWS_ACCESS_KEY_ID,
+  awsSecretKey: process.env.AWS_SECRET_ACCESS_KEY,
+  awsSecret: process.env.AWS_SECRET_ACCESS_KEY,
+  awsRegion: process.env.AWS_REGION
 });
 
 console.log(restore);

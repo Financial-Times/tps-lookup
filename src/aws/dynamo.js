@@ -2,6 +2,7 @@ const AWS = require("aws-sdk");
 const logger = require("../../helper/logger.js");
 const TABLE_NAME = process.env.TABLE_NAME || 'ft-email_platform_tps_lookup';
 const { AWS_REGION } = process.env;
+
 const docClient = new AWS.DynamoDB.DocumentClient({ region: AWS_REGION });
 
 async function addToDynamo(phone) {
