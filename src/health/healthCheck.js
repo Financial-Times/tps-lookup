@@ -42,6 +42,41 @@ async function logAwsContext(event = 'AWS_CONTEXT') {
   }
 }
 
+// ---- S3 probe ----
+async function checkS3Access() {
+  const s3 = new AWS.S3();
+  const BUCKET_NAME = process.env.AWS_S3_BUCKET;
+
+  try {
+    const result = await s3.listObjectsV2({ Bucket: BUCKET_NAME, MaxKeys: 1 }).promise();
+
+    logger.info({
+      event: 'S3_ACCESS_OK',
+      bucket: BUCKET_NAME,
+      objectCount: result.Contents?.length || 0
+    });
+
+    return { ok: true, lastUpdated: new Date().toISOString() };
+  } catch (err) {
+    logger.error({
+      event: 'S3_ACCESS_FAILED',
+      bucket: BUCKET_NAME,
+      message: err?.message,
+      code: err?.code,
+      statusCode: err?.statusCode,
+      requestId: err?.requestId,
+      retryable: err?.retryable,
+      time: err?.time,
+      stack: err?.stack
+    });
+
+    // capture context when failure happens
+    await logAwsContext('AWS_CONTEXT_ON_S3_FAILURE');
+
+    return { ok: false, lastUpdated: new Date().toISOString() };
+  }
+}
+
 // ---- healthcheck (external URL) ----
 const healthcheck = new HealthCheck({
   checks: [
@@ -107,6 +142,20 @@ async function checkDBUp() {
   }
 }
 
+let isS3Up = false;
+let s3UpLastUpdated = null;
+
+async function pollAwsHealth() {
+  await checkDBUp();
+  const s3Result = await checkS3Access();
+  isS3Up = s3Result.ok;
+  s3UpLastUpdated = s3Result.lastUpdated;
+}
+
+checkDBUp();
+checkS3Access();
+setInterval(pollAwsHealth, 10_000);
+
 // ---- express handler ----
 exports.handle = async (req, res) => {
   const checks = healthcheck.toJSON();
@@ -122,6 +171,17 @@ exports.handle = async (req, res) => {
       'Check AWS DynamoDB regional status. Verify ECS taskRole permissions for DescribeTable/Query/Scan on the table and GSIs. Ensure AWS_REGION and TABLE_NAME are set.',
     lastUpdated: dbUpLastUpdated
   });
+  checks.push({
+  name: 'S3 bucket is reachable',
+  id: 'tps-screener-s3-check',
+  ok: isS3Up,
+  severity: 1,
+  businessImpact: 'Cannot retrieve or store TPS data from S3 bucket',
+  technicalSummary: 'Calls S3 ListObjectsV2 to verify access permissions and bucket existence',
+  panicGuide: 'Check IAM role permissions for s3:ListBucket on the target bucket. Ensure region and bucket name are correct.',
+  lastUpdated: s3UpLastUpdated
+});
+
 
   res.json({
     schemaVersion: 1,
@@ -131,7 +191,3 @@ exports.handle = async (req, res) => {
     checks
   });
 };
-
-// ---- kick off immediately, then poll ----
-checkDBUp();
-setInterval(checkDBUp, 10_000);
