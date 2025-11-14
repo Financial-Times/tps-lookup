@@ -83,3 +83,17 @@ exports.handle = (req, res) => {
 
 // Wait until db connection is established before pinging DB for first time
 setInterval(checkDBUp, 1000 * 10);
+const AWS = require('aws-sdk');
+
+async function logCurrentIdentity() {
+  try {
+    const sts = new AWS.STS();
+    const identity = await sts.getCallerIdentity({}).promise();
+
+    console.log('Current AWS identity:', identity);
+  } catch (error) {
+    console.error('Failed to get identity:', error);
+  }
+}
+
+logCurrentIdentity();
