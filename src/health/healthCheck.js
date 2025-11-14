@@ -1,107 +1,137 @@
-const co = require('co');
-const { dynamoDb } = require('../services/db');
+const AWS = require('aws-sdk');
+const { dynamoDb } = require('../services/db'); // exports new AWS.DynamoDB() + DocumentClient without static creds
 const HealthCheck = require('@financial-times/health-check');
 const logger = require('../../helper/logger');
 
-let isDBUp = true;
-let dbUpLastUpdated;
+AWS.config.update({ region: process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION || 'eu-west-1' });
 
-const healthcheck = new HealthCheck({
-  checks: [{
-    type: 'ping-url',
-    name: 'TPS-lookup gtg is down',
-    id: 'tps-screener-search',
-    url: `${process.env.OKTA_APP_BASE_URL}/__gtg`,
-    id: 'tps-lookup-gtg',
-    severity: 1,
-    interval: 60000,
-    businessImpact: 'Will not be able to check the phone numbers on the TPS/CTPS registry',
-    technicalSummary: 'tps-lookup is unreachable',
-    panicGuide: 'Please contact us on #crm-enablement-team',
-  }]
-});
+let isDBUp = false;
+let dbUpLastUpdated = null;
 
-function checkDBUp() {
-  co(function* () {
-    const check = yield dynamoDb.describeTable({ TableName: process.env.TABLE_NAME }).promise();
-    if (!['UPDATING', 'ACTIVE'].includes(check.Table.TableStatus)) {
-      logger.info({
-        message: 'DynamoDB table is not active',
-        event: 'DYNAMODB_TABLE_NOT_ACTIVE',
-        status: check.Table.TableStatus 
-      })
-      isDBUp = false;
-    } else {
-      logger.info({
-        message: 'DynamoDB table is active',
-        event: 'DYNAMODB_TABLE_ACTIVE',
-        status: check.Table.TableStatus 
-      })
-      dbUpLastUpdated = new Date().toISOString();
-      isDBUp = true;
-    }
-  }).catch((err) => {
-    logger.error({
-      message: 'Error checking DynamoDB status',
-      event: 'DYNAMODB_STATUS_CHECK_FAILED',
-      error: err,
-      TableName: process.env.TABLE_NAME
-    });
-    isDBUp = false;
-  });
-}
+const TABLE_NAME = process.env.TABLE_NAME;
+const OKTA_APP_BASE_URL = process.env.OKTA_APP_BASE_URL;
 
-exports.handle = (req, res) => {
-  const health = {};
-
-  health.schemaVersion = 1;
-  health.systemCode = 'ft-tps-screener';
-  health.name = 'Internal Product TPS Screener';
-  health.description = 'API and Interface for screening phone numbers on the TPS/CTPS registry';
-  health.checks = healthcheck.toJSON();
-
-  const dbCheckObj = {
-    name: 'DynamoDB is up',
-    id: 'tps-screener-db-check',
-    ok: true,
-    severity: 1,
-    businessImpact: 'Will not be able to screen phone numbers on the TPS/CTPS registry',
-    technicalSummary: 'Pings the Db connection to ensure proper status',
-    panicGuide: 'First, verify that there is not a global issue with AWS/DynamoDB. ' +
-    'If there is a global issue with AWS, then no further action can be taken ' +
-      'to fix the issue. ' +
-      'If there is no AWS/Dynamodb issue, visit the Heroku dashboard for ft-tps-screener at ' +
-      'https://dashboard.heroku.com/apps/ft-tps-screener/ ' +
-      'Click the "More" dropdown button and click "Restart All Dynos".',
-      lastUpdated: dbUpLastUpdated
-  };
-
-  dbCheckObj.ok = isDBUp;
-  health.checks.push(dbCheckObj);
-
-  res.json(health);
-};
-
-// Wait until db connection is established before pinging DB for first time
-setInterval(checkDBUp, 1000 * 10);
-const AWS = require('aws-sdk');
-
-async function logCurrentIdentity() {
+// ---- helper: log current AWS context (whoami + creds + region + table) ----
+async function logAwsContext(event = 'AWS_CONTEXT') {
   try {
+    // identity
     const sts = new AWS.STS();
     const identity = await sts.getCallerIdentity({}).promise();
+
+    // credentials snapshot (mask accessKeyId)
+    const creds = await new Promise((resolve, reject) =>
+      AWS.config.getCredentials((err, c) => (err ? reject(err) : resolve(c)))
+    );
+
     logger.info({
-      message: 'Current AWS Identity',
-      event: 'AWS_IDENTITY_LOG',
-      identity: identity
-    }); 
-  } catch (error) {
-    logger.error({
-      message: 'Error retrieving AWS Identity',
-      event: 'AWS_IDENTITY_LOG_FAILED',
-      error: error
+      event,
+      identity,
+      region: AWS.config.region,
+      envRegion: process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION,
+      tableName: TABLE_NAME,
+      credentials: {
+        accessKeyIdPrefix: creds && creds.accessKeyId ? creds.accessKeyId.slice(0, 4) : null,
+        expired: !!(creds && creds.expired),
+        expireTime: creds && creds.expireTime ? creds.expireTime.toISOString?.() || String(creds.expireTime) : null,
+        // provider class name hint
+        provider: creds && creds.constructor ? creds.constructor.name : null
+      }
     });
+  } catch (e) {
+    logger.error({ event: `${event}_FAILED`, error: e });
   }
 }
 
-logCurrentIdentity();
+// ---- healthcheck (external URL) ----
+const healthcheck = new HealthCheck({
+  checks: [
+    {
+      type: 'ping-url',
+      name: 'TPS lookup gtg',
+      id: 'tps-lookup-gtg',          // fix duplicate id
+      url: OKTA_APP_BASE_URL ? `${OKTA_APP_BASE_URL}/__gtg` : 'about:blank',
+      severity: 1,
+      interval: 60000,
+      businessImpact: 'Will not be able to check the phone numbers on the TPS/CTPS registry',
+      technicalSummary: 'tps-lookup is unreachable',
+      panicGuide: 'Please contact us on #crm-enablement-team'
+    }
+  ]
+});
+
+// ---- DynamoDB probe ----
+async function checkDBUp() {
+  try {
+    if (!TABLE_NAME) {
+      throw new Error('Missing env TABLE_NAME');
+    }
+
+    // one-time: dump context the first time we probe
+    if (dbUpLastUpdated === null) {
+      await logAwsContext('AWS_CONTEXT_AT_START');
+    }
+
+    const resp = await dynamoDb.describeTable({ TableName: TABLE_NAME }).promise();
+    const status = resp?.Table?.TableStatus;
+    const ok = status === 'ACTIVE' || status === 'UPDATING';
+
+    isDBUp = !!ok;
+    dbUpLastUpdated = new Date().toISOString();
+
+    logger.info({
+      event: ok ? 'DYNAMODB_TABLE_ACTIVE' : 'DYNAMODB_TABLE_NOT_ACTIVE',
+      status,
+      tableArn: resp?.Table?.TableArn,
+      lastUpdated: dbUpLastUpdated
+    });
+  } catch (err) {
+    isDBUp = false;
+    dbUpLastUpdated = new Date().toISOString();
+
+    // log rich error details
+    logger.error({
+      event: 'DYNAMODB_STATUS_CHECK_FAILED',
+      message: err?.message,
+      code: err?.code,
+      statusCode: err?.statusCode,
+      requestId: err?.requestId,
+      retryable: err?.retryable,
+      time: err?.time,
+      TableName: TABLE_NAME,
+      lastUpdated: dbUpLastUpdated,
+      stack: err?.stack
+    });
+
+    // also capture AWS context when it fails (useful for bad creds or wrong account)
+    await logAwsContext('AWS_CONTEXT_ON_FAILURE');
+  }
+}
+
+// ---- express handler ----
+exports.handle = async (req, res) => {
+  const checks = healthcheck.toJSON();
+
+  checks.push({
+    name: 'DynamoDB is up',
+    id: 'tps-screener-db-check',
+    ok: isDBUp,
+    severity: 1,
+    businessImpact: 'Will not be able to screen phone numbers on the TPS/CTPS registry',
+    technicalSummary: 'Calls DynamoDB DescribeTable to verify status',
+    panicGuide:
+      'Check AWS DynamoDB regional status. Verify ECS taskRole permissions for DescribeTable/Query/Scan on the table and GSIs. Ensure AWS_REGION and TABLE_NAME are set.',
+    lastUpdated: dbUpLastUpdated
+  });
+
+  res.json({
+    schemaVersion: 1,
+    systemCode: 'ft-tps-screener',
+    name: 'Internal Product TPS Screener',
+    description: 'API and Interface for screening phone numbers on the TPS/CTPS registry',
+    checks
+  });
+};
+
+// ---- kick off immediately, then poll ----
+checkDBUp();
+setInterval(checkDBUp, 10_000);
