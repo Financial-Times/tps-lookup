@@ -44,7 +44,8 @@ function checkDBUp() {
     logger.error({
       message: 'Error checking DynamoDB status',
       event: 'DYNAMODB_STATUS_CHECK_FAILED',
-      error: err
+      error: err,
+      TableName: process.env.TABLE_NAME
     });
     isDBUp = false;
   });
