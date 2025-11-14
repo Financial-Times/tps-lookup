@@ -90,10 +90,17 @@ async function logCurrentIdentity() {
   try {
     const sts = new AWS.STS();
     const identity = await sts.getCallerIdentity({}).promise();
-
-    console.log('Current AWS identity:', identity);
+    logger.info({
+      message: 'Current AWS Identity',
+      event: 'AWS_IDENTITY_LOG',
+      identity: identity
+    }); 
   } catch (error) {
-    console.error('Failed to get identity:', error);
+    logger.error({
+      message: 'Error retrieving AWS Identity',
+      event: 'AWS_IDENTITY_LOG_FAILED',
+      error: error
+    });
   }
 }
 
