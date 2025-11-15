@@ -3,19 +3,19 @@ const logger = require("../../helper/logger.js");
 
 module.exports = async function checkAwsAccess() {
 
-  const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
-  const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
+  // const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
+  // const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
   const region = process.env.AWS_REGION;
   const tableName = process.env.TABLE_NAME;
   
-  AWS.config.update({
-    accessKeyId,
-    secretAccessKey,
-    region,
-  });
+  // AWS.config.update({
+  //   accessKeyId,
+  //   secretAccessKey,
+  //   region,
+  // });
 
-  const s3 = new AWS.S3();
-  const dynamoDB = new AWS.DynamoDB();
+  const s3 = new AWS.S3({region})
+  const dynamoDB = new AWS.DynamoDB({region});
 
   try {
     logger.info({
