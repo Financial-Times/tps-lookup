@@ -6,8 +6,8 @@ module.exports = async function checkAwsAccess() {
   const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
   const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
   const region = process.env.AWS_REGION;
-  const tableName = process.env.TABLE_NAME;
-  
+  const AWS_DYNAMODB_TABLE = process.env.AWS_DYNAMODB_TABLE;
+  const AWS_S3_BUCKET = process.env.AWS_S3_BUCKET;
   AWS.config.update({
     accessKeyId,
     secretAccessKey,
@@ -26,7 +26,7 @@ module.exports = async function checkAwsAccess() {
 
     const s3Result = await s3
       .listObjectsV2({
-        Bucket: "email-platform-ftcom-tps",
+        Bucket: AWS_S3_BUCKET,
         MaxKeys: 1,
       })
       .promise();
@@ -34,11 +34,11 @@ module.exports = async function checkAwsAccess() {
     logger.info({
       event: "S3 access check successful",
       objectCount: s3Result.Contents?.length || 0,
-      bucket: s3Result.Name,
+      bucket: AWS_S3_BUCKET
     });
 
     const tableResult = await dynamoDB
-      .describeTable({ TableName: tableName })
+      .describeTable({ TableName: AWS_DYNAMODB_TABLE })
       .promise();
 
     logger.info({

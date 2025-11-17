@@ -5,7 +5,7 @@ const fs = require('fs');
 const AWS = require('aws-sdk');
 const es = require('event-stream');
 const Stream = require('stream');
-
+const { AWS_S3_BUCKET } = process.env;
 AWS.config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
@@ -32,7 +32,7 @@ const ctpsOptions = {
 co(function* () {
   function uploadFromStream(s3) {
     const pass = new Stream.PassThrough();
-    const params = { Bucket: 'email-platform-ftcom-tps', Key: 'tps.json', Body: pass };
+    const params = { Bucket: AWS_S3_BUCKET, Key: 'tps.json', Body: pass };
 
     s3.upload(params, (err, data) => {
       console.log(err, data);

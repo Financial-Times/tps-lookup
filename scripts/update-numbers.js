@@ -4,7 +4,7 @@ const ftpToFS = require("../src/ftp-to-fs.js");
 const fs = require("fs");
 const AWS = require("aws-sdk");
 
-const { AWS_REGION } = process.env;
+const { AWS_REGION, AWS_S3_BUCKET } = process.env;
 const s3 = new AWS.S3({ region: AWS_REGION });
 
 
@@ -18,8 +18,8 @@ const updateNumbers = async () => {
     process.exit(1);
   }
   // Get file from S3, then from FTP
-  const s3ParamsTPS = { Bucket: "email-platform-ftcom-tps", Key: "tps.txt" };
-  const s3ParamsCTPS = { Bucket: "email-platform-ftcom-tps", Key: "ctps.txt" };
+  const s3ParamsTPS = { Bucket: AWS_S3_BUCKET, Key: "tps.txt" };
+  const s3ParamsCTPS = { Bucket: AWS_S3_BUCKET, Key: "ctps.txt" };
   const oldCTPSFile = fs.createWriteStream("/tmp/ctps_original.txt");
   const oldTPSFile = fs.createWriteStream("/tmp/tps_original.txt");
 

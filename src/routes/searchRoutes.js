@@ -40,7 +40,7 @@ module.exports = (app) => {
           }
       
           const params = {
-            TableName: process.env.TABLE_NAME,
+            TableName: process.env.AWS_DYNAMODB_TABLE,
             Key: {
               phone: num.replace(/\s/g, '')
             }
