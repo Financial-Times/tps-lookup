@@ -17,7 +17,7 @@ stacks:
       TaskPolicyDocument:
         Version: "2012-10-17"
         Statement:
-          - Sid: "AccessProdDynamoDBTables"
+          - Sid: "AccessTestDynamoDBTables"
             Effect: "Allow"
             Action:
               - "dynamodb:GetItem"
@@ -28,8 +28,7 @@ stacks:
               - "dynamodb:PutItem"
               - "dynamodb:DescribeTable"
             Resource:
-              - arn:aws:dynamodb:eu-west-1:027104099916:table/ft-email_platform_tps_lookup*
-              - arn:aws:dynamodb:eu-west-1:615638662720:table/ft-tps-screener-prod
+              - arn:aws:dynamodb:eu-west-1:615638662720:table/ft-tps-screener-test
           - Sid: "AccessTestS3Buckets"
             Effect: "Allow"
             Action:
@@ -37,8 +36,6 @@ stacks:
               - "s3:PutObject"
               - "s3:ListBucket"
             Resource:
-              - arn:aws:s3:::email-platform-ftcom-tps 
-              - arn:aws:s3:::email-platform-ftcom-tps/*
               - arn:aws:s3:::ft-tps-screener-test
               - arn:aws:s3:::ft-tps-screener-test/*
 

@@ -16,9 +16,10 @@ Subsequently, an FT service can leverage the TPS Screener to intelligently refin
 - **Hosting:** App runs in AWS ECS via Hako. CI deploys ephemeral review builds to `crm-review-eu-west-1` with a default Time To Live (TTL) of two days; merges to `main` go to `crm-prod-eu-west-1`.
 
 ## Configuration & Data
-- **DynamoDB (prod):** `ft-email_platform_tps_lookup` in account `FT Tech Infrastructure Prod (027104099916)`. Each item stores the phone number (primary key) plus `lastRetrieved`, which we update when a number is queried.
-- **DynamoDB (test):** `test-table` in account `FT Tech IP Martech Prod (307164329441)` for experimentation without touching prod data.
-- **S3:** `email-platform-ftcom-tps` bucket in the `FT Tech Infrastructure Prod(027104099916)` AWS account.
+- **DynamoDB (prod):** `ft-tps-screener-prod` in account `FT Tech IP CRM Prod`. Each item stores the phone number (primary key) plus `lastRetrieved`, which we update when a number is queried.
+- **DynamoDB (test):** `ft-tps-screener-test` in account `FT Tech IP CRM Prod` for experimentation. There are a few numbers in the Database which can be picked to query if we get "canCall": true back
+- **S3 (prod):** `ft-tps-screener-prod` bucket in the `FT Tech IP CRM Prod` AWS account.
+- **S3 (test):** `ft-tps-screener-test` bucket in the `FT Tech IP CRM Prod` AWS account.
 - **Secrets:** Doppler project `ft-tps-screener` (configs `dev` and `prod`).
 
 ## Using the App
