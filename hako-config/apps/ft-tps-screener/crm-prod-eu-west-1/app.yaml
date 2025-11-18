@@ -18,7 +18,7 @@ stacks:
       TaskPolicyDocument:
         Version: "2012-10-17"
         Statement:
-          - Sid: "AccessDynamoDBTables"
+          - Sid: "AccessProdDynamoDBTables"
             Effect: "Allow"
             Action:
               - "dynamodb:GetItem"
@@ -27,17 +27,19 @@ stacks:
               - "dynamodb:DeleteItem"
               - "dynamodb:Query"
               - "dynamodb:Scan"
+              - "dynamodb:DescribeTable"
+              - "dynamodb:ListTables"
             Resource:
-              - arn:aws:dynamodb:eu-west-1:027104099916:table/ft-email_platform_tps_lookup*
-          - Sid: "AccessS3Buckets"
+              - arn:aws:dynamodb:eu-west-1:615638662720:table/ft-tps-screener-prod
+          - Sid: "AccessProdS3Buckets"
             Effect: "Allow"
             Action:
               - "s3:GetObject"
               - "s3:PutObject"
               - "s3:ListBucket"
             Resource:
-              - arn:aws:s3:::email-platform-ftcom-tps 
-              - arn:aws:s3:::email-platform-ftcom-tps/*
+              - arn:aws:s3:::ft-tps-screener-prod
+              - arn:aws:s3:::ft-tps-screener-prod/*
 
   scheduled-task:
     type: scheduled-task
@@ -50,13 +52,38 @@ stacks:
       TaskSchedule: "daily at 13:30"
       ContainerCommand: npm run update
       LogDestination: splunk
+      TaskPolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: "AccessProdDynamoDBTables"
+            Effect: "Allow"
+            Action:
+              - "dynamodb:GetItem"
+              - "dynamodb:Query"
+              - "dynamodb:Scan"
+              - "dynamodb:ListTables"
+              - "dynamodb:DescribeTable"
+              - "dynamodb:PutItem"
+              - "dynamodb:UpdateItem"
+              - "dynamodb:DeleteItem"
+            Resource:
+              - arn:aws:dynamodb:eu-west-1:615638662720:table/ft-tps-screener-prod
+          - Sid: "AccessProdS3Buckets"
+            Effect: "Allow"
+            Action:
+              - "s3:GetObject"
+              - "s3:PutObject"
+              - "s3:ListBucket"
+            Resource:
+
+              - arn:aws:s3:::ft-tps-screener-prod
+              - arn:aws:s3:::ft-tps-screener-prod/*
 
   circleci-deployment-role:
     type: circleci-deployment-role
     parameters:
       CircleciProjectId: c9d89113-1fb3-43c5-869c-ad0b8eacf9d2 
       CircleciOrgName: Financial-Times
-
 
 tags:
   systemCode: ft-tps-screener

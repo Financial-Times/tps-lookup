@@ -1,16 +1,9 @@
 const AWS = require('aws-sdk');
-
-AWS.config.update({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  region: process.env.AWS_REGION
-});
-
-const docClient = new AWS.DynamoDB.DocumentClient();
-const dynamoDb = new AWS.DynamoDB();
+const AWS_REGION = process.env.AWS_REGION;
+const docClient = new AWS.DynamoDB.DocumentClient({region: AWS_REGION});
+const dynamoDb = new AWS.DynamoDB({region: AWS_REGION});
 
 module.exports = {
   docClient,
   dynamoDb
 };
-

@@ -9,6 +9,10 @@ const logger = require('../../helper/logger.js');
 const router = express.Router();
 router.use(sessionOptions);
 
+const {
+  AWS_DYNAMODB_TABLE
+} = process.env;
+
 function validateNumber(phoneNum) {
   return /^0(?!044)[\d ]+$/.test(phoneNum);
 }
@@ -40,7 +44,7 @@ module.exports = (app) => {
           }
       
           const params = {
-            TableName: process.env.TABLE_NAME,
+            TableName: AWS_DYNAMODB_TABLE,
             Key: {
               phone: num.replace(/\s/g, '')
             }
