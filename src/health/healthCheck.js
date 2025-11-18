@@ -7,32 +7,34 @@ let isDBUp = true;
 let dbUpLastUpdated;
 
 const {
-  AWS_DYNAMODB_TABLE
+  AWS_DYNAMODB_TABLE,
+  NODE_ENV,
+  OKTA_APP_BASE_URL
 } = process.env;
 
+const isProd = NODE_ENV === 'production';
+
 const healthcheck = new HealthCheck({
-  checks: [{
-    type: 'ping-url',
-    name: 'TPS-lookup gtg is down',
-    id: 'tps-screener-search',
-    url: `${process.env.OKTA_APP_BASE_URL}/__gtg`,
-    id: 'tps-lookup-gtg',
-    severity: 1,
-    interval: 60000,
-    businessImpact: 'Will not be able to check the phone numbers on the TPS/CTPS registry',
-    technicalSummary: 'tps-lookup is unreachable',
-    panicGuide: 'Please contact us on #crm-enablement-team',
-  }]
+  checks: isProd
+    ? [{
+        type: 'ping-url',
+        name: 'TPS lookup gtg is down',
+        id: 'tps-lookup-gtg',
+        url: `${OKTA_APP_BASE_URL}/__gtg`,
+        severity: 1,
+        interval: 60000,
+        businessImpact: 'Will not be able to check the phone numbers on the TPS CTPS registry',
+        technicalSummary: 'tps lookup is unreachable',
+        panicGuide: 'Please contact us on #crm-enablement-team'
+      }]
+    : []
 });
 
 function checkDBUp() {
   co(function* () {
     const check = yield dynamoDb.describeTable({ TableName: AWS_DYNAMODB_TABLE }).promise();
-    if (!['UPDATING', 'ACTIVE'].includes(check.Table.TableStatus)) {
-      isDBUp = false;
-    } else {
-      isDBUp = true;
-    }
+    isDBUp = ['UPDATING', 'ACTIVE'].includes(check.Table.TableStatus);
+    dbUpLastUpdated = new Date().toISOString();
   }).catch((err) => {
     logger.error({
       message: 'Error checking DynamoDB status',
@@ -40,6 +42,7 @@ function checkDBUp() {
       error: err
     });
     isDBUp = false;
+    dbUpLastUpdated = new Date().toISOString();
   });
 }
 
@@ -52,27 +55,27 @@ exports.handle = (req, res) => {
   health.description = 'API and Interface for screening phone numbers on the TPS/CTPS registry';
   health.checks = healthcheck.toJSON();
 
-  const dbCheckObj = {
-    name: 'DynamoDB is up',
-    id: 'tps-screener-db-check',
-    ok: true,
-    severity: 1,
-    businessImpact: 'Will not be able to screen phone numbers on the TPS/CTPS registry',
-    technicalSummary: 'Pings the Db connection to ensure proper status',
-    panicGuide: 'First, verify that there is not a global issue with AWS/DynamoDB. ' +
-    'If there is a global issue with AWS, then no further action can be taken ' +
-      'to fix the issue. ' +
-      'If there is no AWS/Dynamodb issue, visit the Heroku dashboard for ft-tps-screener at ' +
-      'https://dashboard.heroku.com/apps/ft-tps-screener/ ' +
-      'Click the "More" dropdown button and click "Restart All Dynos".',
+  if (isProd) {
+    const dbCheckObj = {
+      name: 'DynamoDB is up',
+      id: 'tps-screener-db-check',
+      ok: isDBUp,
+      severity: 1,
+      businessImpact: 'Will not be able to screen phone numbers on the TPS/CTPS registry',
+      technicalSummary: 'Pings the Db connection to ensure proper status',
+      panicGuide: 'First, verify that there is not a global issue with AWS DynamoDB. ' +
+        'If there is a global issue with AWS then no further action can be taken ' +
+        'to fix the issue. ' +
+        'If there is no AWS DynamoDB issue check the logs in Splunk and visit the app on FT Tech IP CRM Prod ',
       lastUpdated: dbUpLastUpdated
-  };
+    };
 
-  dbCheckObj.ok = isDBUp;
-  health.checks.push(dbCheckObj);
+    health.checks.push(dbCheckObj);
+  }
 
   res.json(health);
 };
 
-// Wait until db connection is established before pinging DB for first time
-setInterval(checkDBUp, 1000 * 10);
+if (isProd) {
+  setInterval(checkDBUp, 1000 * 10);
+}
