@@ -17,7 +17,7 @@ Subsequently, an FT service can leverage the TPS Screener to intelligently refin
 
 ## Configuration & Data
 - **DynamoDB (prod):** `ft-tps-screener-prod` in account `FT Tech IP CRM Prod`. Each item stores the phone number (primary key) plus `lastRetrieved`, which we update when a number is queried.
-- **DynamoDB (test):** `ft-tps-screener-test` in account `FT Tech IP CRM Prod` for experimentation. There are a few numbers in the Database which can be picked to query if we get "canCall": true back
+- **DynamoDB (test):** `ft-tps-screener-test` in account `FT Tech IP CRM Prod` for experimentation. There are a few numbers in the Database which can be used to query as part of testing to see if we get "canCall": true back for numbers in the DB and "canCall": false for numbers not
 - **S3 (prod):** `ft-tps-screener-prod` bucket in the `FT Tech IP CRM Prod` AWS account.
 - **S3 (test):** `ft-tps-screener-test` bucket in the `FT Tech IP CRM Prod` AWS account.
 - **Secrets:** Doppler project `ft-tps-screener` (configs `dev` and `prod`).
@@ -28,7 +28,6 @@ Subsequently, an FT service can leverage the TPS Screener to intelligently refin
 
 ### API (ephemeral)
 `POST https://ft-tps-screener-{ephemeral_id}.eu-west-1.crm-review.ftweb.tech/search`
-
 Body:
 ```json
 ["07400000000"]
