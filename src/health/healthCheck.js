@@ -6,6 +6,10 @@ const logger = require('../../helper/logger');
 let isDBUp = true;
 let dbUpLastUpdated;
 
+const {
+  AWS_DYNAMODB_TABLE
+} = process.env;
+
 const healthcheck = new HealthCheck({
   checks: [{
     type: 'ping-url',
@@ -23,7 +27,7 @@ const healthcheck = new HealthCheck({
 
 function checkDBUp() {
   co(function* () {
-    const check = yield dynamoDb.describeTable({ TableName: process.env.TABLE_NAME }).promise();
+    const check = yield dynamoDb.describeTable({ TableName: AWS_DYNAMODB_TABLE }).promise();
     if (!['UPDATING', 'ACTIVE'].includes(check.Table.TableStatus)) {
       isDBUp = false;
     } else {

@@ -1,12 +1,12 @@
 const AWS = require("aws-sdk");
 const logger = require("../../helper/logger.js");
-const { AWS_REGION } = process.env;
+const { AWS_REGION, AWS_S3_BUCKET } = process.env;
 const s3 = new AWS.S3({ region: AWS_REGION });
 
 async function uploadToS3(fileStream, key) {
   try {
     const params = {
-      Bucket: "email-platform-ftcom-tps",
+      Bucket: AWS_S3_BUCKET,
       Key: key,
       Body: fileStream,
     };
@@ -16,6 +16,8 @@ async function uploadToS3(fileStream, key) {
       event: "Failed to upload file to S3",
       type: "FAILED",
       error: error,
+      bucket: AWS_S3_BUCKET,
+      key: key
     });
     throw error;
   }

@@ -1,14 +1,13 @@
 const AWS = require("aws-sdk");
 const logger = require("../../helper/logger.js");
-const TABLE_NAME = process.env.TABLE_NAME || 'ft-email_platform_tps_lookup';
-const { AWS_REGION } = process.env;
+const { AWS_REGION, AWS_DYNAMODB_TABLE } = process.env;
 
 const docClient = new AWS.DynamoDB.DocumentClient({ region: AWS_REGION });
 
 async function addToDynamo(phone) {
   try {
     const params = {
-      TableName: TABLE_NAME,
+      TableName: AWS_DYNAMODB_TABLE,
       Item: {
         phone: phone.trim(),
       },
@@ -19,6 +18,7 @@ async function addToDynamo(phone) {
       event: "Failed to add phone number to DynamoDB",
       type: "FAILED",
       error: error,
+      table: AWS_DYNAMODB_TABLE
     });
     throw error;
   }
@@ -27,7 +27,7 @@ async function addToDynamo(phone) {
 async function removeFromDynamo(phone) {
   try {
     const params = {
-      TableName: TABLE_NAME,
+      TableName: AWS_DYNAMODB_TABLE,
       Key: {
         phone: phone.trim(),
       },
@@ -38,6 +38,7 @@ async function removeFromDynamo(phone) {
       event: "Failed to remove phone number from DynamoDB",
       type: "FAILED",
       error: error,
+      table: AWS_DYNAMODB_TABLE
     });
     throw error;
   }
