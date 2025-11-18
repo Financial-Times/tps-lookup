@@ -1,6 +1,5 @@
 const express = require('express');
 const co = require('co');
-const config = require('../../config.js');
 const { docClient } = require('../services/db.js');
 const { ensureHttps } = require('../middleware/ensureHttps.js');
 const authenticate = require('../middleware/authenticate.js');
@@ -15,7 +14,7 @@ function validateNumber(phoneNum) {
 }
 
 module.exports = (app) => {
-  if (config.NODE_ENV === 'production') {
+  if (process.env.NODE_ENV === 'production') {
     router.use(ensureHttps);
   }
 
@@ -41,7 +40,7 @@ module.exports = (app) => {
           }
       
           const params = {
-            TableName: config.tableName,
+            TableName: process.env.AWS_DYNAMODB_TABLE,
             Key: {
               phone: num.replace(/\s/g, '')
             }

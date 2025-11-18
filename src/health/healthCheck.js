@@ -1,8 +1,10 @@
 const co = require('co');
 const { dynamoDb } = require('../services/db');
-const config = require('../../config');
 const HealthCheck = require('@financial-times/health-check');
 const logger = require('../../helper/logger');
+const {
+  AWS_DYNAMODB_TABLE
+} = process.env;
 
 let isDBUp = true;
 let dbUpLastUpdated;
@@ -24,7 +26,7 @@ const healthcheck = new HealthCheck({
 
 function checkDBUp() {
   co(function* () {
-    const check = yield dynamoDb.describeTable({ TableName: config.tableName }).promise();
+    const check = yield dynamoDb.describeTable({ TableName: AWS_DYNAMODB_TABLE }).promise();
     if (!['UPDATING', 'ACTIVE'].includes(check.Table.TableStatus)) {
       isDBUp = false;
     } else {

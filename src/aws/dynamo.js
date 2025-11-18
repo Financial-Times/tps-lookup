@@ -1,13 +1,13 @@
 const AWS = require("aws-sdk");
 const logger = require("../../helper/logger.js");
-const config = require("../../config.js");
-const { AWS_REGION } = process.env;
+const { AWS_REGION, AWS_DYNAMODB_TABLE } = process.env;
+
 const docClient = new AWS.DynamoDB.DocumentClient({ region: AWS_REGION });
 
 async function addToDynamo(phone) {
   try {
     const params = {
-      TableName: config.tableName,
+      TableName: AWS_DYNAMODB_TABLE,
       Item: {
         phone: phone.trim(),
       },
@@ -26,7 +26,7 @@ async function addToDynamo(phone) {
 async function removeFromDynamo(phone) {
   try {
     const params = {
-      TableName: config.tableName,
+      TableName: AWS_DYNAMODB_TABLE,
       Key: {
         phone: phone.trim(),
       },

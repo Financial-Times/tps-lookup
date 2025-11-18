@@ -5,12 +5,11 @@ const fs = require('fs');
 const AWS = require('aws-sdk');
 const es = require('event-stream');
 const Stream = require('stream');
-const config = require('../config');
-
+const { AWS_S3_BUCKET } = process.env;
 AWS.config.update({
-  accessKeyId: config.awsAccessKeyId,
-  secretAccessKey: config.awsSecretAccessKey,
-  region: config.awsRegion
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: process.env.AWS_REGION
 });
 
 //const s3 = new AWS.S3({ });
@@ -33,7 +32,7 @@ const ctpsOptions = {
 co(function* () {
   function uploadFromStream(s3) {
     const pass = new Stream.PassThrough();
-    const params = { Bucket: 'email-platform-ftcom-tps', Key: 'tps.json', Body: pass };
+    const params = { Bucket: AWS_S3_BUCKET, Key: 'tps.json', Body: pass };
 
     s3.upload(params, (err, data) => {
       console.log(err, data);
