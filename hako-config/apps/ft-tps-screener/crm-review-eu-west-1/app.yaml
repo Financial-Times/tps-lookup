@@ -17,16 +17,20 @@ stacks:
       TaskPolicyDocument:
         Version: "2012-10-17"
         Statement:
-          - Sid: "AccessDynamoDBTables"
+          - Sid: "AccessProdDynamoDBTables"
             Effect: "Allow"
             Action:
               - "dynamodb:GetItem"
               - "dynamodb:Query"
               - "dynamodb:Scan"
               - "dynamodb:ListTables"
+              - "dynamodb:UpdateItem"
+              - "dynamodb:PutItem"
+              - "dynamodb:DescribeTable"
             Resource:
               - arn:aws:dynamodb:eu-west-1:027104099916:table/ft-email_platform_tps_lookup*
-          - Sid: "AccessS3Buckets"
+              - arn:aws:dynamodb:eu-west-1:615638662720:table/ft-tps-screener-prod
+          - Sid: "AccessTestS3Buckets"
             Effect: "Allow"
             Action:
               - "s3:GetObject"
@@ -35,6 +39,8 @@ stacks:
             Resource:
               - arn:aws:s3:::email-platform-ftcom-tps 
               - arn:aws:s3:::email-platform-ftcom-tps/*
+              - arn:aws:s3:::ft-tps-screener-test
+              - arn:aws:s3:::ft-tps-screener-test/*
 
   circleci-deployment-role:
     type: circleci-deployment-role
