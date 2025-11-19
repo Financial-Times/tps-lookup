@@ -9,28 +9,39 @@ const s3 = new AWS.S3({ region: AWS_REGION });
 
 
 const updateNumbers = async () => {
-  logger.info({ event: "UPDATE_NUMBERS", type: "START", message: "Starting updateNumbers script" });
+  logger.info({
+    event: "UPDATE_NUMBERS",
+    type: "START",
+    message: "Starting updateNumbers script"
+  });
 
   const hasAwsAccess = await checkAwsAccess();
 
   if (!hasAwsAccess) {
-    logger.error({ event: 'No AWS access - exiting' });
+    logger.error({
+      event: "AWS_ACCESS_CHECK",
+      message: 'No AWS access - exiting',
+      type: 'FAILED'
+    });
     process.exit(1);
   }
   // Get file from S3, then from FTP
-  const s3ParamsTPS = { Bucket: AWS_S3_BUCKET, Key: "tps.txt" };
-  const s3ParamsCTPS = { Bucket: AWS_S3_BUCKET, Key: "ctps.txt" };
+  const tpsFileName = "tps.txt";
+  const ctpsFileName = "ctps.txt";
+  const s3ParamsTPS = { Bucket: AWS_S3_BUCKET, Key: tpsFileName };
+  const s3ParamsCTPS = { Bucket: AWS_S3_BUCKET, Key: ctpsFileName };
+
   const oldCTPSFile = fs.createWriteStream("/tmp/ctps_original.txt");
   const oldTPSFile = fs.createWriteStream("/tmp/tps_original.txt");
 
   oldCTPSFile.on("close", () => {
   logger.info({ event: "Old CTPS file downloaded" });
-  ftpToFS("./CTPS/ctps_ns.txt", "/tmp/ctps_new.txt", "ctps.txt");
+  ftpToFS("./CTPS/ctps_ns.txt", "/tmp/ctps_new.txt", ctpsFileName);
   });
 
   oldTPSFile.on("close", () => {
     logger.info({ event: "Old TPS file downloaded" });
-    ftpToFS("./tps/tps_ns.txt", "/tmp/tps_new.txt", "tps.txt");
+    ftpToFS("./tps/tps_ns.txt", "/tmp/tps_new.txt", tpsFileName);
   });
 
     logger.info({ event: "Downloading old files from s3", type: "START" });
