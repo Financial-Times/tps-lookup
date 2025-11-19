@@ -28,6 +28,7 @@ Subsequently, an FT service can leverage the TPS Screener to intelligently refin
 
 ### API (ephemeral)
 `POST https://ft-tps-screener-{ephemeral_id}.eu-west-1.crm-review.ftweb.tech/search`
+
 Body:
 ```json
 ["07400000000"]
