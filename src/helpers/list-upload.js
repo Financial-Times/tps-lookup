@@ -11,7 +11,15 @@ function writeChangesToTmpFile(changes, filename) {
 
 async function uploadChangesToS3(changes, key) {
   if (!Array.isArray(changes)) {
-    throw new Error("List must be an array before uploading to S3");
+    throw new Error(`Changes must be an array before uploading to S3. Received: ${typeof changes}`);
+  }
+
+  if (changes.length === 0) {
+    logger.info({
+      event: "SKIP_UPLOAD_EMPTY_CHANGES_FILE",
+      key,
+    });
+    return;
   }
 
   const localFilename = key.split("/").pop();
@@ -26,6 +34,7 @@ async function uploadChangesToS3(changes, key) {
 
   return uploadToS3(stream, key);
 }
+
 
 function sanitiseListName(filename = "") {
   const base = path.basename(filename).toLowerCase();

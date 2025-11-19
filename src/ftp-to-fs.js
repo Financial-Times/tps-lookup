@@ -61,13 +61,15 @@ function ftpToFS(moveFrom, moveTo, filename) {
           const additions = getAdditions(oldFile, newFile).filter((a) => a.trim());
 
           if (deletions.length > 1000000) {
+            const error = new Error("List appears to be incomplete - halting sync");
             logger.error({
-              event: "List appears to be incomplete - halting sync",
+              event: "LIST_INCOMPLETE_HALTING_SYNC",
               filename,
-              error: err,
+              error,
             });
-            throw new Error("List appears to be incomplete - halting sync");
+            throw error;
           }
+
 
           co(function* () {
             logger.info({
@@ -106,8 +108,8 @@ function ftpToFS(moveFrom, moveTo, filename) {
             yield uploadChangesToS3(additions, additionsKey);
 
             logger.info({
-              event: "UPLOAD_NEW_FILE_TO_S3",
-              message: "Uploading new file to S3",
+              event: "UPLOAD_BASELINE_TO_S3",
+              message: "Uploading baseline file to S3",
               filename
             });
             yield uploadToS3(fs.createReadStream(moveTo), filename);
