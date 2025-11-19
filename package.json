@@ -12,7 +12,8 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "update-numbers": "doppler run -p ft-tps-screener -c dev -- node scripts/update-numbers.js",
-    "update": "node scripts/update-numbers.js"
+    "update": "node scripts/update-numbers.js",
+    "prettier": "prettier --write ."
   },
   "author": "Andrew Snead",
   "license": "ISC",
@@ -44,6 +45,7 @@
   },
   "devDependencies": {
     "jest": "^29.7.0",
-    "supertest": "^7.1.1"
+    "supertest": "^7.1.1",
+    "prettier": "^3.3.3"
   }
 }
