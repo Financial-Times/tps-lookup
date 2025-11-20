@@ -1,5 +1,5 @@
 application: ft-tps-screener #System code of the app
-environment: crm-prod-eu-west-1  # This should already exist under environments of the ip-crm-hako-config repo
+environment: crm-prod-eu-west-1 # This should already exist under environments of the ip-crm-hako-config repo
 
 stacks:
   web:
@@ -14,29 +14,29 @@ stacks:
       ContainerGoodToGoEndpoint: /__gtg
       CustomDomainName: tps-screener.ft.com
       CustomDomainCertificateArn: arn:aws:acm:eu-west-1:615638662720:certificate/34132e9f-3be6-48b8-a085-9beb931d8dc4
-      LogDestination: splunk 
+      LogDestination: splunk
       TaskPolicyDocument:
-        Version: "2012-10-17"
+        Version: '2012-10-17'
         Statement:
-          - Sid: "AccessProdDynamoDBTables"
-            Effect: "Allow"
+          - Sid: 'AccessProdDynamoDBTables'
+            Effect: 'Allow'
             Action:
-              - "dynamodb:GetItem"
-              - "dynamodb:PutItem"
-              - "dynamodb:UpdateItem"
-              - "dynamodb:DeleteItem"
-              - "dynamodb:Query"
-              - "dynamodb:Scan"
-              - "dynamodb:DescribeTable"
-              - "dynamodb:ListTables"
+              - 'dynamodb:GetItem'
+              - 'dynamodb:PutItem'
+              - 'dynamodb:UpdateItem'
+              - 'dynamodb:DeleteItem'
+              - 'dynamodb:Query'
+              - 'dynamodb:Scan'
+              - 'dynamodb:DescribeTable'
+              - 'dynamodb:ListTables'
             Resource:
               - arn:aws:dynamodb:eu-west-1:615638662720:table/ft-tps-screener-prod
-          - Sid: "AccessProdS3Buckets"
-            Effect: "Allow"
+          - Sid: 'AccessProdS3Buckets'
+            Effect: 'Allow'
             Action:
-              - "s3:GetObject"
-              - "s3:PutObject"
-              - "s3:ListBucket"
+              - 's3:GetObject'
+              - 's3:PutObject'
+              - 's3:ListBucket'
             Resource:
               - arn:aws:s3:::ft-tps-screener-prod
               - arn:aws:s3:::ft-tps-screener-prod/*
@@ -49,40 +49,39 @@ stacks:
       ContainerRegistryCredentialsSecretName: /hako/registry-credential/cloudsmith/crm-en-full-stack-read-only
       TaskCpu: 256
       TaskMemory: 512
-      TaskSchedule: "daily at 18:30"
+      TaskSchedule: 'daily at 18:30'
       ContainerCommand: npm run update
       LogDestination: splunk
       TaskPolicyDocument:
-        Version: "2012-10-17"
+        Version: '2012-10-17'
         Statement:
-          - Sid: "AccessProdDynamoDBTables"
-            Effect: "Allow"
+          - Sid: 'AccessProdDynamoDBTables'
+            Effect: 'Allow'
             Action:
-              - "dynamodb:GetItem"
-              - "dynamodb:Query"
-              - "dynamodb:Scan"
-              - "dynamodb:ListTables"
-              - "dynamodb:DescribeTable"
-              - "dynamodb:PutItem"
-              - "dynamodb:UpdateItem"
-              - "dynamodb:DeleteItem"
+              - 'dynamodb:GetItem'
+              - 'dynamodb:Query'
+              - 'dynamodb:Scan'
+              - 'dynamodb:ListTables'
+              - 'dynamodb:DescribeTable'
+              - 'dynamodb:PutItem'
+              - 'dynamodb:UpdateItem'
+              - 'dynamodb:DeleteItem'
             Resource:
               - arn:aws:dynamodb:eu-west-1:615638662720:table/ft-tps-screener-prod
-          - Sid: "AccessProdS3Buckets"
-            Effect: "Allow"
+          - Sid: 'AccessProdS3Buckets'
+            Effect: 'Allow'
             Action:
-              - "s3:GetObject"
-              - "s3:PutObject"
-              - "s3:ListBucket"
+              - 's3:GetObject'
+              - 's3:PutObject'
+              - 's3:ListBucket'
             Resource:
-
               - arn:aws:s3:::ft-tps-screener-prod
               - arn:aws:s3:::ft-tps-screener-prod/*
 
   circleci-deployment-role:
     type: circleci-deployment-role
     parameters:
-      CircleciProjectId: c9d89113-1fb3-43c5-869c-ad0b8eacf9d2 
+      CircleciProjectId: c9d89113-1fb3-43c5-869c-ad0b8eacf9d2
       CircleciOrgName: Financial-Times
 
 tags:

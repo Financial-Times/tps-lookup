@@ -1,6 +1,6 @@
 const { okta } = require('../services/okta.js');
-const oktaNoRedirect = okta.verifyJwts({redirect:false});
-const logger = require('../../helper/logger.js'); 
+const oktaNoRedirect = okta.verifyJwts({ redirect: false });
+const logger = require('../../helper/logger.js');
 
 module.exports = (req, res, next) => {
   const apiKey = req.headers['x-api-key'];
@@ -11,12 +11,9 @@ module.exports = (req, res, next) => {
       ip: req.ip,
       userAgent: req.headers['user-agent']
     });
-    
-    return next()
+
+    return next();
   }
 
   return oktaNoRedirect(req, res, next);
 };
-
-
-

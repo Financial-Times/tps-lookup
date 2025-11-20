@@ -42,12 +42,14 @@ co(function* () {
   //es.merge(res, cRes)
   res
     .pipe(es.split('\r\n'))
-    .pipe(es.mapSync((data) => {
-      if (data.trim()) {
-        console.log(count++);
-        return `${JSON.stringify({ phone: { S: data.trim() } })}\n`;
-      }
-    }))
+    .pipe(
+      es.mapSync((data) => {
+        if (data.trim()) {
+          console.log(count++);
+          return `${JSON.stringify({ phone: { S: data.trim() } })}\n`;
+        }
+      })
+    )
     .pipe(fs.createWriteStream('./tps.json'));
 }).catch((err) => {
   console.log(err);
