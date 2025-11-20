@@ -5,6 +5,10 @@ const fs = require("fs");
 const logger = require("../helper/logger.js");
 const { addToDynamo, removeFromDynamo } = require("./aws/dynamo.js");
 const uploadToS3 = require("./aws/upload-to-s3.js");
+const {
+  uploadChangesToS3,
+  buildChangeKeys,
+} = require("./helpers/list-upload.js");
 const { getDeletions, getAdditions } = require("./helpers/deletions-and-additions.js");
 
 let done = 0;
@@ -32,61 +36,95 @@ function ftpToFS(moveFrom, moveTo, filename) {
           });
           throw err;
         }
-        logger.info("Retrieving new file from FTP");
+        logger.info({
+          event: "DOWNLOAD_NEW_FILE_FROM_FTP",
+          message: "Retrieving new file from FTP",
+          filename
+        });
         sftp.fastGet(moveFrom, moveTo, {}, (downloadErr) => {
           if (downloadErr) {
-            logger.error({ event: "Download error", error: downloadErr });
+            logger.error({
+              event: "DOWNLOAD_ERROR",
+              message: "Error downloading new file from FTP",
+              filename,
+              error: downloadErr
+            });
             throw downloadErr;
           }
 
           logger.info({
-            event: "Finding deletions and additions since last update",
-            type: "START",
+            event: "FINDING_DELETIONS_ADDITIONS",
+            message: "Finding deletions and additions since last update",
+            filename
           });
-          const deletions = getDeletions(oldFile, newFile).filter((d) =>
-            d.trim()
-          );
-          const additions = getAdditions(oldFile, newFile).filter((a) =>
-            a.trim()
-          );
+          const deletions = getDeletions(oldFile, newFile).filter((d) => d.trim());
+          const additions = getAdditions(oldFile, newFile).filter((a) => a.trim());
 
           if (deletions.length > 1000000) {
+            const error = new Error("List appears to be incomplete - halting sync");
             logger.error({
-              event: "List appears to be incomplete - halting sync",
-              type: "FAILED",
-              error: err,
+              event: "LIST_INCOMPLETE_HALTING_SYNC",
+              filename,
+              error,
             });
-            throw new Error("List appears to be incomplete - halting sync");
+            throw error;
           }
 
           co(function* () {
             logger.info({
-              event: `Deleting ${deletions.length} records from Dynamo DB`,
-              type: "START",
+              event: "REMOVE_FROM_DYNAMO",
+              message: `Removing ${deletions.length} records`,
+              filename,
             });
             for (const del of deletions) {
               yield removeFromDynamo(del);
               yield wait(100);
             }
             logger.info({
-              event: `Adding ${additions.length} records`,
-              type: "START",
+              event: "ADD_TO_DYNAMO",
+              message: `Adding ${additions.length} records`,
+              filename,
             });
             for (const add of additions) {
               yield addToDynamo(add);
               yield wait(100);
             }
 
-            logger.info({ event: "Uploading new file to S3" });
+            const { additionsKey, deletionsKey } = buildChangeKeys(filename);
+
+            logger.info({
+              event: "DELETIONS_CHANGES_FILE_TO_S3",
+              message: "Uploading deletions changes file to S3",
+              key: deletionsKey,
+              filename,
+            });
+            yield uploadChangesToS3(deletions, deletionsKey);
+
+            logger.info({
+              event: "ADDITIONS_CHANGES_FILE_TO_S3",
+              message: "Uploading additions changes file to S3",
+              key: additionsKey,
+              filename,
+            });
+            yield uploadChangesToS3(additions, additionsKey);
+
+            logger.info({
+              event: "UPLOAD_BASELINE_TO_S3",
+              message: "Uploading baseline file to S3",
+              filename
+            });
             yield uploadToS3(fs.createReadStream(moveTo), filename);
             if (++done === 2) {
-              logger.info({ event: "Done!", type: "COMPLETE" });
+              logger.info({
+                event: "UPDATE_NUMBERS_COMPLETE",
+                message: "Update numbers script complete",
+              });
               process.exit(0);
             }
           }).catch((err) => {
             logger.error({
-              event:
-                "Error while deleting or adding numbers and uploading to Dynamodb",
+              event: "UPDATE_NUMBERS_ERROR",
+              message: "Error while deleting or adding numbers and uploading to Dynamodb",
               type: "FAILED",
               error: err,
             });
@@ -106,3 +144,4 @@ function ftpToFS(moveFrom, moveTo, filename) {
     .connect(connSettings);
 }
 module.exports = ftpToFS;
+

@@ -100,6 +100,53 @@ If it runs, the logs can be viewed with this query:
 `npm run start:dev`. This will use the environment variables in the [dev Doppler config](https://dashboard.doppler.com/workplace/99fbb11f5bea112e94dd/projects/ft-tps-screener/configs/dev).
 - Use `http://localhost:3000` to access TPS Screener.
 
+### Using the Changes Files for Testing and Debugging
+
+The update numbers job now stores two additional files in S3(ft-tps-screener-{{test/prod}}) for every TPS and CTPS sync run:
+- {{CTPS/TPS}}_additions.txt
+- {{CTPS/TPS}}_deletions.txt
+
+These files are written daily into a date structured path inside the S3 bucket:
+```
+changes/{{CTPS/TPS}}/<YYYY>/<MM>/<DD>/
+  {{CTPS/TPS}}_additions.txt
+  {{CTPS/TPS}}_deletions.txt
+```
+
+#### What these files contain
+
+Each file lists the exact phone numbers that the job intended to add to Dynamo or remove from Dynamo during that specific run. The entries match the diff between the new TPS or CTPS file from SFTP and the baseline stored in S3.
+
+#### Why this is useful
+
+Previously, when Dynamo looked incorrect or a number was missing from lookups, it was difficult to determine:
+
+- what changes the update job attempted to apply on a given day
+- whether the source file contained unexpected additions or deletions
+- whether the issue was caused by Dynamo operations failing silently
+- whether the baseline file was corrupted or incomplete
+
+The changes files provide a clear audit trail so you can confirm:
+
+- the exact set of additions that should have been written
+- the exact set of deletions that should have been applied
+- whether a specific number was expected to enter or leave the database on a given date
+
+### How to use them
+- Go to the relevant S3 bucket
+- Navigate to
+  changes/<tps or ctps>/<year>/<month>/<day>
+- Open the additions or deletions file for that date
+- Compare the contents with Dynamo or with the SFTP source to confirm whether the system behaved correctly
+
+This makes it easier and faster to investigate issues such as:
+
+- numbers present in the TPS or CTPS file but missing from Dynamo
+- numbers removed unexpectedly
+- discrepancies between the baseline and the new file
+- partial failures during a sync run
+
+The changes files give a daily snapshot of intended database modifications, allowing for direct and reliable debugging without needing to rerun diffs or manually compare source files.
 
 ## Where and How tps-lookup Runs
 `ft-tps-screener` is hosted in AWS ECS via Hako in the CRM prod AWS account.

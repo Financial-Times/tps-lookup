@@ -38,6 +38,42 @@ stacks:
             Resource:
               - arn:aws:s3:::ft-tps-screener-test
               - arn:aws:s3:::ft-tps-screener-test/*
+  scheduled-task:
+    type: scheduled-task
+    parameters:
+      TaskCpuArchitecture: ARM64
+      ContainerRegistry: docker.packages.ft.com/ip-container-registry
+      ContainerRegistryCredentialsSecretName: /hako/registry-credential/cloudsmith/crm-en-full-stack-read-only
+      TaskCpu: 256
+      TaskMemory: 512
+      TaskSchedule: "daily at 18:30"
+      ContainerCommand: npm run update
+      LogDestination: splunk
+      TaskPolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: "AccessTestDynamoDBTables"
+            Effect: "Allow"
+            Action:
+              - "dynamodb:GetItem"
+              - "dynamodb:Query"
+              - "dynamodb:Scan"
+              - "dynamodb:ListTables"
+              - "dynamodb:DescribeTable"
+              - "dynamodb:PutItem"
+              - "dynamodb:UpdateItem"
+              - "dynamodb:DeleteItem"
+            Resource:
+              - arn:aws:dynamodb:eu-west-1:615638662720:table/ft-tps-screener-test
+          - Sid: "AccessTestS3Buckets"
+            Effect: "Allow"
+            Action:
+              - "s3:GetObject"
+              - "s3:PutObject"
+              - "s3:ListBucket"
+            Resource:
+              - arn:aws:s3:::ft-tps-screener-test
+              - arn:aws:s3:::ft-tps-screener-test/*
 
   circleci-deployment-role:
     type: circleci-deployment-role

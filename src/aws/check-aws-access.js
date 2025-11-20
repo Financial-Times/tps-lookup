@@ -2,18 +2,19 @@ const AWS = require("aws-sdk");
 const logger = require("../../helper/logger.js");
 
 module.exports = async function checkAwsAccess() {
-  
   const {
     AWS_REGION,
     AWS_DYNAMODB_TABLE,
     AWS_S3_BUCKET
   } = process.env;
+
   const s3 = new AWS.S3({region: AWS_REGION});
   const dynamoDB = new AWS.DynamoDB({region: AWS_REGION});
 
   try {
     logger.info({
-      event: "Checking AWS access",
+      event: "AWS_ACCESS_CHECK",
+      message: "Checking AWS access",
       region: AWS_REGION,
       dynamoDBTable: AWS_DYNAMODB_TABLE,
       s3Bucket: AWS_S3_BUCKET,
@@ -27,7 +28,8 @@ module.exports = async function checkAwsAccess() {
       .promise();
 
     logger.info({
-      event: "S3 access check successful",
+      event: "AWS_S3_ACCESS_CHECK",
+      message: "S3 access check successful",
       objectCount: s3Result.Contents?.length || 0,
       bucket: AWS_S3_BUCKET
     });
@@ -37,7 +39,8 @@ module.exports = async function checkAwsAccess() {
       .promise();
 
     logger.info({
-      event: "DynamoDB access check successful",
+      message: "DynamoDB access check successful",
+      event: "AWS_DYNAMODB_ACCESS_CHECK",
       table: tableResult.Table.TableName,
       itemCount: tableResult.Table.ItemCount,
     });
@@ -45,7 +48,8 @@ module.exports = async function checkAwsAccess() {
     return true;
   } catch (err) {
     logger.error({
-      event: "AWS access check failed",
+      event: "AWS_ACCESS_CHECK",
+      message: "AWS access check failed",
       error: err,
       code: err.code,
       statusCode: err.statusCode,
