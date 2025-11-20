@@ -45,15 +45,15 @@ const updateNumbers = async () => {
   oldTPSFile.on('close', () => {
     logger.info({
       message: 'Old TPS file downloaded',
-      event: 'OLD_FILE_DOWNLOADED',
+      event: 'BASELINE_FILE_DOWNLOADED',
       filename: tpsFileName
     });
     ftpToFS('./tps/tps_ns.txt', '/tmp/tps_new.txt', tpsFileName);
   });
 
   logger.info({
-    message: 'Downloading old files from s3',
-    event: 'STARTING_DOWNLOAD_OLD_FILES',
+    message: 'Downloading old baseline TPS file from s3',
+    event: 'DOWNLOAD_BASELINE_FILE',
     filename: tpsFileName,
     type: 'START'
   });
@@ -63,7 +63,7 @@ const updateNumbers = async () => {
     .on('error', (err) => {
       logger.error({
         message: 'Failed to download old TPS files from s3',
-        event: 'FAILED_TO_DOWNLOAD_OLD_FILE',
+        event: 'FAILED_TO_DOWNLOAD_BASELINE_FILE',
         filename: tpsFileName,
         type: 'FAILED',
         error: err
@@ -72,8 +72,8 @@ const updateNumbers = async () => {
     .pipe(oldTPSFile);
 
   logger.info({
-    message: 'Downloading old files from s3',
-    event: 'STARTING_DOWNLOAD_OLD_FILES',
+    message: 'Downloading old baseline CTPS file from s3',
+    event: 'DOWNLOAD_BASELINE_FILE',
     filename: ctpsFileName,
     type: 'START'
   });
@@ -82,7 +82,9 @@ const updateNumbers = async () => {
     .createReadStream()
     .on('error', (err) => {
       logger.error({
-        event: 'Failed to download old CTPS files from s3',
+        message: 'Failed to download old CTPS files from s3',
+        event: 'FAILED_TO_DOWNLOAD_BASELINE_FILE',
+        filename: ctpsFileName,
         type: 'FAILED',
         error: err
       });

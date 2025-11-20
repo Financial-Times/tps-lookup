@@ -28,6 +28,7 @@ async function uploadChangesToS3(changes, key) {
 
   logger.info({
     event: "UPLOAD_CHANGES_FILE_TO_S3",
+    message: "Uploading changes file to S3",
     key,
     changesLength: changes.length,
   });
