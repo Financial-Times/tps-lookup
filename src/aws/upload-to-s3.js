@@ -10,6 +10,13 @@ async function uploadToS3(fileStream, key) {
       Key: key,
       Body: fileStream,
     };
+    logger.info({
+      event: 'UPLOADING_TO_S3',
+      message:'Uploading file to S3 Bucket',
+      key,
+      bucket
+
+    })
     return s3.upload(params).promise();
   } catch (error) {
     logger.error({

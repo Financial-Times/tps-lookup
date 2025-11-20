@@ -70,7 +70,6 @@ function ftpToFS(moveFrom, moveTo, filename) {
             throw error;
           }
 
-
           co(function* () {
             logger.info({
               event: "REMOVE_FROM_DYNAMO",
