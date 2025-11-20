@@ -12,7 +12,7 @@ async function uploadToS3(fileStream, key) {
     };
     logger.info({
       event: 'UPLOADING_TO_S3',
-      message:'Uploading file to S3 Bucket',
+      message: 'Uploading file to S3 Bucket',
       key,
       bucket: AWS_S3_BUCKET
     })
