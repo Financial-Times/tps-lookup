@@ -7,20 +7,19 @@ describe('authenticate middleware', () => {
       jest.doMock('../services/okta', () => ({
         okta: {
           verifyJwts: jest.fn(() => (req, res, next) => next()) // noop
-        },
+        }
       }));
-  
+
       const authenticate = require('./authenticate');
       const req = { headers: { 'x-api-key': 'valid-key' } };
       const res = {};
       const next = jest.fn();
-  
+
       authenticate(req, res, next);
-  
+
       expect(next).toHaveBeenCalled();
     });
   });
-  
 
   it('should reject access with an invalid API key', () => {
     jest.isolateModules(() => {
@@ -30,8 +29,8 @@ describe('authenticate middleware', () => {
 
       jest.doMock('../services/okta', () => ({
         okta: {
-          verifyJwts: jest.fn(() => mockOktaMiddleware),
-        },
+          verifyJwts: jest.fn(() => mockOktaMiddleware)
+        }
       }));
 
       const authenticate = require('./authenticate');

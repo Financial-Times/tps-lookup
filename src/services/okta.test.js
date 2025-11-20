@@ -6,7 +6,7 @@ jest.mock('@financial-times/okta-express-middleware', () =>
   jest.fn(() => ({
     router: jest.fn((req, res, next) => next()),
     ensureAuthenticated: jest.fn((req, res, next) => next()),
-    verifyJwts: jest.fn((req, res, next) => next()),
+    verifyJwts: jest.fn((req, res, next) => next())
   }))
 );
 
@@ -20,10 +20,9 @@ describe('Okta Session Options', () => {
         cookie: expect.objectContaining({
           maxAge: expect.any(Number),
           httpOnly: true,
-          secure: expect.any(Boolean),
-        }),
+          secure: expect.any(Boolean)
+        })
       })
     );
   });
-  
 });

@@ -38,7 +38,7 @@ workflows:
       - build_tag_and_push_image:
           requires:
             - test
-          filters:            
+          filters:
             branches:
               ignore:
                 - main
@@ -56,9 +56,9 @@ workflows:
           # use shortened branch name if available or fall back to sha value
           ephemeral_id: $(bash -lc 'BR="$CIRCLE_BRANCH";
             if [[ "$BR" =~ ([A-Za-z]{2,10})[-_/]*([0-9]{1,7}) ]]; then
-              ID="${BASH_REMATCH[1],,}${BASH_REMATCH[2]}";
+            ID="${BASH_REMATCH[1],,}${BASH_REMATCH[2]}";
             else
-              ID="$(printf "%s" "$BR" | sha1sum | cut -c1-7)";
+            ID="$(printf "%s" "$BR" | sha1sum | cut -c1-7)";
             fi; printf "%.7s" "$ID"')
   build_and_deploy_prod:
     jobs:

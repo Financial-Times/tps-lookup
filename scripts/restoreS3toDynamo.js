@@ -26,7 +26,11 @@ restore.on('finish-batch', (l) => {
 
 restore.on('send-batch', (batches, requests, streamMeta) => {
   console.log(restore.options.concurrency);
-  console.log('Batch sent. %d in flight. %d Mb remaining to download...', requests, streamMeta.RemainingLength / (1024 * 1024));
+  console.log(
+    'Batch sent. %d in flight. %d Mb remaining to download...',
+    requests,
+    streamMeta.RemainingLength / (1024 * 1024)
+  );
   console.log(`num cached batches ${batches}`);
 });
 

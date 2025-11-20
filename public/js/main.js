@@ -33,32 +33,35 @@ document.addEventListener('DOMContentLoaded', () => {
         method: 'POST',
         credentials: 'include',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify([numberInput?.value || '']),
+        body: JSON.stringify([numberInput?.value || ''])
       };
 
       fetch('/search', options)
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(`HTTP error! status: ${res.status}`);
-        }
-        return res.json();
-      })
-      .then((resJson) => {
-        let resText;
-        if (resJson.results[0].canCall) {
-          resText = 'Good news! This number is not on the TPS/CTPS list.';
-          if (tickImg) tickImg.classList.remove('img-hidden');
-        } else {
-          resText = 'This number IS ON the TPS/CTPS list. Please seek guidance before calling.';
-          if (crossImg) crossImg.classList.remove('img-hidden');
-        }
-        if (resultSection) resultSection.innerHTML = resText;
-      })
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+          }
+          return res.json();
+        })
+        .then((resJson) => {
+          let resText;
+          if (resJson.results[0].canCall) {
+            resText = 'Good news! This number is not on the TPS/CTPS list.';
+            if (tickImg) tickImg.classList.remove('img-hidden');
+          } else {
+            resText =
+              'This number IS ON the TPS/CTPS list. Please seek guidance before calling.';
+            if (crossImg) crossImg.classList.remove('img-hidden');
+          }
+          if (resultSection) resultSection.innerHTML = resText;
+        })
         .catch((err) => {
           console.error('Error during fetch:', err);
-          if (resultSection) resultSection.innerHTML = 'An error occurred. Please try again later.';
+          if (resultSection)
+            resultSection.innerHTML =
+              'An error occurred. Please try again later.';
         });
     });
   }
