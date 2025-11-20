@@ -14,7 +14,7 @@ async function uploadToS3(fileStream, key) {
       event: 'UPLOADING_TO_S3',
       message:'Uploading file to S3 Bucket',
       key,
-      bucket
+      bucket: AWS_S3_BUCKET
     })
     return s3.upload(params).promise();
   } catch (error) {
