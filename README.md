@@ -117,7 +117,7 @@ changes/{{CTPS/TPS}}/<YYYY>/<MM>/<DD>/
 
 Each file lists the exact phone numbers that the job intended to add to Dynamo or remove from Dynamo during that specific run. The entries match the diff between the new TPS or CTPS file from SFTP and the baseline stored in S3.
 
-#### Why this is useful?
+#### Why this is useful
 
 Previously, when Dynamo looked incorrect or a number was missing from lookups, it was difficult to determine:
 
