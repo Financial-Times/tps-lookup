@@ -68,6 +68,7 @@ describe("uploadChangesToS3", () => {
     expect(logger.info).toHaveBeenCalledWith({
       event: "UPLOAD_CHANGES_FILE_TO_S3",
       key: "changes/tps/2025/file.txt",
+      message: "Uploading changes file to S3",
       changesLength: 2,
     });
 
