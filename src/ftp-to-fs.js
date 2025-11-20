@@ -93,14 +93,16 @@ function ftpToFS(moveFrom, moveTo, filename) {
             const { additionsKey, deletionsKey } = buildChangeKeys(filename);
 
             logger.info({
-              event: "UPLOAD_DELETIONS_FILE_TO_S3",
+              event: "DELETIONS_CHANGES_FILE_TO_S3",
+              message: "Uploading deletions changes file to S3",
               key: deletionsKey,
               filename,
             });
             yield uploadChangesToS3(deletions, deletionsKey);
 
             logger.info({
-              event: "UPLOAD_ADDITIONS_FILE_TO_S3",
+              event: "ADDITIONS_CHANGES_FILE_TO_S3",
+              message: "Uploading additions changes file to S3",
               key: additionsKey,
               filename,
             });

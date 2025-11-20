@@ -17,7 +17,7 @@ async function uploadChangesToS3(changes, key) {
   if (changes.length === 0) {
     logger.info({
       event: "SKIP_UPLOAD_EMPTY_CHANGES_FILE",
-      key,
+      message: "No changes to upload, skipping S3 upload"
     });
     return;
   }
@@ -59,4 +59,5 @@ module.exports = {
   writeChangesToTmpFile,
   uploadChangesToS3,
   buildChangeKeys,
+  sanitiseListName
 };
