@@ -1,10 +1,12 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
   <head>
-    <link rel="stylesheet" href="https://www.ft.com/__origami/service/build/v3/bundles/css?components=o-buttons@^7.5.0,o-forms@^9.2.4,o-icons@^7.2.1,o-grid@^6.1.5,o-layout@^5.2.2,o-header-services@^5.2.2,o-autoinit@^3.1.1&brand=internal&system_code=ft-tps-screener" />
-    <link rel="stylesheet" type="text/css" href="/main.css">
-    <meta charset="UTF-8">
+    <link
+      rel="stylesheet"
+      href="https://www.ft.com/__origami/service/build/v3/bundles/css?components=o-buttons@^7.5.0,o-forms@^9.2.4,o-icons@^7.2.1,o-grid@^6.1.5,o-layout@^5.2.2,o-header-services@^5.2.2,o-autoinit@^3.1.1&brand=internal&system_code=ft-tps-screener"
+    />
+    <link rel="stylesheet" type="text/css" href="/main.css" />
+    <meta charset="UTF-8" />
     <title>TPS Screener</title>
   </head>
 
@@ -15,17 +17,25 @@
           <div class="o-header-services__top">
             <div class="o-header-services__logo"></div>
             <div class="o-header-services__title">
-              <span class="o-header-services__product-name">Internal Products - TPS Screener</span>
+              <span class="o-header-services__product-name"
+                >Internal Products - TPS Screener</span
+              >
             </div>
             <div class="o-header-services__related-content">
-              <a class="o-header-services__related-content-link logout-link" href="#">Logout</a>
-              <form class="logout-form" method="post" action="/logout">
-              </form>
+              <a
+                class="o-header-services__related-content-link logout-link"
+                href="#"
+                >Logout</a
+              >
+              <form class="logout-form" method="post" action="/logout"></form>
             </div>
           </div>
         </header>
       </div>
-      <div class="o-layout__main o-layout-typography" data-o-component="o-syntax-highlight">
+      <div
+        class="o-layout__main o-layout-typography"
+        data-o-component="o-syntax-highlight"
+      >
         <div class="o-grid-container">
           <div data-o-grid-colspan="5">
             <form class="search-form">
@@ -33,15 +43,26 @@
                 <span class="o-forms-title">
                   <span class="o-forms-title__main">Phone Number</span>
                 </span>
-                <span class="o-forms-input o-forms-input--text o-forms-input--suffix">
-                  <input type="text" id="search-input" class="o-forms__text search-input" placeholder="UK Phone number" required pattern="^0(?!044)[\d ]+$" />
-                  <button class="o-buttons o-buttons--secondary o-buttons--big">Search</button>
+                <span
+                  class="o-forms-input o-forms-input--text o-forms-input--suffix"
+                >
+                  <input
+                    type="text"
+                    id="search-input"
+                    class="o-forms__text search-input"
+                    placeholder="UK Phone number"
+                    required
+                    pattern="^0(?!044)[\d ]+$"
+                  />
+                  <button class="o-buttons o-buttons--secondary o-buttons--big">
+                    Search
+                  </button>
                 </span>
               </label>
             </form>
           </div>
           <div data-o-grid-colspan="4">
-            Number must begin with a 0 and not include the country code.<br>
+            Number must begin with a 0 and not include the country code.<br />
             <strong>Example</strong>: 077xxxxxxxx
           </div>
         </div>
@@ -49,8 +70,16 @@
           <div data-o-grid-colspan="12">
             <div class="search-result">
               <span class="search-result-text"></span>
-              <img id="img-cross" class="img-hidden" src="https://images.ft.com/v3/image/raw/fticon-v1:cross?source=origami&tint=ff0000">
-              <img id="img-tick" class="img-hidden" src="https://images.ft.com/v3/image/raw/fticon-v1:tick?source=origami&tint=4BB543">
+              <img
+                id="img-cross"
+                class="img-hidden"
+                src="https://images.ft.com/v3/image/raw/fticon-v1:cross?source=origami&tint=ff0000"
+              />
+              <img
+                id="img-tick"
+                class="img-hidden"
+                src="https://images.ft.com/v3/image/raw/fticon-v1:tick?source=origami&tint=4BB543"
+              />
             </div>
           </div>
         </div>

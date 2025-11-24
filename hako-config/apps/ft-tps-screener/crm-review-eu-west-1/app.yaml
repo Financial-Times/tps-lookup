@@ -1,5 +1,5 @@
 application: ft-tps-screener #System code of the app
-environment: crm-review-eu-west-1  # This should already exist under environments of the ip-crm-hako-config repo
+environment: crm-review-eu-west-1 # This should already exist under environments of the ip-crm-hako-config repo
 ephemeralAppTTL: 2 days
 
 stacks:
@@ -13,28 +13,28 @@ stacks:
       ContainerRegistry: docker.packages.ft.com/ip-container-registry
       ContainerRegistryCredentialsSecretName: /hako/registry-credential/cloudsmith/crm-en-full-stack-read-only
       ContainerGoodToGoEndpoint: /__gtg
-      LogDestination: splunk 
+      LogDestination: splunk
       TaskPolicyDocument:
-        Version: "2012-10-17"
+        Version: '2012-10-17'
         Statement:
-          - Sid: "AccessTestDynamoDBTables"
-            Effect: "Allow"
+          - Sid: 'AccessTestDynamoDBTables'
+            Effect: 'Allow'
             Action:
-              - "dynamodb:GetItem"
-              - "dynamodb:Query"
-              - "dynamodb:Scan"
-              - "dynamodb:ListTables"
-              - "dynamodb:UpdateItem"
-              - "dynamodb:PutItem"
-              - "dynamodb:DescribeTable"
+              - 'dynamodb:GetItem'
+              - 'dynamodb:Query'
+              - 'dynamodb:Scan'
+              - 'dynamodb:ListTables'
+              - 'dynamodb:UpdateItem'
+              - 'dynamodb:PutItem'
+              - 'dynamodb:DescribeTable'
             Resource:
               - arn:aws:dynamodb:eu-west-1:615638662720:table/ft-tps-screener-test
-          - Sid: "AccessTestS3Buckets"
-            Effect: "Allow"
+          - Sid: 'AccessTestS3Buckets'
+            Effect: 'Allow'
             Action:
-              - "s3:GetObject"
-              - "s3:PutObject"
-              - "s3:ListBucket"
+              - 's3:GetObject'
+              - 's3:PutObject'
+              - 's3:ListBucket'
             Resource:
               - arn:aws:s3:::ft-tps-screener-test
               - arn:aws:s3:::ft-tps-screener-test/*
@@ -46,31 +46,31 @@ stacks:
       ContainerRegistryCredentialsSecretName: /hako/registry-credential/cloudsmith/crm-en-full-stack-read-only
       TaskCpu: 256
       TaskMemory: 512
-      TaskSchedule: "daily at 18:30"
+      TaskSchedule: 'daily at 18:30'
       ContainerCommand: npm run update
       LogDestination: splunk
       TaskPolicyDocument:
-        Version: "2012-10-17"
+        Version: '2012-10-17'
         Statement:
-          - Sid: "AccessTestDynamoDBTables"
-            Effect: "Allow"
+          - Sid: 'AccessTestDynamoDBTables'
+            Effect: 'Allow'
             Action:
-              - "dynamodb:GetItem"
-              - "dynamodb:Query"
-              - "dynamodb:Scan"
-              - "dynamodb:ListTables"
-              - "dynamodb:DescribeTable"
-              - "dynamodb:PutItem"
-              - "dynamodb:UpdateItem"
-              - "dynamodb:DeleteItem"
+              - 'dynamodb:GetItem'
+              - 'dynamodb:Query'
+              - 'dynamodb:Scan'
+              - 'dynamodb:ListTables'
+              - 'dynamodb:DescribeTable'
+              - 'dynamodb:PutItem'
+              - 'dynamodb:UpdateItem'
+              - 'dynamodb:DeleteItem'
             Resource:
               - arn:aws:dynamodb:eu-west-1:615638662720:table/ft-tps-screener-test
-          - Sid: "AccessTestS3Buckets"
-            Effect: "Allow"
+          - Sid: 'AccessTestS3Buckets'
+            Effect: 'Allow'
             Action:
-              - "s3:GetObject"
-              - "s3:PutObject"
-              - "s3:ListBucket"
+              - 's3:GetObject'
+              - 's3:PutObject'
+              - 's3:ListBucket'
             Resource:
               - arn:aws:s3:::ft-tps-screener-test
               - arn:aws:s3:::ft-tps-screener-test/*
@@ -78,9 +78,8 @@ stacks:
   circleci-deployment-role:
     type: circleci-deployment-role
     parameters:
-      CircleciProjectId: c9d89113-1fb3-43c5-869c-ad0b8eacf9d2 
+      CircleciProjectId: c9d89113-1fb3-43c5-869c-ad0b8eacf9d2
       CircleciOrgName: Financial-Times
-
 
 tags:
   systemCode: ft-tps-screener
