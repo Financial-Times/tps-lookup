@@ -55,7 +55,7 @@ module.exports = (app) => {
                 '#d': 'lastRetrieved'
               },
               ExpressionAttributeValues: {
-                ':d': JSON.stringify(new Date())
+                ':d': new Date().toISOString()
               },
               UpdateExpression: 'SET #d = :d'
             });

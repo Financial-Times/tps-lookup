@@ -9,7 +9,8 @@ async function addToDynamo(phone) {
     const params = {
       TableName: AWS_DYNAMODB_TABLE,
       Item: {
-        phone: phone.trim()
+        phone: phone.trim(),
+        dateAdded: new Date().toISOString()
       }
     };
     return docClient.put(params).promise();
