@@ -13,7 +13,6 @@ function getDeletions(oldFile, newFile) {
       cwd: '/tmp',
       encoding: 'utf-8',
       stdio: ['pipe', 'pipe', 'pipe'],
-      // Large diffs can exceed the default 1MB buffer; increase to avoid ENOBUFS.
       maxBuffer: 1024 * 1024 * 200
     }
   );
