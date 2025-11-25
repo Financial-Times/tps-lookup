@@ -39,7 +39,7 @@ function getAdditions(oldFile, newFile) {
       cwd: '/tmp',
       encoding: 'utf-8',
       stdio: ['pipe', 'pipe', 'pipe'],
-      maxBuffer: 1024 * 1024 * 200
+      maxBuffer: 1024 * 1024 * 200 // 200 MB
     }
   );
 
