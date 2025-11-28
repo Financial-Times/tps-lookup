@@ -23,7 +23,7 @@ describe('authenticate middleware', () => {
 
   it('should reject access with an invalid API key', () => {
     jest.isolateModules(() => {
-      const mockOktaMiddleware = jest.fn((req, res, next) => {
+      const mockOktaMiddleware = jest.fn((_req, res) => {
         res.status(401).json({ error: 'unauthorised' });
       });
 

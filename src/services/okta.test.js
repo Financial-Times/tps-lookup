@@ -1,6 +1,7 @@
 jest.mock('express-session');
 const session = require('express-session');
-const { sessionOptions } = require('./okta');
+
+require('./okta');
 
 jest.mock('@financial-times/okta-express-middleware', () =>
   jest.fn(() => ({
