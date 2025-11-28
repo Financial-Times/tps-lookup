@@ -1,7 +1,4 @@
-.env
-.env.test
-*\n"
-dist
-*.dat
-*.txt
-node_modules
+*.env*
+coverage/
+dist/
+node_modules/
