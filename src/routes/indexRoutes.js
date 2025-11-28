@@ -17,7 +17,7 @@ module.exports = (app) => {
   router.get('/authorization-code/callback', ({ res }) =>
     res.redirect(302, '/')
   );
-  router.get('/', (req, res, next) => {
+  router.get('/', (_req, res) => {
     res.sendFile(path.join(__dirname, '../../index.html'));
   });
 
