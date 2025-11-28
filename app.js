@@ -8,7 +8,7 @@ const app = new express();
 
 app.use(compression());
 app.use(bodyParser.json());
-app.post(`/logout`, (req, res) => {
+app.post('/logout', (req, res) => {
   req.session = null;
   return res.redirect('/');
 });
