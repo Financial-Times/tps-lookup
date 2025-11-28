@@ -1,39 +1,39 @@
 const FormData = require('form-data');
-const fetch = require('node-fetch');
+// const fetch = require('node-fetch');
 const co = require('co');
 const fs = require('fs');
-const AWS = require('aws-sdk');
+// const AWS = require('aws-sdk');
 const es = require('event-stream');
-const Stream = require('stream');
+// const Stream = require('stream');
 
-const { AWS_S3_BUCKET } = process.env;
+// const { AWS_S3_BUCKET } = process.env;
 
 const form = new FormData();
 form.append('f', '/www/corporate.tpsonline.org.uk//data/tps_ns.txt');
 const ctpsForm = new FormData();
 ctpsForm.append('f', 'f=/www/corporate.tpsonline.org.uk//data/ctps_ns.txt');
 
-const options = {
-  method: 'POST',
-  body: form
-};
+// const options = {
+//   method: 'POST',
+//   body: form
+// };
 
-const ctpsOptions = {
-  method: 'POST',
-  body: ctpsForm
-};
+// const ctpsOptions = {
+//   method: 'POST',
+//   body: ctpsForm
+// };
 
 co(function* () {
-  function uploadFromStream(s3) {
-    const pass = new Stream.PassThrough();
-    const params = { Bucket: AWS_S3_BUCKET, Key: 'tps.json', Body: pass };
-
-    s3.upload(params, (err, data) => {
-      console.log(err, data);
-    });
-
-    return pass;
-  }
+  // function uploadFromStream(s3) {
+  //   const pass = new Stream.PassThrough();
+  //   const params = { Bucket: AWS_S3_BUCKET, Key: 'tps.json', Body: pass };
+  //
+  //   s3.upload(params, (err, data) => {
+  //     console.log(err, data);
+  //   });
+  //
+  //   return pass;
+  // }
   let count = 0;
   const res = fs.createReadStream('./CTPS.txt');
   //const cRes = fs.createReadStream('./ctps_ns.txt');
