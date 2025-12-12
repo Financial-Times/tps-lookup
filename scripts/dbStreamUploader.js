@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 const FormData = require('form-data');
 const fetch = require('node-fetch');
 const co = require('co');
